@@ -12,7 +12,7 @@ public enum  Color {
     RED (rouge),
     WHITE (blanc);
 
-    public static final List<Color> ALL = Arrays.asList(Color.values());
-    public static final int COUNT = Color.values().length;
+    public static final List<Color> ALL = List.of(Color.values());
+    public static final int COUNT = ALL.size();
 
 }
