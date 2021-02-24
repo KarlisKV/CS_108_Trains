@@ -2,6 +2,7 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,8 +26,19 @@ public final class Trip {
         Objects.requireNonNull(to);
         Preconditions.checkArgument(points > 0);
 
+        List<Trip> possibleTrips = new ArrayList<Trip>();
+
+        //Goes through all the stations in from and to and adds the trip to the list if the trip isn't already in that list
+        for(Station s1 : from) {
+            for (Station s2 : to) {
+                if(! possibleTrips.contains(new Trip(s1, s2, points))) {
+                    possibleTrips.add(new Trip(s1, s2, points));
+                }
+            }
+        }
+
         // TODO: 2/24/2021 I don't get how should we return the list
-        return null;
+        return possibleTrips;
     }
 
     //Getters
