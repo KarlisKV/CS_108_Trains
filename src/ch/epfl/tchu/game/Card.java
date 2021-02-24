@@ -31,7 +31,7 @@ public enum Card {
 
     public static Card of(Color color) {
 
-        for( Card c : CARS) {
+        for(Card c : CARS) {
             if(color.equals(c.color)) {
                 return c;
             }

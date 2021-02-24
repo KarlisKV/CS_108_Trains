@@ -19,8 +19,11 @@ public final class Ticket implements Comparable<Ticket> {
 
     // TODO: 2/24/2021 how to call using 'this' 
     Ticket(Station from, Station to, int points) {
-        this(from, to, points);
+        this.from = from;
+        this.to = to;
+        this.points = points;
     }
+
 
 
     public String text() {
