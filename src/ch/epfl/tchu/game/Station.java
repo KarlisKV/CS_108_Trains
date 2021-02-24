@@ -14,12 +14,14 @@ public final class Station {
         this.name = name;
     }
 
-    public int id() {
-        return id;
-    }
+    public int id() { return id; }
 
     public String name() {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

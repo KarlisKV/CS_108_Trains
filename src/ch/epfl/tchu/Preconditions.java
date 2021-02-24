@@ -1,11 +1,9 @@
 package ch.epfl.tchu;
 
-public class Preconditions {
+public final class Preconditions {
 
     private Preconditions() {}
 
-    public static void checkArgument(boolean shouldBeTrue) {
-        if (!shouldBeTrue) throw new IllegalArgumentException();
-    }
+    public static void checkArgument(boolean shouldBeTrue) { if (!shouldBeTrue) throw new IllegalArgumentException(); }
 
 }

@@ -1,5 +1,4 @@
 package ch.epfl.tchu.game;
-import java.util.Arrays;
 import java.util.List;
 
 public enum  Color {
@@ -16,3 +15,4 @@ public enum  Color {
     public static final int COUNT = ALL.size();
 
 }
+

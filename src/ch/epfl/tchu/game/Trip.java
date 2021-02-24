@@ -1,5 +1,7 @@
 package ch.epfl.tchu.game;
 
+import ch.epfl.tchu.Preconditions;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -13,30 +15,32 @@ public final class Trip {
 
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
-        if(points <= 0) {
-            throw new IllegalArgumentException("Points must be larger than zero: " + points);
-        }
+        Preconditions.checkArgument(points > 0);
         this.points = points;
 
     }
-    // TODO: 2/23/2021 fix this method currently not doing anything no clue at the moment, should use ArrayList and for-each loop idk
 
     public static List<Trip> all(List<Station> from, List<Station> to, int points) {
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(to);
+        Preconditions.checkArgument(points > 0);
+
+        // TODO: 2/24/2021 I don't get how should we return the list
         return null;
     }
 
     //Getters
     public Station from() {
-        return this.from;
+        return from;
     }
 
     public Station to() {
-        return this.to;
-    }
-    public int points() {
-        return this.points;
+        return to;
     }
 
+    public int points() {
+        return points;
+    }
 
     public int points(StationConnectivity connectivity){
         if(connectivity.connected(from, to)) {

@@ -1,6 +1,5 @@
 package ch.epfl.tchu.game;
 
-import java.util.Arrays;
 import java.util.List;
 
 public enum Card {
@@ -21,25 +20,15 @@ public enum Card {
 
     // TODO: 2/23/2021 Help needed with this method + that other one named color, I legit have no clue what he wants from us
     public Color color(){
-        return this.color();
-    }
-
-    /**
-     * Method of returns the tupe of wagon card respodning to the given color
-     * @param color
-     * @return
-     */
-    public static Card of(Color color) {
-        for(int i = 0; i < COUNT; i++) {
-            if(ALL.get(i).equals()) {
-                return ALL.get(i);
-            }
-        }
-    }
-
-    // TODO: 2/23/2021 here no clue :((
-    public Color color() {
         return null;
     }
+
+
+    public static Card of(Color color) {
+
+        return null;
+    }
+
+
 
 }
