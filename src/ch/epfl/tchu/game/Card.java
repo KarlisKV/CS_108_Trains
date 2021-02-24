@@ -30,8 +30,7 @@ public enum Card {
 
 
     public static Card of(Color color) {
-
-        return null;
+        return Card.of(color);
     }
 
 
