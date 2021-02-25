@@ -12,6 +12,12 @@ public final class Trip {
     private final Station to;
     private final int points;
 
+    /**
+     *  Default Trip constructor
+     * @param from (Station) Departure station
+     * @param to (Station) Arrival station
+     * @param points (int) points for connecting the 2 stations
+     */
     public Trip(Station from, Station to, int points) {
 
         this.from = Objects.requireNonNull(from);
@@ -21,6 +27,13 @@ public final class Trip {
 
     }
 
+    /**
+     * 'all' method to get List of possible journeys between 2 stations with the given points
+     * @param from (Station) Departure station
+     * @param to (Station) Arrival station
+     * @param points (int) points for connecting the 2 stations
+     * @return possibleTrips List<Trip> returns list of all possible trips between 2 stations
+     */
     public static List<Trip> all(List<Station> from, List<Station> to, int points) {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
@@ -37,7 +50,6 @@ public final class Trip {
             }
         }
 
-        // TODO: 2/24/2021 I don't get how should we return the list
         return possibleTrips;
     }
 
@@ -54,6 +66,12 @@ public final class Trip {
         return points;
     }
 
+
+    /**
+     * 'points' method gives points if 2 stations are connected and negative points if not
+     * @param connectivity
+     * @return points or -points (int) gained/lost depending whether 2 Stations are connected
+     */
     public int points(StationConnectivity connectivity){
         if(connectivity.connected(from, to)) {
             return points;

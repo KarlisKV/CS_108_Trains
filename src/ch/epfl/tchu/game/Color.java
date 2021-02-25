@@ -2,6 +2,7 @@ package ch.epfl.tchu.game;
 import java.util.List;
 
 public enum  Color {
+
     BLACK,
     VIOLET,
     BLUE,
