@@ -1,6 +1,11 @@
 package ch.epfl.tchu.game;
 import java.util.List;
 
+/**
+ * Color enum
+ *
+ * @author Karlis Velins (325180)
+ */
 public enum  Color {
 
     BLACK,

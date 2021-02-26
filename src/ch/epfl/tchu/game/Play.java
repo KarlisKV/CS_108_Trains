@@ -7,7 +7,8 @@ public class Play {
 
         //Testing the secondary Ticket constructor (works)
         System.out.println(new Ticket(new Station(1, "lol"), new Station(2, "lmao"), 1));
-
+        Ticket ticket = new Ticket(new Station(1, "lolll"), new Station(3, "lmao"), 1);
+        System.out.println(ticket.text());
     }
 
 

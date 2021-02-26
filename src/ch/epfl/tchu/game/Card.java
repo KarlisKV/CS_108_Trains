@@ -2,6 +2,11 @@ package ch.epfl.tchu.game;
 
 import java.util.List;
 
+/**
+ * Card enum
+ *
+ * @author Karlis Velins (325180)
+ */
 public enum Card {
 
     BLACK (Color.BLACK),

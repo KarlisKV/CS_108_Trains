@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Trips
+ *
+ * @author Karlis Velins (325180)
+ * @author Daniel Polka  (326800)
+ */
 public final class Trip {
 
     private final Station from;
@@ -53,15 +59,26 @@ public final class Trip {
         return possibleTrips;
     }
 
-    //Getters
+    /**
+     * Returns the departure Station
+     * @return the departure Station
+     */
     public Station from() {
         return from;
     }
 
+    /**
+     * Returns the arrival Station
+     * @return the arrival Station
+     */
     public Station to() {
         return to;
     }
 
+    /**
+     * Returns the points for connecting the stations
+     * @return (int) the points for connecting the stations
+     */
     public int points() {
         return points;
     }

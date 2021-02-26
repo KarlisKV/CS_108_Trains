@@ -1,5 +1,10 @@
 package ch.epfl.tchu.game;
 
+/**
+ * Connectivity of stations interface
+ *
+ * @author Daniel Polka  (326800)
+ */
 public interface StationConnectivity {
 
     /**

@@ -2,6 +2,9 @@ package ch.epfl.tchu;
 
 public final class Preconditions {
 
+    /**
+     * Private constructor for Preconditions
+     */
     private Preconditions() {}
 
     /**
