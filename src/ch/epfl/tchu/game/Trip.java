@@ -39,12 +39,12 @@ public final class Trip {
         Objects.requireNonNull(to);
         Preconditions.checkArgument(points > 0);
 
-        List<Trip> possibleTrips = new ArrayList<Trip>();
+        List<Trip> possibleTrips = new ArrayList<>();
 
         //Goes through all the stations in from and to and adds the trip to the list if the trip isn't already in that list
         for(Station s1 : from) {
             for (Station s2 : to) {
-                if(! possibleTrips.contains(new Trip(s1, s2, points))) {
+                if(!possibleTrips.contains(new Trip(s1, s2, points))) {
                     possibleTrips.add(new Trip(s1, s2, points));
                 }
             }
@@ -69,7 +69,7 @@ public final class Trip {
 
     /**
      * 'points' method gives points if 2 stations are connected and negative points if not
-     * @param connectivity
+     * @param connectivity boolean - true if stations are connected by cars/locomotives, false otherwise
      * @return points or -points (int) gained/lost depending whether 2 Stations are connected
      */
     public int points(StationConnectivity connectivity){
