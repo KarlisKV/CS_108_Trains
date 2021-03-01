@@ -90,9 +90,11 @@ public final class Ticket implements Comparable<Ticket> {
         int maxValue = Integer.MIN_VALUE;
 
         for (Trip trip : trips) {
+
             if (trip.points(connectivity) > maxValue) {
                 maxValue = trip.points(connectivity);
             }
+
         }
 
         return maxValue;
