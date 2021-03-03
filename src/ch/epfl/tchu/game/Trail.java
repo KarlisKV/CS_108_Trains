@@ -28,7 +28,7 @@ public final class Trail {
     }
 
 
-    //TODO: 3/3/2021 algorithm incorrect
+    //TODO: 3/3/2021 algorithm incorrect (for now it runs infinitely, I think the adding elements part is correct but I don't know how to make it end yet)
     /**
      *
      */
@@ -47,18 +47,19 @@ public final class Trail {
             List<Trail> temp = new ArrayList<>();
             List<Route> continuingPossibleTrailRoutes = new ArrayList<>();
             for(Trail t : possibleTrails) {
+                //Adding Trail t to temp
+                temp.add(t);
+
                 for (Route r : routes) {
-                    if( ( !t.Routes.contains(r) ) &&
-                            //Second boolean = true if Trail t can be prolonged by Route r
-                            ( t.Routes.get(t.Routes.size() - 1).station2().equals(r.station1()) ) ) {
-                        //Adding Trail t to temp
-                        temp.add(t);
-                        //Adding Route r to Trail t
-                        temp.get(temp.size() - 1).Routes.add(r);
+                    if( ( !temp.get(temp.indexOf(t)).Routes.contains(r) ) &&
+                            //Second boolean = true if Trail t in temp can be prolonged by Route r
+                            ( temp.get(temp.indexOf(t)).Routes.get(t.Routes.size() - 1).station2().equals(r.station1()) ) ) {
+                        //Adding Route r to Trail t in temp
+                        temp.get(temp.indexOf(t)).Routes.add(r);
                     }
                 }
-            }
 
+            }
 
             possibleTrails = temp;
         } while(possibleTrails.size() > 0);
