@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tickets
+ * Trail class
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */
@@ -15,7 +15,10 @@ public final class Trail {
     private final List<Station> Stations;
     private final int length;
 
-
+    /**
+     * Private constructor of the Trail class
+     * @param Routes (List<Route>) List of routes
+     */
     private Trail(List<Route> Routes) {
         Stations = new ArrayList<>();
         int tempLength = 0;
@@ -29,8 +32,11 @@ public final class Trail {
 
 
     //TODO: 3/3/2021 algorithm incorrect (for now it runs infinitely, I think the adding elements part is correct but I don't know how to make it end yet)
+
     /**
-     *
+     * longest method
+     * @param routes (List<Route>) List of routes
+     * @return the longest path of the network made up of the given routes
      */
     public static Trail longest(List<Route> routes) {
 
@@ -67,11 +73,18 @@ public final class Trail {
         return null;
     }
 
-
+    /**
+     * Returns the length of the path
+     * @return the length of the path
+     */
     public int length() {
         return length;
     }
 
+    /**
+     * Returns the first station of the path, or nullif (and only if) the path is zero length
+     * @return the first station of the path, or nullif (and only if) the path is zero length
+     */
     public Station station1() {
         if (length == 0) {
             return null;
@@ -80,6 +93,11 @@ public final class Trail {
         }
     }
 
+    /**
+     * returns the last station of the path, or null, if (and only if) the path is zero length
+     * @return the last station of the path, or null, if (and only if) the path is zero length
+     */
+    // TODO: 3/3/2021 ask assistant whether stations.size() -1 can be changed to -1
     public Station station2() {
         if (length == 0) {
             return null;
@@ -88,6 +106,10 @@ public final class Trail {
         }
     }
 
+    /**
+     * toString method returns a textual representation of the path
+     * @return (String) a textual representation of the path
+     */
     @Override
     public String toString() {
         String complete = "";

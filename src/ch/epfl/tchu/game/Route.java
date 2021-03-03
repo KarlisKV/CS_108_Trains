@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Station
+ * Route class
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */
@@ -84,33 +84,34 @@ public final class Route {
         return null;
     }
 
+    /**
+     * claim points returns number of points gained depending on the length of the road
+     * @return amount of points gained for getting the road
+     */
     public int claimPoints() {
-        if(length == 1) {
 
-            return 1;
+        switch(length) {
+            case 1:
+                return 1;
 
-        } else if (length == 2) {
+            case 2:
+                return 2;
 
-            return 2;
+            case 3:
+                return 4;
 
-        } else if (length == 3) {
+            case 4:
+                return 7;
 
-            return 4;
+            case 5:
+                return 10;
 
-        } else if (length == 4) {
+            case 6:
+                return 15;
 
-            return 7;
+            default:
+                return 0;
 
-        } else if (length == 5) {
-
-            return 10;
-
-        } else if (length == 6) {
-
-            return 15;
-        } else {
-
-            return 0;
         }
     }
 
