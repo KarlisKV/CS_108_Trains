@@ -84,9 +84,34 @@ public final class Route {
         return null;
     }
 
-    // TODO: 3/2/2021 create this method
     public int claimPoints() {
+        if(length == 1) {
 
+            return 1;
+
+        } else if (length == 2) {
+
+            return 2;
+
+        } else if (length == 3) {
+
+            return 4;
+
+        } else if (length == 4) {
+
+            return 7;
+
+        } else if (length == 5) {
+
+            return 10;
+
+        } else if (length == 6) {
+
+            return 15;
+        } else {
+
+            return 0;
+        }
     }
 
     /**
