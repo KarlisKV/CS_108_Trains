@@ -59,9 +59,7 @@ public final class Route {
      * @return list of both stations
      */
     public List<Station> stations() {
-        List<Station> stations = List.of(station1, station2);
-
-        return stations;
+        return List.of(station1, station2);
     }
 
     /**

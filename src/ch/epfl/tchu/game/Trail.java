@@ -26,6 +26,7 @@ public final class Trail {
             Stations.add(r.station1());
             tempLength = tempLength + r.length();
         }
+        Stations.add(Routes.get(Routes.size() - 1).station2());
         length = tempLength;
         this.Routes = Routes;
     }
@@ -49,28 +50,54 @@ public final class Trail {
             }
         }
 
-        do {
-            List<Trail> temp = new ArrayList<>();
-            List<Route> continuingPossibleTrailRoutes = new ArrayList<>();
-            for(Trail t : possibleTrails) {
-                //Adding Trail t to temp
-                temp.add(t);
+        List<Trail> possibleTrailsCopy = new ArrayList<>(possibleTrails);
+        Trail longestTrail = new Trail(List.of());
 
-                for (Route r : routes) {
-                    if( ( !temp.get(temp.indexOf(t)).Routes.contains(r) ) &&
-                            //Second boolean = true if Trail t in temp can be prolonged by Route r
-                            ( temp.get(temp.indexOf(t)).Routes.get(t.Routes.size() - 1).station2().equals(r.station1()) ) ) {
-                        //Adding Route r to Trail t in temp
-                        temp.get(temp.indexOf(t)).Routes.add(r);
+        do {
+
+            //This integer helps determine which trail is the longest of them all
+            int maxLength = 0;
+
+            for(Trail t : possibleTrailsCopy) {
+
+                //Boolean added determines whether a route has been added to ANY Trail t in possibleTrailsCopy, and if added remains false it clears possibleTrailsCopy, thus terminating the loop
+                boolean added = false;
+
+                for(Route r : routes) {
+                    if( !(possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).Routes.contains(r)) &&
+                            //Second boolean = true if Trail t in possibleTrailsCopy can be prolonged by Route r
+                            ( possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).Routes.get(possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).Routes.size() - 1).station2().equals(r.station1()) ) ) {
+
+                        /* Adding Route r to Trail t in possibleTrailsCopy
+                          !!! Route r needs to be added to Trail t this way, do not modify,
+
+                          (= setting Trail t in possibleTrailsCopy to a new trail, which
+                          contains all routes it contained before, plus Route r)
+
+                          because Trail's length attribute is final and therefore won't be updated
+                          unless you create a new instance of Trail
+                         */
+
+                        t.Routes.add(r);
+                        possibleTrailsCopy.set(possibleTrailsCopy.indexOf(t), new Trail(t.Routes));
+                        added = true; //Self-explanatory
+
+                        //Extracting the longest trail from possibleTrailsCopy
+                        if(maxLength < possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).length) {
+                            maxLength = possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).length;
+                            longestTrail = possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t));
+                        }
                     }
                 }
-
+                if(!added) {
+                    possibleTrails = possibleTrailsCopy;
+                    possibleTrailsCopy.clear();
+                }
             }
 
-            possibleTrails = temp;
-        } while(possibleTrails.size() > 0);
+        } while(!possibleTrailsCopy.isEmpty());
 
-        return null;
+        return longestTrail;
     }
 
     /**
@@ -82,8 +109,8 @@ public final class Trail {
     }
 
     /**
-     * Returns the first station of the path, or nullif (and only if) the path is zero length
-     * @return the first station of the path, or nullif (and only if) the path is zero length
+     * Returns the first station of the path, or null if (and only if) the path is zero length
+     * @return the first station of the path, or null if (and only if) the path is zero length
      */
     public Station station1() {
         if (length == 0) {
