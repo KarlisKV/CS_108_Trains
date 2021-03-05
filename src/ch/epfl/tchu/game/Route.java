@@ -3,6 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,9 +81,35 @@ public final class Route {
 
 
     public List<SortedBag<Card>> possibleClaimCards() {
+        List<SortedBag<Card>> possibleCards = new ArrayList<>();
 
-        return null;
+        int necessaryCards = length;
+        List<Color> allColours = List.of(Color.BLACK, Color.VIOLET ,Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED, Color.WHITE);
+
+
+        for(Color c : allColours) {
+
+            if(color.equals(null) || color.equals(c)) {
+
+                List<Card> cards = new ArrayList<>();
+
+                //Mix of locomotives & colour cards (1x locomotive + other cards, 2x locomotives + other cards, ..., only locomotives)
+                for (int numberOfLocomotives = 0; numberOfLocomotives < necessaryCards; ++numberOfLocomotives) {
+                    for (int locomotives = 0; locomotives < numberOfLocomotives; ++locomotives) {
+                        cards.add(Card.of(null));
+                    }
+                    for (int colourCards = 0; colourCards < (necessaryCards - numberOfLocomotives); ++colourCards) {
+                        cards.add(Card.of(c));
+                    }
+                    possibleCards.add(SortedBag.of(cards));
+                    cards.clear();
+                }
+            }
+        }
+
+        return possibleCards;
     }
+
 
 
 
