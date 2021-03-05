@@ -48,7 +48,7 @@ public final class Trail {
         }
 
         List<Trail> possibleTrailsCopy = new ArrayList<>(possibleTrails);
-        Trail longestTrail = new Trail(List.of());
+        Trail longestTrail = new Trail();
 
         do {
 
