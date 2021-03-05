@@ -77,9 +77,15 @@ public final class Route {
         }
     }
 
-    // TODO: 3/2/2021 create this method
+
+
     public List<SortedBag<Card>> possibleClaimCards() {
+
         return null;
+    }
+
+    public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
+        return 0;
     }
 
     /**
@@ -88,29 +94,8 @@ public final class Route {
      */
     public int claimPoints() {
 
-        switch(length) {
-            case 1:
-                return 1;
+        return Constants.ROUTE_CLAIM_POINTS.get(length);
 
-            case 2:
-                return 2;
-
-            case 3:
-                return 4;
-
-            case 4:
-                return 7;
-
-            case 5:
-                return 10;
-
-            case 6:
-                return 15;
-
-            default:
-                return 0;
-
-        }
     }
 
     /**
