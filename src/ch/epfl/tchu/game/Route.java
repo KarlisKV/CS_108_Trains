@@ -126,16 +126,14 @@ public final class Route {
 
         int nrOfPts = 0;
 
-        for(int i = 0; i < claimCards.size(); i++) {
+        for(int i = 0; i < drawnCards.size(); i++) {
 
-            for(int j = 0; j < drawnCards.size(); j++) {
-
-                if(claimCards.get(i).color().equals(drawnCards.get(j).color())) {
-                    nrOfPts += 1;
-                }
-
+            if(claimCards.contains(drawnCards.get(i)) || drawnCards.get(i).equals(Card.LOCOMOTIVE)) {
+                nrOfPts += 1;
             }
+
         }
+
         return nrOfPts;
     }
 
