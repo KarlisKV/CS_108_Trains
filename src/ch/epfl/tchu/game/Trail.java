@@ -21,14 +21,20 @@ public final class Trail {
      * @param Routes (List<Route>) List of Routes
      * @param station1 (Station) First station
      * @param station2 (Station) Second station
-     * @param length (int) length of trail
      */
-    private Trail(List<Route> Routes, Station station1, Station station2, int length) {
+    private Trail(List<Route> Routes, Station station1, Station station2) {
 
         this.station2 = station2;
-        this.station1= station1;
-        this.length = length;
+        this.station1 = station1;
         this.Routes = Routes;
+
+        int tempLength = 0;
+        if(Routes != null && station1 != null && station2 != null){
+            for (Route r : Routes)  {
+                tempLength = tempLength + r.length();
+            }
+        }
+        length = tempLength;
     }
 
     /**
@@ -41,14 +47,14 @@ public final class Trail {
         List<Trail> possibleTrails = new ArrayList<>();
 
         for(Route r : routes) {
-            Trail t = new Trail (List.of(r), r.station1(), r.station2(), r.length());
+            Trail t = new Trail (List.of(r), r.station1(), r.station2());
             if (!possibleTrails.contains(t)) {
                 possibleTrails.add(t);
             }
         }
 
         List<Trail> possibleTrailsCopy = new ArrayList<>(possibleTrails);
-        Trail longestTrail = new Trail(List.of(), null, null, 0);
+        Trail longestTrail = new Trail(List.of(), null, null);
 
         do {
 
@@ -76,7 +82,7 @@ public final class Trail {
                          */
 
                         t.Routes.add(r);
-                        possibleTrailsCopy.set(possibleTrailsCopy.indexOf(t), new Trail(t.Routes, t.station1, t.station2, t.length));
+                        possibleTrailsCopy.set(possibleTrailsCopy.indexOf(t), new Trail(t.Routes, t.station1, t.station2));
                         added = true; //Self-explanatory
 
                         //Extracting the longest trail from possibleTrailsCopy
