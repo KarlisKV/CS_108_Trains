@@ -84,8 +84,32 @@ public final class Route {
         return null;
     }
 
+
+
+    /**
+     * additionalClaimCardsCount returns (int) the number of drawn cards that are equal to the played cards
+     * @param claimCards(SortedBag<Card>) list of played cards to claim the route
+     * @param drawnCards(SortedBag<Card>) list of cards to draw after playing
+     * @return number of drawn cards that correspond to the played cards
+     */
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
-        return 0;
+
+        Preconditions.checkArgument(drawnCards.size() == 3);
+        Preconditions.checkArgument(level.equals(Level.UNDERGROUND));
+
+        int nrOfPts = 0;
+
+        for(int i = 0; i < claimCards.size(); i++) {
+
+            for(int j = 0; j < drawnCards.size(); j++) {
+
+                if(claimCards.get(i).color().equals(drawnCards.get(j).color())) {
+                    nrOfPts += 1;
+                }
+
+            }
+        }
+        return nrOfPts;
     }
 
     /**

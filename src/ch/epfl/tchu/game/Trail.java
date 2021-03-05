@@ -12,27 +12,24 @@ import java.util.List;
 public final class Trail {
 
     private final List<Route> Routes;
-    private final List<Station> Stations;
+    private final Station station1;
+    private final Station station2;
     private final int length;
 
     /**
-     * Private constructor of the Trail class
-     * @param Routes (List<Route>) List of routes
+     * Private constructor for Trail class
+     * @param Routes (List<Route>) List of Routes
+     * @param station1 (Station) First station
+     * @param station2 (Station) Second station
+     * @param length (int) length of trail
      */
-    private Trail(List<Route> Routes) {
-        Stations = new ArrayList<>();
-        int tempLength = 0;
-        for (Route r : Routes)  {
-            Stations.add(r.station1());
-            tempLength = tempLength + r.length();
-        }
-        Stations.add(Routes.get(Routes.size() - 1).station2());
-        length = tempLength;
+    private Trail(List<Route> Routes, Station station1, Station station2, int length) {
+
+        this.station2 = station2;
+        this.station1= station1;
+        this.length = length;
         this.Routes = Routes;
     }
-
-
-    //TODO: 3/3/2021 algorithm incorrect (for now it runs infinitely, I think the adding elements part is correct but I don't know how to make it end yet)
 
     /**
      * longest method
@@ -44,7 +41,7 @@ public final class Trail {
         List<Trail> possibleTrails = new ArrayList<>();
 
         for(Route r : routes) {
-            Trail t = new Trail (List.of(r));
+            Trail t = new Trail (List.of(r), r.station1(), r.station2(), r.length());
             if (!possibleTrails.contains(t)) {
                 possibleTrails.add(t);
             }
@@ -79,7 +76,7 @@ public final class Trail {
                          */
 
                         t.Routes.add(r);
-                        possibleTrailsCopy.set(possibleTrailsCopy.indexOf(t), new Trail(t.Routes));
+                        possibleTrailsCopy.set(possibleTrailsCopy.indexOf(t), new Trail(t.Routes, t.station1, t.station2, t.length));
                         added = true; //Self-explanatory
 
                         //Extracting the longest trail from possibleTrailsCopy
@@ -116,7 +113,7 @@ public final class Trail {
         if (length == 0) {
             return null;
         } else {
-            return Stations.get(0);
+            return station1;
         }
     }
 
@@ -124,12 +121,12 @@ public final class Trail {
      * returns the last station of the path, or null, if (and only if) the path is zero length
      * @return the last station of the path, or null, if (and only if) the path is zero length
      */
-    // TODO: 3/3/2021 ask assistant whether stations.size() -1 can be changed to -1
+
     public Station station2() {
         if (length == 0) {
             return null;
         } else {
-            return Stations.get(Stations.size() - 1);
+            return station2;
         }
     }
 
