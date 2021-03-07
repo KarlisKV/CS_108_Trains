@@ -42,7 +42,7 @@ public final class Route {
 
 
         Preconditions.checkArgument(!station1.equals(station2) &&
-                (length > Constants.MIN_ROUTE_LENGTH && length < Constants.MAX_ROUTE_LENGTH));
+                (length >= Constants.MIN_ROUTE_LENGTH && length <= Constants.MAX_ROUTE_LENGTH));
 
         Objects.requireNonNull(level);
         Objects.requireNonNull(id);
@@ -193,5 +193,9 @@ public final class Route {
         return color;
     }
 
+
+    public String toString() {
+        return "[Route] " + station1.name() + " - " + station2.name() + " (" + length + ")";
+    }
 
 }

@@ -45,31 +45,84 @@ public final class Trail {
     public static Trail longest(List<Route> routes) {
 
         List<Trail> possibleTrails = new ArrayList<>();
+        List<Route> twoWayRoutes = new ArrayList<>(routes);
 
         for(Route r : routes) {
-            Trail t = new Trail (List.of(r), r.station1(), r.station2());
+            Trail t = new Trail (new ArrayList<>(List.of(r)), r.station1(), r.station2());
             if (!possibleTrails.contains(t)) {
                 possibleTrails.add(t);
             }
+            twoWayRoutes.add(new Route(r.id(), r.station2(), r.station1(), r.length(), r.level(), r.color()));
         }
 
-        List<Trail> possibleTrailsCopy = new ArrayList<>(possibleTrails);
         Trail longestTrail = new Trail(List.of(), null, null);
+        List<Trail> possibleTrailsCopy = new ArrayList<>(possibleTrails);
+        List<Trail> possibleTrailsCopy2;
+
+        int debug3 = 1;
+        int debug4 = 0;
 
         do {
 
             //This integer helps determine which trail is the longest of them all
             int maxLength = 0;
+            //Boolean added determines whether a route has been added to ANY Trail t in possibleTrails, and if added remains false it clears possibleTrails, thus terminating the loop
+            boolean added = false;
+            //Index of possibleTrailsCopy
+            int index = 0;
 
-            for(Trail t : possibleTrailsCopy) {
+            int debug = 0;
+            int debug2 = 1;
 
-                //Boolean added determines whether a route has been added to ANY Trail t in possibleTrailsCopy, and if added remains false it clears possibleTrailsCopy, thus terminating the loop
-                boolean added = false;
+            for(Trail t : possibleTrails) {
 
-                for(Route r : routes) {
-                    if( !(possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).Routes.contains(r)) &&
-                            //Second boolean = true if Trail t in possibleTrailsCopy can be prolonged by Route r
-                            ( possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).Routes.get(possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).Routes.size() - 1).station2().equals(r.station1()) ) ) {
+                //Index of routes (necessary because of a bug with .contains(Object o))
+                int rIndex = 0;
+
+
+
+                if(debug3 == 2) {
+                    System.out.println("index: " + index + " / iteration: " + debug3);
+                    System.out.println("trail: " + t);
+                    System.out.println();
+                    System.out.println();
+
+                }
+
+
+
+                for(Route r : twoWayRoutes) {
+
+
+                    boolean verifyNoCopy = !(possibleTrailsCopy.get(index).Routes.contains(twoWayRoutes.get(rIndex)));
+
+
+                    //TODO: fix trailStation2 or "duplicate" roads so they go both ways
+                    //Trying with duplication
+                    Station trailStation2 = possibleTrailsCopy.get(index).station2;
+                    Station routeStation1 = twoWayRoutes.get(rIndex).station1();
+                    Station routeStation2 = twoWayRoutes.get(rIndex).station2();
+                    //firstEqualsSecond = true if Trail t in possibleTrailsCopy can be prolonged by Route r
+                    boolean firstEqualsSecond = trailStation2.equals(routeStation1);
+
+
+
+
+                    if(debug3 == 2) {
+                        System.out.println("rIndex: " + rIndex + " /iteration: " + debug3);
+
+                        System.out.println("verifyNoCopy: " + verifyNoCopy);
+                        System.out.println("trailStation2: " + trailStation2);
+                        System.out.println("routeStation1: " + routeStation1);
+
+                        System.out.println("firstEqualsSecond: " + firstEqualsSecond);
+                        System.out.println();
+
+                    }
+
+
+
+                    if( verifyNoCopy && firstEqualsSecond ) {
 
                         /* Adding Route r to Trail t in possibleTrailsCopy
                           !!! Route r needs to be added to Trail t this way, do not modify,
@@ -81,24 +134,67 @@ public final class Trail {
                           unless you create a new instance of Trail
                          */
 
-                        t.Routes.add(r);
-                        possibleTrailsCopy.set(possibleTrailsCopy.indexOf(t), new Trail(t.Routes, t.station1, t.station2));
+                        if(debug3 == 2) {
+                            System.out.println();
+                            System.out.println("Adding route: " + twoWayRoutes.get(rIndex));
+                        }
+
+                        t.Routes.add(twoWayRoutes.get(rIndex));
+                        Trail trail = new Trail(t.Routes, t.station1, twoWayRoutes.get(rIndex).station2());
+                        possibleTrailsCopy.set(index,trail);
                         added = true; //Self-explanatory
 
-                        //Extracting the longest trail from possibleTrailsCopy
-                        if(maxLength < possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).length) {
-                            maxLength = possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t)).length;
-                            longestTrail = possibleTrailsCopy.get(possibleTrailsCopy.indexOf(t));
+                        if(debug3 == 2) {
+                            System.out.println("new Trail: " + possibleTrailsCopy.get(index));
+                            System.out.println();
+                        }
+                        ++debug;
+                        ++debug4;
+
+                        //Extracting the longest trail from possibleTrails
+                        if(possibleTrailsCopy.contains(trail)) {
+                            if(maxLength < possibleTrailsCopy.get(index).length) {
+                                maxLength = possibleTrailsCopy.get(index).length;
+                                longestTrail = possibleTrailsCopy.get(possibleTrailsCopy.indexOf(trail));
+
+                                /*
+                                System.out.println("#" + debug3 + "." + debug2 + ". longest trail: " + longestTrail);
+                                System.out.println();
+                                 */
+                                ++debug2;
+                            }
                         }
                     }
+                    ++rIndex;
                 }
-                if(!added) {
-                    possibleTrails = possibleTrailsCopy;
-                    possibleTrailsCopy.clear();
+                if(debug3 == 2) {
+                    System.out.println();
                 }
+                ++index;
             }
 
+
+            System.out.println("Trail 2: " + possibleTrailsCopy.get(2));
+
+            possibleTrailsCopy2 = new ArrayList<>(possibleTrailsCopy);
+
+            if(!added) {
+                possibleTrailsCopy.clear();
+            //    System.out.println("cleared, " + debug4 + " total elements added, " + debug3 + " total iterations");
+            }
+
+            possibleTrails = new ArrayList<>(possibleTrailsCopy2);
+
+
+            System.out.println(debug + " elements added (iteration #" + debug3 + ")");
+            System.out.println();
+
+
+            ++debug3;
+
         } while(!possibleTrailsCopy.isEmpty());
+
+        System.out.println(longestTrail.Routes);
 
         return longestTrail;
     }
@@ -142,13 +238,17 @@ public final class Trail {
      */
     @Override
     public String toString() {
-        String complete = "";
+
+        String complete = station1.toString() + " - ";
+        Station station = station1;
+
         for (Route r : Routes) {
-            complete = complete + r.station1().toString();
-            if(Routes.indexOf(r) == (Routes.size() - 1)) {
+            complete = complete + r.stationOpposite(station).toString();
+            station = r.stationOpposite(station);
+
+
+            if(!(Routes.indexOf(r) == (Routes.size() - 1))) {
                 complete = complete + " - ";
-            } else {
-                complete = complete + " - " + r.station2().toString();
             }
         }
 
