@@ -79,24 +79,28 @@ public final class Route {
     }
 
 
-
+    /**
+     * possibleClaimCards method
+     * @return the list of all the sets of cards that could be played to
+     * (attempt to) grab the road, sorted in ascending order of number of locomotive cards, then by suit,
+     */
     public List<SortedBag<Card>> possibleClaimCards() {
         List<SortedBag<Card>> possibleCards = new ArrayList<>();
 
-        int necessaryCards = length;
-        List<Color> allColours = List.of(Color.BLACK, Color.VIOLET ,Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED, Color.WHITE);
+        int necessaryCards = level == Level.OVERGROUND ? 0 : length;
+        List<Color> allColours = Color.ALL;
 
 
         for(Color c : allColours) {
 
-            if(color.equals(null) || color.equals(c)) {
+            if(color == null || color.equals(c)) {
 
                 List<Card> cards = new ArrayList<>();
 
                 //Mix of locomotives & colour cards (1x locomotive + other cards, 2x locomotives + other cards, ..., only locomotives)
                 for (int numberOfLocomotives = 0; numberOfLocomotives < necessaryCards; ++numberOfLocomotives) {
                     for (int locomotives = 0; locomotives < numberOfLocomotives; ++locomotives) {
-                        cards.add(Card.of(null));
+                        cards.add(Card.LOCOMOTIVE);
                     }
                     for (int colourCards = 0; colourCards < (necessaryCards - numberOfLocomotives); ++colourCards) {
                         cards.add(Card.of(c));
@@ -121,7 +125,7 @@ public final class Route {
      */
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
 
-        Preconditions.checkArgument(drawnCards.size() == 3);
+        Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
         Preconditions.checkArgument(level.equals(Level.UNDERGROUND));
 
         int nrOfPts = 0;
