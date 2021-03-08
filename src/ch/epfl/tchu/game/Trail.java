@@ -44,160 +44,67 @@ public final class Trail {
      */
     public static Trail longest(List<Route> routes) {
 
+        //Avoids error if routes happens to be an immutable list
+        routes = new ArrayList<>(routes);
         List<Trail> possibleTrails = new ArrayList<>();
-        List<Route> twoWayRoutes = new ArrayList<>(routes);
 
         for(Route r : routes) {
-            Trail t = new Trail (new ArrayList<>(List.of(r)), r.station1(), r.station2());
-            if (!possibleTrails.contains(t)) {
-                possibleTrails.add(t);
-            }
-            twoWayRoutes.add(new Route(r.id(), r.station2(), r.station1(), r.length(), r.level(), r.color()));
+            Trail trail = new Trail(new ArrayList<>(List.of(r)), r.station1(), r.station2());
+            possibleTrails.add(trail);
+            Trail trail2 = new Trail(new ArrayList<>(List.of(r)), r.station2(), r.station1());
+            possibleTrails.add(trail2);
         }
 
-        Trail longestTrail = new Trail(List.of(), null, null);
-        List<Trail> possibleTrailsCopy = new ArrayList<>(possibleTrails);
-        List<Trail> possibleTrailsCopy2;
+        List<Trail> cs = new ArrayList<>(possibleTrails);
+        Trail longestTrail = new Trail(null, null, null);
 
-        int debug3 = 1;
-        int debug4 = 0;
+        do{
 
-        do {
-
-            //This integer helps determine which trail is the longest of them all
             int maxLength = 0;
-            //Boolean added determines whether a route has been added to ANY Trail t in possibleTrails, and if added remains false it clears possibleTrails, thus terminating the loop
-            boolean added = false;
-            //Index of possibleTrailsCopy
-            int index = 0;
 
-            int debug = 0;
-            int debug2 = 1;
+            List<Trail> cs2 = new ArrayList<>();
 
-            for(Trail t : possibleTrails) {
+            for(Trail c : cs) {
 
-                //Index of routes (necessary because of a bug with .contains(Object o))
-                int rIndex = 0;
+                List<Route> rs = new ArrayList<>();
 
+                for(Route r : routes) {
+                    boolean canBeAdded = c.station2.equals(r.station1()) || c.station2.equals(r.station2());
+                    boolean doesntContain = !(c.Routes.contains(r));
 
-
-                if(debug3 == 2) {
-                    System.out.println("index: " + index + " / iteration: " + debug3);
-                    System.out.println("trail: " + t);
-                    System.out.println();
-                    System.out.println();
-
-                }
-
-
-
-                for(Route r : twoWayRoutes) {
-
-
-                    boolean verifyNoCopy = !(possibleTrailsCopy.get(index).Routes.contains(twoWayRoutes.get(rIndex)));
-
-
-                    //TODO: fix trailStation2 or "duplicate" roads so they go both ways
-                    //Trying with duplication
-                    Station trailStation2 = possibleTrailsCopy.get(index).station2;
-                    Station routeStation1 = twoWayRoutes.get(rIndex).station1();
-                    Station routeStation2 = twoWayRoutes.get(rIndex).station2();
-                    //firstEqualsSecond = true if Trail t in possibleTrailsCopy can be prolonged by Route r
-                    boolean firstEqualsSecond = trailStation2.equals(routeStation1);
-
-
-
-
-                    if(debug3 == 2) {
-                        System.out.println("rIndex: " + rIndex + " /iteration: " + debug3);
-
-                        System.out.println("verifyNoCopy: " + verifyNoCopy);
-                        System.out.println("trailStation2: " + trailStation2);
-                        System.out.println("routeStation1: " + routeStation1);
-
-                        System.out.println("firstEqualsSecond: " + firstEqualsSecond);
-                        System.out.println();
-
+                    if(canBeAdded && doesntContain) {
+                        rs.add(r);
                     }
+                }
 
+                for(Route r : rs) {
 
+                    //Can't add r directly to c because otherwise it would potentially mess up the other trails (see algorithm)
+                    List<Route> prolongedRoutes = new ArrayList<>(c.Routes);
+                    prolongedRoutes.add(r);
 
-                    if( verifyNoCopy && firstEqualsSecond ) {
+                    //station2 of new trail = the station that wasn't already c.station2
+                    Station definedStation2 = r.stationOpposite(c.station2);
 
-                        /* Adding Route r to Trail t in possibleTrailsCopy
-                          !!! Route r needs to be added to Trail t this way, do not modify,
+                    //Have to make a new Trail because all Trail's attributes are final, therefore can't be updated by adding the route directly
+                    Trail trail = new Trail(prolongedRoutes, c.station1, definedStation2);
+                    cs2.add(trail);
 
-                          (= setting Trail t in possibleTrailsCopy to a new trail, which
-                          contains all routes it contained before, plus Route r)
-
-                          because Trail's length attribute is final and therefore won't be updated
-                          unless you create a new instance of Trail
-                         */
-
-                        if(debug3 == 2) {
-                            System.out.println();
-                            System.out.println("Adding route: " + twoWayRoutes.get(rIndex));
-                        }
-
-                        t.Routes.add(twoWayRoutes.get(rIndex));
-                        Trail trail = new Trail(t.Routes, t.station1, twoWayRoutes.get(rIndex).station2());
-                        possibleTrailsCopy.set(index,trail);
-                        added = true; //Self-explanatory
-
-                        if(debug3 == 2) {
-                            System.out.println("new Trail: " + possibleTrailsCopy.get(index));
-                            System.out.println();
-                        }
-                        ++debug;
-                        ++debug4;
-
-                        //Extracting the longest trail from possibleTrails
-                        if(possibleTrailsCopy.contains(trail)) {
-                            if(maxLength < possibleTrailsCopy.get(index).length) {
-                                maxLength = possibleTrailsCopy.get(index).length;
-                                longestTrail = possibleTrailsCopy.get(possibleTrailsCopy.indexOf(trail));
-
-                                /*
-                                System.out.println("#" + debug3 + "." + debug2 + ". longest trail: " + longestTrail);
-                                System.out.println();
-                                 */
-                                ++debug2;
-                            }
-                        }
+                    if(trail.length > maxLength) {
+                        longestTrail = trail;
+                        maxLength = longestTrail.length;
                     }
-                    ++rIndex;
                 }
-                if(debug3 == 2) {
-                    System.out.println();
-                }
-                ++index;
             }
 
+            possibleTrails = cs;
+            cs = cs2;
 
-            System.out.println("Trail 2: " + possibleTrailsCopy.get(2));
-
-            possibleTrailsCopy2 = new ArrayList<>(possibleTrailsCopy);
-
-            if(!added) {
-                possibleTrailsCopy.clear();
-            //    System.out.println("cleared, " + debug4 + " total elements added, " + debug3 + " total iterations");
-            }
-
-            possibleTrails = new ArrayList<>(possibleTrailsCopy2);
-
-
-            System.out.println(debug + " elements added (iteration #" + debug3 + ")");
-            System.out.println();
-
-
-            ++debug3;
-
-        } while(!possibleTrailsCopy.isEmpty());
-
-        System.out.println(longestTrail.Routes);
+        }while(!cs.isEmpty());
 
         return longestTrail;
     }
+
 
     /**
      * Returns the length of the path
