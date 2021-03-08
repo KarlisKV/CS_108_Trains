@@ -18,7 +18,7 @@ public final class Deck < C extends Comparable <C >>{
 
 
     /**
-     * Public method to intialize deck
+     * Public method to initialize deck
      * @param cards (SortedBag<C>) list of cards to place in deck
      * @param rng (Random) randomizer for card shuffling
      * @return deck of cards
@@ -64,7 +64,7 @@ public final class Deck < C extends Comparable <C >>{
      * @return a multiset containing the card at the top of the pile
      */
     public C topCard() {
-        Preconditions.checkArgument(!cards.isEmpty());
+        Preconditions.checkArgument(!isEmpty());
         return cards.get(0);
     }
 
@@ -73,7 +73,7 @@ public final class Deck < C extends Comparable <C >>{
      * @return Deck<C> without top card
      */
     public Deck<C> withoutTopCard() {
-        Preconditions.checkArgument(!cards.isEmpty());
+        Preconditions.checkArgument(!isEmpty());
 
         List<C> cardsWithoutTop = cards;
         cardsWithoutTop.remove(0);
@@ -96,7 +96,7 @@ public final class Deck < C extends Comparable <C >>{
 
         SortedBag.Builder<C> cardsToReturn = new SortedBag.Builder<>();
         for(int i = 0; i < count; i++) {
-            cardsToReturn.add(cards.get(i));
+            cardsToReturn.add(cardsAtTop.get(i));
         }
 
 
