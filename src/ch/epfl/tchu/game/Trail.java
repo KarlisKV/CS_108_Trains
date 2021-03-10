@@ -97,7 +97,6 @@ public final class Trail {
                 }
             }
 
-            possibleTrails = cs;
             cs = cs2;
 
         }while(!cs.isEmpty());
