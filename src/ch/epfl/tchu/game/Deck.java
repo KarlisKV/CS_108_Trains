@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Route class
+ * Deck class
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */
