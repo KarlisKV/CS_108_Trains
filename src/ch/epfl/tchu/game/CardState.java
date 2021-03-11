@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * CardState class
+ * @author Daniel Polka  (326800)
+ */
+
 public class CardState extends PublicCardState {
 
     private final List<Card> faceUpCards;

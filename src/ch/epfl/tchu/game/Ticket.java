@@ -103,10 +103,11 @@ public final class Ticket implements Comparable<Ticket> {
     /**
      * Compares two ticket alphabetic order
      * @param that (Ticket)
-     * @return thisis strictly less than that,
+     * @return this is strictly less than that,
      * a strictly positive integer if this is strictly greater than that,
      * and zero if the two are equal
      */
+    @Override
     public int compareTo(Ticket that) {
 
         return this.text().compareTo(that.text());

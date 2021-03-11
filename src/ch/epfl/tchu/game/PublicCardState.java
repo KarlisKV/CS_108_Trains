@@ -4,6 +4,11 @@ import ch.epfl.tchu.Preconditions;
 
 import java.util.List;
 
+/**
+ * PublicCardState class
+ * @author Daniel Polka  (326800)
+ */
+
 public class PublicCardState {
 
 

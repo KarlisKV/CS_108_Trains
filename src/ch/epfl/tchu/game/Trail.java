@@ -57,10 +57,11 @@ public final class Trail {
 
         List<Trail> cs = new ArrayList<>(possibleTrails);
         Trail longestTrail = new Trail(null, null, null);
+        int maxLength = 0;
+
 
         do{
 
-            int maxLength = 0;
 
             List<Trail> cs2 = new ArrayList<>();
 
@@ -100,6 +101,17 @@ public final class Trail {
             cs = cs2;
 
         }while(!cs.isEmpty());
+
+
+        if(longestTrail.station1 == null) {
+            maxLength = 0;
+            for(Route r : routes) {
+                if(r.length() > maxLength) {
+                    longestTrail = new Trail(new ArrayList<>(List.of(r)), r.station1(), r.station2());
+                    maxLength = r.length();
+                }
+            }
+        }
 
         return longestTrail;
     }

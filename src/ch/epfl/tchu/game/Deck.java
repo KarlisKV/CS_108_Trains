@@ -9,7 +9,6 @@ import java.util.Random;
 /**
  * Deck class
  * @author Karlis Velins (325180)
- * @author Daniel Polka  (326800)
  */
 
 public final class Deck < C extends Comparable <C >>{
