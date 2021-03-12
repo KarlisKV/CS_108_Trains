@@ -101,12 +101,15 @@ public final class Route {
 
                 //Mix of locomotives & colour cards (1x locomotive + other cards, 2x locomotives + other cards, ..., only locomotives)
                 for (int numberOfLocomotives = 0; numberOfLocomotives < necessaryCards; ++numberOfLocomotives) {
+
                     for (int locomotives = 0; locomotives < numberOfLocomotives; ++locomotives) {
                         cards.add(Card.LOCOMOTIVE);
                     }
+
                     for (int colourCards = 0; colourCards < (necessaryCards - numberOfLocomotives); ++colourCards) {
                         cards.add(Card.of(c));
                     }
+
                     possibleCards.add(SortedBag.of(cards));
                     cards.clear();
                 }

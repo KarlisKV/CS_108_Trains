@@ -35,7 +35,7 @@ public final class Deck < C extends Comparable <C >>{
      * Private constructor of Deck class
      * @param cards (List<C>) list of cards
      */
-    private Deck(List<C> cards) {
+    public Deck(List<C> cards) {
 
         this.cards = cards;
 
@@ -55,7 +55,7 @@ public final class Deck < C extends Comparable <C >>{
      */
     public boolean isEmpty() {
 
-        return cards == null;
+        return cards.isEmpty();
     }
 
     /**
