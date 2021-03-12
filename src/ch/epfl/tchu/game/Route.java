@@ -93,28 +93,18 @@ public final class Route {
         List<Color> allColours = Color.ALL;
 
 
-        for(Color c : allColours) {
+        //Mix of locomotives & colour cards (1x locomotive + other cards, 2x locomotives + other cards, ..., only locomotives)
+        for (int numberOfLocomotives = 0; numberOfLocomotives < necessaryCards; ++numberOfLocomotives) {
+            if ((length - numberOfLocomotives) == 0) {
+                possibleCards.add(SortedBag.of(numberOfLocomotives, Card.LOCOMOTIVE));
+            } else {
+                possibleCards.add(SortedBag.of(numberOfLocomotives, Card.LOCOMOTIVE));
 
-            if(color == null || color.equals(c)) {
-
-                List<Card> cards = new ArrayList<>();
-
-                //Mix of locomotives & colour cards (1x locomotive + other cards, 2x locomotives + other cards, ..., only locomotives)
-                for (int numberOfLocomotives = 0; numberOfLocomotives < necessaryCards; ++numberOfLocomotives) {
-
-                    for (int locomotives = 0; locomotives < numberOfLocomotives; ++locomotives) {
-                        cards.add(Card.LOCOMOTIVE);
-                    }
-
-                    for (int colourCards = 0; colourCards < (necessaryCards - numberOfLocomotives); ++colourCards) {
-                        cards.add(Card.of(c));
-                    }
-
-                    possibleCards.add(SortedBag.of(cards));
-                    cards.clear();
-                }
             }
         }
+
+
+
 
         return possibleCards;
     }
