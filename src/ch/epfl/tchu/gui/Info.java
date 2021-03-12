@@ -38,7 +38,8 @@ public final class Info {
      */
     public static String cardName(Card card, int count) {
 
-        List<String> allCardNames = new ArrayList<>(List.of(StringsFr.BLACK_CARD, StringsFr.VIOLET_CARD, StringsFr.BLUE_CARD, StringsFr.GREEN_CARD, StringsFr.YELLOW_CARD, StringsFr.ORANGE_CARD, StringsFr.RED_CARD, StringsFr.WHITE_CARD, StringsFr.LOCOMOTIVE_CARD));
+        List<String> allCardNames = new ArrayList<>(List.of(StringsFr.BLACK_CARD, StringsFr.VIOLET_CARD, StringsFr.BLUE_CARD,
+                StringsFr.GREEN_CARD, StringsFr.YELLOW_CARD, StringsFr.ORANGE_CARD, StringsFr.RED_CARD, StringsFr.WHITE_CARD, StringsFr.LOCOMOTIVE_CARD));
 
         if(!Card.ALL.contains(card)) {
             return "ERROR: Card doesn't exist";
@@ -56,7 +57,7 @@ public final class Info {
      * that the two players drew
      */
     public static String draw(List<String> playerNames, int points) {
-        String namesOfPlayers = playerNames.get(0) + " et " + playerNames.get(1);
+        String namesOfPlayers = playerNames.get(0) + StringsFr.AND_SEPARATOR + playerNames.get(1);
         return String.format(StringsFr.DRAW, namesOfPlayers, points);
     }
 
@@ -72,6 +73,11 @@ public final class Info {
     }
 
 
+    /**
+     * returns the message declaring that the player kept the given number of tickets
+     * @param count (int) number of tickets
+     * @return the message declaring that the player kept the given number of tickets
+     */
 
     public String keptTickets(int count) {
 
@@ -79,45 +85,74 @@ public final class Info {
     }
 
 
-
+    /**
+     * returns the message declaring that the player can play
+     * @return the message declaring that the player can play
+     */
     public String canPlay() {
 
         return String.format(StringsFr.CAN_PLAY, playerName);
     }
 
 
-
+    /**
+     *returns the message stating that the player has drawn the given number of tickets
+     * @param count (int) number of tickets
+     * @return the message stating that the player has drawn the given number of tickets
+     */
     public String drewTickets(int count) {
 
         return String.format(StringsFr.DREW_TICKETS, playerName, count, StringsFr.plural(count));
     }
 
 
-
+    /**
+     * returns the message declaring that the player has drawn a card "blind", i.e. from the top of the draw pile
+     * @return the message declaring that the player has drawn a card "blind", i.e. from the top of the draw pile
+     */
     public String drewBlindCard() {
         return String.format(StringsFr.DREW_BLIND_CARD, playerName);
     }
 
 
-
+    /**
+     * returns the message declaring that the player has drawn the face-up card given
+     * @param card (Card) the given card
+     * @return the message declaring that the player has drawn the face-up card given
+     */
     public String drewVisibleCard(Card card) {
         return String.format(StringsFr.DREW_VISIBLE_CARD, playerName, card);
     }
 
 
-
+    /**
+     * returns the message stating that the player has seized the given route using the given cards
+     * @param route (Route) given route
+     * @param cards (Card) given card
+     * @return the message stating that the player has seized the given route using the given cards
+     */
     public String claimedRoute(Route route, SortedBag<Card> cards) {
         return String.format(StringsFr.CLAIMED_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(cards));
     }
 
-
+    /**
+     *  returns the message stating that the player wishes to seize the given tunnel route using initially the given cards
+     * @param route (Route) given tunnel route
+     * @param initialCards (SortedBag<Card>) initially given cards
+     * @return returns the message stating that the player wishes to seize the given tunnel route using initially the given cards
+     */
 
     public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards) {
         return String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(initialCards));
     }
 
 
-
+    /**
+     *  returns the message stating that the player has fired three additional cards data, and they imply a cost not included in the number of cards given
+     * @param drawnCards  (SortedBag<Card>) given cards
+     * @param additionalCost (int) cost of the cards
+     * @return the message stating that the player has fired three additional cards data, and they imply a cost not included in the number of cards given
+     */
     public String drewAdditionalCards(SortedBag<Card> drawnCards, int additionalCost) {
 
         String additionalCardsAre = String.format(StringsFr.ADDITIONAL_CARDS_ARE, cardNames(drawnCards));
@@ -129,42 +164,55 @@ public final class Info {
         }
     }
 
-
+    /**
+     * returns the message declaring that the player could not (or wanted) to seize the given tunnel
+     * @param route (Route) given route
+     * @return the message declaring that the player could not (or wanted) to seize the given tunnel
+     */
 
     public String didNotClaimRoute(Route route) {
         return String.format(StringsFr.DID_NOT_CLAIM_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2());
     }
 
 
-
+    /**
+     * returns the message declaring that the player has only the given number (and less than or equal to 2) of wagons, and that the last turn therefore begins
+     * @param carCount (int) count of wagons left
+     * @return the message declaring that the player has only the given number (and less than or equal to 2) of wagons, and that the last turn therefore begins
+     */
     public String lastTurnBegins(int carCount) {
         return String.format(StringsFr.LAST_TURN_BEGINS, playerName , carCount, StringsFr.plural(carCount));
     }
 
 
-
+    /**
+     * returns the message declaring that the player obtains the end-of-game bonus thanks to the given path, which is the longest, or one of the longest
+     * @param longestTrail (Trail) longest trail
+     * @return the message declaring that the player obtains the end-of-game bonus thanks to the given path, which is the longest, or one of the longest
+     */
     public String getsLongestTrailBonus(Trail longestTrail) {
         return String.format(StringsFr.GETS_BONUS, playerName, longestTrail.station1() + StringsFr.EN_DASH_SEPARATOR + longestTrail.station2());
     }
 
 
-
+    /**
+     * returns the message declaring that the player wins the game with the number of points given, his opponent having only obtained loserPoints
+     * @param winnerPoints (int) winner's points
+     * @param loserPoints (int) loser's points
+     * @return the message declaring that the player wins the game with the number of points given, his opponent having only obtained loserPoints
+     */
     public String won(int winnerPoints, int loserPoints) {
         return String.format(StringsFr.WINS, playerName, winnerPoints, StringsFr.plural(winnerPoints), loserPoints, StringsFr.plural(loserPoints));
     }
 
-
-
-
-
     /**
-     * Private method added to avoid code repetition (is this allowed?).
+     * Private method added to avoid code repetition.
      * It has the same function as cardName except it works with multiple cards
      * @param cards SortedBag<Card> of the cards you want the names of
      * @return A String containing a sentence enumerating the number of colour cards
      * (the colours are specified in the sentence) followed by the number of locomotive cards
      */
-    public String cardNames(SortedBag<Card> cards) {
+    private String cardNames(SortedBag<Card> cards) {
         Preconditions.checkArgument(cards != null);
 
         HashMap<Color, Integer> cardCount = new HashMap<>();
