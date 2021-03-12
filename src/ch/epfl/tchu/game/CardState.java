@@ -45,6 +45,7 @@ public class CardState extends PublicCardState {
         SortedBag<Card> discard = deck.topCards(Constants.FACE_UP_CARDS_COUNT);
         List<Card> faceUp = new ArrayList<>(discard.toList());
         discard = SortedBag.of();
+
         Deck<Card> cards = deck.withoutTopCards(Constants.FACE_UP_CARDS_COUNT);
 
         return new CardState(faceUp, cards, discard);

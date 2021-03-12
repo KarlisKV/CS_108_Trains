@@ -35,7 +35,7 @@ public final class Deck < C extends Comparable <C >>{
      * Private constructor of Deck class
      * @param cards (List<C>) list of cards
      */
-    public Deck(List<C> cards) {
+    private Deck(List<C> cards) {
 
         this.cards = cards;
 
@@ -88,13 +88,12 @@ public final class Deck < C extends Comparable <C >>{
      */
     public SortedBag<C> topCards(int count) {
 
-        Preconditions.checkArgument(count > 0 && count < cards.size());
-
+        Preconditions.checkArgument(count >= 0 && count <= cards.size());
 
         List<C> cardsAtTop = cards.subList(0, count);
 
         SortedBag.Builder<C> cardsToReturn = new SortedBag.Builder<>();
-        for(int i = 0; i < count; i++) {
+        for(int i = 0; i < count; ++i) {
             cardsToReturn.add(cardsAtTop.get(i));
         }
 
@@ -111,7 +110,7 @@ public final class Deck < C extends Comparable <C >>{
 
     public Deck<C> withoutTopCards(int count) {
 
-        Preconditions.checkArgument(count > 0 && count < cards.size());
+        Preconditions.checkArgument(count >= 0 && count <= cards.size());
 
         List<C> cardsWithoutTop = cards.subList(count, cards.size());
 

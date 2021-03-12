@@ -15,6 +15,6 @@ public class InfoTest {
         List<String> playerNames = new ArrayList<>();
         playerNames.add("Karlis");
         playerNames.add("Daniel");
-        assertEquals("Karlis et Daniel sont avec 20 points", Info.draw(playerNames, 20));
+        assertEquals("Karlis et Daniel sont ex æqo avec 20 points !", Info.draw(playerNames, 20));
     }
 }

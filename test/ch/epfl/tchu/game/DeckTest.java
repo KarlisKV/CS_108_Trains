@@ -79,17 +79,9 @@ public class DeckTest {
         list.addAll(SortedBag.of(5, Card.BLUE).toList());
 
         Deck<Card> deck = new Deck<Card>(list);
-        for(int i = 0; i< list.size(); i++) {
-            System.out.println((list.get(i)));
 
-        }
-        System.out.println();
-        System.out.println();
         SortedBag<Card> cardsBag = SortedBag.of(5, Card.BLUE, 2, Card.BLACK);
-        for(int i = 0; i< list.size(); i++) {
-            System.out.println(cardsBag.get(i));
 
-        }
         assertEquals(cardsBag, deck.topCards(7));
 
     }
