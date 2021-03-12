@@ -23,7 +23,7 @@ public class CardState extends PublicCardState {
      * Private constructor of CardState class. gets called from 'of' method
      * @param faceUpCards (List<Card>) list of face up cards
      * @param deck (Deck<Card>) the deck
-     * @param discardPile (SortedBag<Card>) sortedbag of discarded cards
+     * @param discardPile (SortedBag<Card>) SortedBag of discarded cards
      */
     private CardState(List<Card> faceUpCards, Deck<Card> deck, SortedBag<Card> discardPile) {
         super(faceUpCards, deck.size(), discardPile.size());
