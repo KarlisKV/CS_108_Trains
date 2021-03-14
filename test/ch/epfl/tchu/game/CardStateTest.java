@@ -26,15 +26,12 @@ public class CardStateTest {
     void ofWorksWithNormalDeck(){
         Deck<Card> f1= new Deck<>(SortedBag.of(5, Card.BLUE, 3, Card.RED).toList());
 
-        System.out.println("Deck:" + f1.topCard() + " " + f1.withoutTopCard().topCard() + " " + f1.withoutTopCard().withoutTopCard().topCard());
         CardState cardState = CardState.of(f1);
         assertEquals(5, cardState.faceUpCards().size());
-        System.out.println(cardState.faceUpCards());
 
         assertEquals(3, cardState.deckSize());
 
-        assertEquals(Card.BLUE, cardState.topDeckCard());
-        System.out.println(cardState.topDeckCard());
+        assertEquals(Card.RED, cardState.topDeckCard());
 
         assertEquals(0, cardState.discardsSize());
     }
@@ -63,9 +60,10 @@ public class CardStateTest {
     void withDrawnFaceUpCardWorksWithSlotIndex(){
         Deck<Card> f1= new Deck<>(SortedBag.of(2, Card.BLUE, 4, Card.RED).toList());
         CardState cardState = CardState.of(f1);
-        System.out.println(cardState.faceUpCards());
-        CardState switchedCardState = cardState.withDrawnFaceUpCard(2); //Set blue instead of red
-        assertEquals(Card.BLUE, switchedCardState.faceUpCard(2));
+
+        CardState switchedCardState = cardState.withDrawnFaceUpCard(2);
+
+        assertEquals(Card.RED, switchedCardState.faceUpCard(2));
         assertEquals(Card.RED, cardState.faceUpCard(2));
     }
 
@@ -82,8 +80,12 @@ public class CardStateTest {
     @Test
     void topDeckCardWorksWithNormalPile(){
         Deck<Card> f1= new Deck<>(SortedBag.of(2, Card.BLUE, 4, Card.RED).toList());
+
         CardState cardState = CardState.of(f1);
-        assertEquals(Card.BLUE,cardState.topDeckCard());
+
+
+
+        assertEquals(Card.RED,cardState.topDeckCard());
     }
 
     @Test
@@ -100,7 +102,6 @@ public class CardStateTest {
     void withoutTopDeckCardWorksWithSingleCardDeck(){
         Deck<Card> f1= new Deck<>(SortedBag.of(3, Card.BLUE, 3, Card.RED).toList());
         CardState cardState = CardState.of(f1);
-        System.out.println(cardState.faceUpCards());
 
         assertEquals(0, cardState.withoutTopDeckCard().deckSize());
     }
@@ -109,7 +110,6 @@ public class CardStateTest {
     void withoutTopDeckCardWorksWithNormalDeck(){
         Deck<Card> f1= new Deck<>(SortedBag.of(4, Card.BLUE, 5, Card.RED).toList());
         CardState cardState = CardState.of(f1);
-        System.out.println(cardState.faceUpCards());
 
         assertEquals(3, cardState.withoutTopDeckCard().deckSize());
     }

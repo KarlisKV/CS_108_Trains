@@ -89,6 +89,40 @@ public final class Route {
     public List<SortedBag<Card>> possibleClaimCards() {
         List<SortedBag<Card>> possibleCards = new ArrayList<>();
 
+        int necessaryCards = length;
+        List<Color> allColours = List.of(Color.BLACK, Color.VIOLET ,Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED, Color.WHITE);
+
+        for (int numberOfLocomotives = 0; numberOfLocomotives < necessaryCards; ++numberOfLocomotives) {
+
+                //Mix of locomotives & colour cards (1x locomotive + other cards, 2x locomotives + other cards, ..., only locomotives)
+                for(Color c : allColours) {
+                    if(color == null || color.equals(c)) {
+
+                        List<Card> cards = new ArrayList<>();
+                    for (int locomotives = 0; locomotives < numberOfLocomotives; ++locomotives) {
+                        cards.add(Card.LOCOMOTIVE);
+                    }
+                    for (int colourCards = 0; colourCards < (necessaryCards - numberOfLocomotives); ++colourCards) {
+                        cards.add(Card.of(c));
+                    }
+                    possibleCards.add(SortedBag.of(cards));
+                    cards.clear();
+                }
+            }
+        }
+
+        possibleCards.add(SortedBag.of(length, Card.LOCOMOTIVE));
+
+        return possibleCards;
+    }
+
+    //Sorry Karlis I removed your method :(
+
+    /*
+    public List<SortedBag<Card>> possibleClaimCards() {
+
+        List<SortedBag<Card>> possibleCards = new ArrayList<>();
+
         int necessaryCards = level == Level.OVERGROUND ? 0 : length;
         List<Color> allColours = Color.ALL;
 
@@ -103,11 +137,9 @@ public final class Route {
             }
         }
 
-
-
-
         return possibleCards;
     }
+     */
 
 
 

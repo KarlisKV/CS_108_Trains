@@ -2,6 +2,8 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -35,7 +37,7 @@ public final class Deck < C extends Comparable <C >>{
      * Private constructor of Deck class
      * @param cards (List<C>) list of cards
      */
-    private Deck(List<C> cards) {
+    public Deck(List<C> cards) {
 
         this.cards = cards;
 
@@ -74,7 +76,7 @@ public final class Deck < C extends Comparable <C >>{
     public Deck<C> withoutTopCard() {
         Preconditions.checkArgument(!isEmpty());
 
-        List<C> cardsWithoutTop = cards;
+        List<C> cardsWithoutTop = new ArrayList<>(cards);
         cardsWithoutTop.remove(0);
 
 
@@ -91,6 +93,11 @@ public final class Deck < C extends Comparable <C >>{
         Preconditions.checkArgument(count >= 0 && count <= cards.size());
 
         List<C> cardsAtTop = cards.subList(0, count);
+
+        //Which is the first card? The last one in the cards List<> or the first one?
+
+    //    List<C> cardsAtTop = cards.subList(cards.size() - count, cards.size());
+
 
         SortedBag.Builder<C> cardsToReturn = new SortedBag.Builder<>();
         for(int i = 0; i < count; ++i) {

@@ -80,7 +80,7 @@ public class DeckTest {
 
         Deck<Card> deck = new Deck<Card>(list);
 
-        SortedBag<Card> cardsBag = SortedBag.of(5, Card.BLUE, 2, Card.BLACK);
+        SortedBag<Card> cardsBag = SortedBag.of(3, Card.BLUE, 4, Card.BLACK);
 
         assertEquals(cardsBag, deck.topCards(7));
 

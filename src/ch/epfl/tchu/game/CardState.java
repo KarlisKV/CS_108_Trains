@@ -62,8 +62,10 @@ public class CardState extends PublicCardState {
         if(slot >= Constants.FACE_UP_CARDS_COUNT || slot < 0) {
             throw new IndexOutOfBoundsException();
         }
+
         List<Card> faceUp = new ArrayList<>(faceUpCards);
         faceUp.set(slot, deck.topCard());
+
         return new CardState(faceUp, deck.withoutTopCard(), discardPile);
     }
 
