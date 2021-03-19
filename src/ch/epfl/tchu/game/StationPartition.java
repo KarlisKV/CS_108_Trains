@@ -7,16 +7,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * StationPartition and Builder
+ *
+ * @author Daniel Polka  (326800)
+ */
 
 public final class StationPartition implements StationConnectivity {
 
     private final Map<Integer, List<Integer>> stationMap;
 
+    /**
+     * Private constructor of StationPartition class
+     * @param stationMap map of stations
+     */
     private StationPartition(Map<Integer, List<Integer>> stationMap) {
         this.stationMap = stationMap;
     }
-
+    /**
+     * Implemented method from StationConnectivity
+     * @param s1 (Station) first station
+     * @param s2 (Station) second station
+     * @return true if stations are connected
+     */
     @Override
     public boolean connected(Station s1, Station s2) {
 
@@ -30,13 +43,19 @@ public final class StationPartition implements StationConnectivity {
     }
 
 
-
+    /**
+     * Nested builder class for StationPartition
+     */
 
     public final static class Builder {
 
         private final Map<Integer, List<Integer>> stationMap;
         private final int stationCount;
 
+        /**
+         * Public constructor for Builder class
+         * @param stationCount (int) number of stations
+         */
         public Builder(int stationCount) {
             Preconditions.checkArgument(stationCount >= 0);
             this.stationCount = stationCount;
@@ -49,6 +68,13 @@ public final class StationPartition implements StationConnectivity {
         }
 
 
+        /**
+         * joins the sub-assemblies containing the two stations passed as arguments, by “electing”
+         * one of the two representatives as representative of the joined sub-assembly;
+         * @param s1 (Station) station 1
+         * @param s2 (Station) station 2
+         * @return the builder (this)
+         */
         public Builder connect(Station s1, Station s2) {
 
             if (stationMap.get(representative(s1.id())).size() > 1 ^ stationMap.get(representative(s2.id())).size() > 1) {
@@ -79,7 +105,10 @@ public final class StationPartition implements StationConnectivity {
         }
 
 
-
+        /**
+         * returns the flattened partition of the stations corresponding to the deep partition under construction by this builder
+         * @return the flattened partition of the stations corresponding to the deep partition under construction by this builder
+         */
         public StationPartition build() {
             return new StationPartition(stationMap);
         }
@@ -104,7 +133,11 @@ public final class StationPartition implements StationConnectivity {
     }
 
 
-    //I wouldn't have copy-pasted code if we were bloody allowed to make bloody public methods lol
+    /**
+     * Private representative method for the builder
+     * @param stationID (int) id number of a station
+     * @return the id of the representative of the sub-assembly containing it.
+     */
     private int representative(int stationID) {
 
         int ID = -1;
