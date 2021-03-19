@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * PlayerState class
- * @author Daniel Polka  (326800)
- */
-
 public final class PlayerState extends  PublicPlayerState {
 
 
@@ -89,8 +84,25 @@ public final class PlayerState extends  PublicPlayerState {
      * @return true iff the player can seize the given route
      */
     public boolean canClaimRoute(Route route) {
-        return cards.contains(SortedBag.of(route.length(), Card.of(route.color()))) && this.carCount() >= route.length();
+
+        if(route.color() == null) {
+
+            boolean cardsOfOneColour = false;
+
+            for(Color c : Color.ALL) {
+                if(cards.contains(SortedBag.of(route.length(), Card.of(c)))) {
+                    cardsOfOneColour = true;
+                }
+            }
+
+            return cardsOfOneColour && this.carCount() >= route.length();
+
+        } else {
+            return cards.contains(SortedBag.of(route.length(), Card.of(route.color()))) && this.carCount() >= route.length();
+        }
     }
+
+
 
     /**
      * returns the list of all the sets of cards the player could use to take possession of the given route
@@ -104,7 +116,7 @@ public final class PlayerState extends  PublicPlayerState {
         List<SortedBag<Card>> playerPossibleClaimCards = new ArrayList<>();
 
         for(SortedBag<Card> sc : allPossibleClaimCards) {
-            if(!sc.union(cards).equals(sc)) {
+            if(cards.contains(sc)) {
                 playerPossibleClaimCards.add(sc);
             }
         }
@@ -125,10 +137,14 @@ public final class PlayerState extends  PublicPlayerState {
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3 && !initialCards.isEmpty() && twoTypesMax.size() <= 2 && drawnCards.size() == 3);
 
         List<SortedBag<Card>> possibleCards = new ArrayList<>();
+        SortedBag<Card> cardsDifference = SortedBag.of(cards).difference(initialCards);
 
         for(int i = 0; i <= additionalCardsCount; ++i) {
-            if(cards.contains(SortedBag.of(i, Card.LOCOMOTIVE)) && cards.contains(SortedBag.of(additionalCardsCount - i, initialCards.get(0)))) {
-                    possibleCards.add(SortedBag.of(additionalCardsCount - i, initialCards.get(0), i, Card.LOCOMOTIVE));
+            if(cardsDifference.contains(SortedBag.of(i, Card.LOCOMOTIVE)) && cardsDifference.contains(SortedBag.of(additionalCardsCount - i, initialCards.get(0)))
+            && !possibleCards.contains(SortedBag.of(additionalCardsCount - i, initialCards.get(0), i, Card.LOCOMOTIVE))
+            && SortedBag.of(additionalCardsCount - i, initialCards.get(0), i, Card.LOCOMOTIVE).size() == additionalCardsCount) {
+
+                possibleCards.add(SortedBag.of(additionalCardsCount - i, initialCards.get(0), i, Card.LOCOMOTIVE));
             }
         }
 
@@ -153,15 +169,42 @@ public final class PlayerState extends  PublicPlayerState {
      */
     //TODO
     public int ticketPoints() {
-        int ticketScore = 0;
 
-        
+        int maxID = 0;
 
-        for(Ticket t : tickets) {
-
+        for(Route r : routes()) {
+            if(r.station1().id() > maxID) {
+                maxID = r.station1().id();
+            }
+            if(r.station2().id() > maxID) {
+                maxID = r.station2().id();
+            }
         }
 
-        return ticketScore;
+        StationPartition.Builder connectivityBuilder = new StationPartition.Builder(maxID + 1);
+
+        for(Route r1 : routes()) {
+            for(Route r2 : routes()) {
+                if(r1.station1().equals(r2.station1())) {
+                    connectivityBuilder.connect(r1.station1(), r2.station1());
+                } else if(r1.station1().equals(r2.station2())) {
+                    connectivityBuilder.connect(r1.station1(), r2.station2());
+                } else if (r1.station2().equals(r2.station1())) {
+                    connectivityBuilder.connect(r1.station2(), r2.station1());
+                } else if(r1.station2().equals(r2.station2())) {
+                    connectivityBuilder.connect(r1.station2(), r2.station2());
+                }
+            }
+        }
+        StationPartition connectivity = connectivityBuilder.build();
+
+        int points = 0;
+
+        for(Ticket t : tickets) {
+            points = t.points(connectivity);
+        }
+
+        return points;
     }
 
     /**

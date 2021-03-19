@@ -51,8 +51,12 @@ public enum Card {
     public static Card of(Color color) {
 
         for( Card c : CARS) {
-            if(color.equals(c.color)) {
-                return c;
+            if(color != null) {
+                if(color.equals(c.color)) {
+                    return c;
+                }
+            } else {
+                return Card.LOCOMOTIVE;
             }
         }
         return null;
