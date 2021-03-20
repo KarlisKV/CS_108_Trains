@@ -10,6 +10,7 @@ import ch.epfl.tchu.game.Trail;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * CardState class
@@ -121,7 +122,7 @@ public final class Info {
      * @return the message declaring that the player has drawn the face-up card given
      */
     public String drewVisibleCard(Card card) {
-        return String.format(StringsFr.DREW_VISIBLE_CARD, playerName, card);
+        return String.format(StringsFr.DREW_VISIBLE_CARD, playerName, cardName(card, 1));
     }
 
 
@@ -215,6 +216,8 @@ public final class Info {
     private String cardNames(SortedBag<Card> cards) {
         Preconditions.checkArgument(cards != null);
 
+        Map<Card, Integer> cardTypes = cards.toMap();
+
         HashMap<Color, Integer> cardCount = new HashMap<>();
         StringBuilder cardNameBuilder = new StringBuilder();
 
@@ -233,7 +236,7 @@ public final class Info {
             boolean beforeLastCard = cards.get(cards.size() - 2).equals(clr);
             boolean notLastCard = !cards.get(cards.size() - 1).equals(clr);
 
-            if(beforeLastCard) {
+            if(beforeLastCard && cardTypes.size() > 1) {
                 cardNameBuilder.append(StringsFr.AND_SEPARATOR);
             }
 

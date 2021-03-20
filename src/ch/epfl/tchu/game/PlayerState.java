@@ -167,7 +167,6 @@ public final class PlayerState extends  PublicPlayerState {
      * returns the number of points - possibly negative - obtained by the player thanks to his tickets
      * @return the number of points - possibly negative - obtained by the player thanks to his tickets
      */
-    //TODO
     public int ticketPoints() {
 
         int maxID = 0;
@@ -185,23 +184,34 @@ public final class PlayerState extends  PublicPlayerState {
 
         for(Route r1 : routes()) {
             for(Route r2 : routes()) {
-                if(r1.station1().equals(r2.station1())) {
-                    connectivityBuilder.connect(r1.station1(), r2.station1());
-                } else if(r1.station1().equals(r2.station2())) {
-                    connectivityBuilder.connect(r1.station1(), r2.station2());
-                } else if (r1.station2().equals(r2.station1())) {
-                    connectivityBuilder.connect(r1.station2(), r2.station1());
-                } else if(r1.station2().equals(r2.station2())) {
-                    connectivityBuilder.connect(r1.station2(), r2.station2());
+                if(!r1.equals(r2)) {
+                    if(r1.station1().equals(r2.station1())) {
+                        connectivityBuilder.connect(r1.station1(), r2.station2());
+                        connectivityBuilder.connect(r1.station2(), r2.station1());
+                        connectivityBuilder.connect(r1.station2(), r2.station2());
+                    } else if(r1.station1().equals(r2.station2())) {
+                        connectivityBuilder.connect(r1.station1(), r2.station1());
+                        connectivityBuilder.connect(r1.station2(), r2.station1());
+                        connectivityBuilder.connect(r1.station2(), r2.station2());
+                    } else if (r1.station2().equals(r2.station1())) {
+                        connectivityBuilder.connect(r1.station1(), r2.station1());
+                        connectivityBuilder.connect(r1.station1(), r2.station2());
+                        connectivityBuilder.connect(r1.station2(), r2.station2());
+                    } else if(r1.station2().equals(r2.station2())) {
+                        connectivityBuilder.connect(r1.station1(), r2.station1());
+                        connectivityBuilder.connect(r1.station1(), r2.station2());
+                        connectivityBuilder.connect(r1.station2(), r2.station1());
+                    }
                 }
             }
         }
+
         StationPartition connectivity = connectivityBuilder.build();
 
         int points = 0;
 
         for(Ticket t : tickets) {
-            points = t.points(connectivity);
+            points = points + t.points(connectivity);
         }
 
         return points;
