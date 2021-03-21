@@ -26,8 +26,7 @@ public class PublicPlayerState {
      */
     public PublicPlayerState(int ticketCount, int cardCount, List<Route> routes) {
 
-        Preconditions.checkArgument(ticketCount >= 0);
-        Preconditions.checkArgument(cardCount >= 0);
+        Preconditions.checkArgument(ticketCount >= 0 && cardCount >= 0);
         this.ticketCount = ticketCount;
         this.routes = routes;
         this.cardCount = cardCount;

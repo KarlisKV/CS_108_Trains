@@ -39,11 +39,8 @@ public final class Route {
      * @param color (Color) of the route
      */
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) {
-
-
         Preconditions.checkArgument(!station1.equals(station2) &&
                 (length >= Constants.MIN_ROUTE_LENGTH && length <= Constants.MAX_ROUTE_LENGTH));
-
         Objects.requireNonNull(level);
         Objects.requireNonNull(id);
         Objects.requireNonNull(station1);
@@ -203,13 +200,14 @@ public final class Route {
     //"Illegal method" for now, which is why it's commented out, but could be useful so not deleted
 
 
-    /*
 
+    /*
     @Override
     public String toString() {
         return "[Route] " + station1.name() + " - " + station2.name() + " (" + length + ")";
     }
-
      */
+
+
 
 }

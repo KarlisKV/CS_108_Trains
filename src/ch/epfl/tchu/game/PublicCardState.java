@@ -2,7 +2,9 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * PublicCardState class
@@ -24,7 +26,7 @@ public class PublicCardState {
      */
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) {
         Preconditions.checkArgument(deckSize >= 0 && discardsSize >= 0 && faceUpCards.size() == Constants.FACE_UP_CARDS_COUNT);
-        this.faceUpCards = faceUpCards;
+        this.faceUpCards = new ArrayList<>(faceUpCards);
         this.deckSize = deckSize;
         this.discardsSize = discardsSize;
     }
@@ -67,7 +69,7 @@ public class PublicCardState {
      * @return the card face up at the given index
      */
     public Card faceUpCard(int slot) {
-        Preconditions.checkArgument(slot < Constants.FACE_UP_CARDS_COUNT && slot >= 0);
+        Objects.checkIndex(slot, Constants.FACE_UP_CARDS_COUNT);
         return faceUpCards.get(slot);
     }
 

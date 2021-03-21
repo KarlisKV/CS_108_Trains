@@ -43,6 +43,25 @@ public final class StationPartition implements StationConnectivity {
     }
 
 
+    /*
+
+    * Method for testing whole StationPartition class
+
+    public static StationPartition fullConnectivity() {
+
+        Map<Integer, List<Integer>> fullMap = new HashMap<>();
+        fullMap.put(0, new ArrayList<>());
+
+        for(int i = 0; i < ChMap.stations().size(); ++i) {
+            fullMap.get(0).add(i);
+        }
+
+        return new StationPartition(fullMap);
+    }
+     */
+
+
+
     /**
      * Nested builder class for StationPartition
      */
@@ -77,29 +96,41 @@ public final class StationPartition implements StationConnectivity {
          */
         public Builder connect(Station s1, Station s2) {
 
-            if (stationMap.get(representative(s1.id())).size() > 1 ^ stationMap.get(representative(s2.id())).size() > 1) {
+            if(!build().connected(s1, s2)) {
 
-                if(stationMap.get(representative(s1.id())).size() > 1) {
+                if(!stationsAlreadyInDifferentMapGroups(s1, s2)) {
 
-                    stationMap.get(representative(s1.id())).add(s2.id());
-                    stationMap.remove(s2.id());
+                    if (stationMap.get(representative(s1.id())).size() > 1 ^ stationMap.get(representative(s2.id())).size() > 1) {
 
+                        if(stationMap.get(representative(s1.id())).size() > 1) {
+
+                            stationMap.get(representative(s1.id())).add(s2.id());
+                            stationMap.remove(s2.id());
+
+                        } else {
+
+                            stationMap.get(representative(s2.id())).add(s1.id());
+                            stationMap.remove(s1.id());
+                        }
+
+                    } else if (stationMap.containsKey(s1.id())) {
+
+                        stationMap.get(s1.id()).add(s2.id());
+                        stationMap.remove(s2.id());
+
+                    } else if (stationMap.containsKey(s2.id())) {
+
+                        stationMap.get(s2.id()).add(s1.id());
+                        stationMap.remove(s1.id());
+                    }
                 } else {
 
-                    stationMap.get(representative(s2.id())).add(s1.id());
-                    stationMap.remove(s1.id());
+                    int index = representative(s2.id());
+                    stationMap.get(representative(s1.id())).addAll(stationMap.get(index));
+                    stationMap.remove(index);
                 }
-
-            } else if (stationMap.containsKey(s1.id())) {
-
-                stationMap.get(s1.id()).add(s2.id());
-                stationMap.remove(s2.id());
-
-            } else if (stationMap.containsKey(s2.id())) {
-
-                stationMap.get(s2.id()).add(s1.id());
-                stationMap.remove(s1.id());
             }
+
 
             return this;
         }
@@ -126,6 +157,22 @@ public final class StationPartition implements StationConnectivity {
             }
 
             return ID;
+        }
+
+        private boolean stationsAlreadyInDifferentMapGroups(Station s1, Station s2) {
+            boolean b = false;
+
+            for(int i = 0; i < stationCount; ++i) {
+                if(stationMap.containsKey(i)) {
+                    if(stationMap.get(i).contains(s1.id())) {
+                        if(stationMap.get(i).size() > 1 && !stationMap.get(i).contains(s2.id()) && stationMap.get(representative(s2.id())).size() > 1) {
+                            b = true;
+                        }
+                    }
+                }
+            }
+
+            return b;
         }
 
 
