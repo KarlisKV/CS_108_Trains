@@ -2,6 +2,7 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class PublicPlayerState {
 
         Preconditions.checkArgument(ticketCount >= 0 && cardCount >= 0);
         this.ticketCount = ticketCount;
-        this.routes = routes;
+        this.routes = new ArrayList<>(routes);
         this.cardCount = cardCount;
         int tempPoints = 0;
 
