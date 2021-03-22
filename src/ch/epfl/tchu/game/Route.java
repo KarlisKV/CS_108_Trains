@@ -97,21 +97,26 @@ public final class Route {
 
                         List<Card> cards = new ArrayList<>();
 
-                         for (int locomotives = 0; locomotives < numberOfLocomotives; ++locomotives) {
-                            cards.add(Card.LOCOMOTIVE);
-                         }
+                        if(level.equals(Level.UNDERGROUND)) {
+                            for (int locomotives = 0; locomotives < numberOfLocomotives; ++locomotives) {
+                                cards.add(Card.LOCOMOTIVE);
+                            }
+                        }
+
                          for (int colourCards = 0; colourCards < (necessaryCards - numberOfLocomotives); ++colourCards) {
                              cards.add(Card.of(c));
                          }
 
-                         if(level.equals(Level.OVERGROUND)) {
-                             numberOfLocomotives = necessaryCards;
-                         }
 
-                    possibleCards.add(SortedBag.of(cards));
-                    cards.clear();
+                        possibleCards.add(SortedBag.of(cards));
+                        cards.clear();
+                    }
                 }
+
+            if(level.equals(Level.OVERGROUND)) {
+                numberOfLocomotives = necessaryCards;
             }
+
         }
 
         if(level.equals(Level.UNDERGROUND)) {

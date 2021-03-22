@@ -116,7 +116,7 @@ public final class PlayerState extends  PublicPlayerState {
         List<SortedBag<Card>> playerPossibleClaimCards = new ArrayList<>();
 
         for(SortedBag<Card> sc : allPossibleClaimCards) {
-            if(cards.contains(sc)) {
+            if(cards.contains(sc) && !(sc.contains(Card.LOCOMOTIVE) && route.level().equals(Route.Level.OVERGROUND))) {
                 playerPossibleClaimCards.add(sc);
             }
         }
