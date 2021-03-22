@@ -10,23 +10,22 @@ public final class GameState extends PublicGameState {
 
     private final Map<PlayerId, PlayerState> playerState;
     private final Deck<Ticket> tickets;
-    private final CardState privateCardState;
+    private final CardState cardState;
 
     /**
-     * Private constructor of GameState class
-     * @param ticketsCount
-     * @param cardState
-     * @param playerState
-     * @param lastPlayer
-     * @param currentPlayerId
+     * Private constructor of the GameState class
+     * @param currentPlayerId (PlayerId) current player
+     * @param playerState (Map<PlayerId, PlayerState>) playerState
+     * @param lastPlayer (PlayerId) player who played last
+     * @param tickets (Deck<Ticket>) deck of tickets
+     * @param cardState (CardState) given cardState
      */
-    // TODO: 3/21/2021 the playerState is marked for the reason see 3.2.1. i cba to type it
-    private GameState(int ticketsCount, PublicCardState cardState, PlayerId currentPlayerId,
-                      Map<PlayerId, PlayerState> playerState, PlayerId lastPlayer, Deck<Ticket> tickets, CardState privateCardState) {
+    private GameState(PlayerId currentPlayerId, Map<PlayerId, PlayerState> playerState,
+                      PlayerId lastPlayer, Deck<Ticket> tickets, CardState cardState) {
 
-        super(ticketsCount, cardState, currentPlayerId, playerState, lastPlayer);
+        super(tickets.size(), cardState, currentPlayerId, Map.copyOf(playerState), lastPlayer);
 
-        this.privateCardState = privateCardState;
+        this.cardState = cardState;
         this.tickets = tickets;
         this.playerState = playerState;
     }
@@ -45,18 +44,18 @@ public final class GameState extends PublicGameState {
         Deck<Ticket> deckOfTickets = Deck.of(tickets, rng);
 
         List<PlayerId> players = PlayerId.ALL;
+
         PlayerId startingPlayer = players.get(rng.nextInt());
 
-        Map<PlayerId, PlayerState> initialMap = new HashMap<>();
-        initialMap.put(PlayerId.PLAYER_1, PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
+        Map<PlayerId, PlayerState> initialState = new HashMap<>();
+        initialState.put(PlayerId.PLAYER_1, PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
         fullDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
-        initialMap.put(PlayerId.PLAYER_2, PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
+        initialState.put(PlayerId.PLAYER_2, PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
         fullDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
 
         PublicCardState initialCardState = new PublicCardState(null, fullDeck.size(), 0);
-        CardState privateState = CardState.of(fullDeck);
 
-        return new GameState(tickets.size(), initialCardState, startingPlayer, initialMap, null, deckOfTickets, privateState);
+        return new GameState(startingPlayer, initialState, null, deckOfTickets, CardState.of(fullDeck));
     }
 
     /**
@@ -78,21 +77,81 @@ public final class GameState extends PublicGameState {
         return playerState.get(currentPlayerId());
     }
 
+    /**
+     *  returnsthe count tickets from the top of the pile
+     * @param count (int) amount of tickets to give back
+     * @return SortedBag of tickets
+     */
     public SortedBag<Ticket> topTickets(int count) {
 
-        // TODO: 3/22/2021 dont understand is it the sortedbag of tickets? What does sommet de la pioche means
-        // do i need to create a deck of tickets and then if yes how do I initialize it?
         Preconditions.checkArgument(count >= 0 && count <= tickets.size());
 
         return tickets.topCards(count);
     }
 
+    /**
+     * returns an identical state to the receiver, but without the count tickets from the top of the pile
+     * @param count (int) amount of cards to remove from the top
+     * @return an identical state to the receiver, but without the count tickets from the top of the pile
+     */
     public GameState withoutTopTickets(int count) {
+
         Preconditions.checkArgument(count >= 0 && count <= tickets.size());
-        return new GameState(ticketsCount(), cardState(), currentPlayerId(), playerState, lastPlayer(),tickets.withoutTopCards(count), privateCardState);
+
+        return new GameState(currentPlayerId(), playerState, lastPlayer(),tickets.withoutTopCards(count), cardState);
     }
 
+    /**
+     * Returns the top card of the draw pile
+     * @return the top card of the draw pile
+     */
     public Card topCard() {
-        return privateCardState.topDeckCard();
+
+        return cardState.topDeckCard();
     }
+
+    /**
+     * returns an identical state to the receiver but without the card at the top of the draw pile
+     * @return an identical state to the receiver but without the card at the top of the draw pile
+     */
+    public GameState withoutTopCard() {
+
+        Preconditions.checkArgument(!cardState.isDeckEmpty());
+
+        return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState.withoutTopDeckCard());
+    }
+
+    /**
+     * returns an identical state to the receiver but with the given cards added to the discard pile
+     * @param discardedCards (SortedBag<Card>) given cards
+     * @return an identical state to the receiver but with the given cards added to the discard pile
+     */
+    public GameState withMoreDiscardedCards(SortedBag<Card> discardedCards) {
+
+        return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState.withMoreDiscardedCards(discardedCards));
+    }
+
+    /**
+     * returns an identical state to the receiver unless the deck of cards is empty,
+     * in which case it is recreated from the discard pile, shuffled using the given random generator
+     * @param rng (Random) randomizer
+     * @return an identical state to the receiver or if empty, deck is recreated from discards
+     */
+    public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
+
+        if(cardState.isDeckEmpty()) {
+
+            CardState deckFromDiscards = cardState.withDeckRecreatedFromDiscards(rng);
+
+            return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, deckFromDiscards);
+        }
+        else {
+            return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState);
+        }
+    }
+
+
+
+
+
 }
