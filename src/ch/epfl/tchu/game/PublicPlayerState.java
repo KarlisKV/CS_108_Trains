@@ -32,14 +32,16 @@ public class PublicPlayerState {
         this.routes = new ArrayList<>(routes);
         this.cardCount = cardCount;
         int tempPoints = 0;
+        int tempLength = 0;
 
         for (Route route : routes) {
             tempPoints += route.claimPoints();
+            tempLength += route.length();
         }
 
         this.claimPoints = tempPoints;
 
-        this.carCount = Constants.INITIAL_CAR_COUNT - routes.size();
+        this.carCount = Constants.INITIAL_CAR_COUNT - tempLength;
     }
 
     /**
