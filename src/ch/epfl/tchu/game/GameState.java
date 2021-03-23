@@ -38,22 +38,19 @@ public final class GameState extends PublicGameState {
      */
     public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
 
-        SortedBag<Card> allCards = Constants.ALL_CARDS;
-        Deck<Card> fullDeck = Deck.of(allCards, rng);
-
         Deck<Ticket> deckOfTickets = Deck.of(tickets, rng);
 
         List<PlayerId> players = PlayerId.ALL;
-
         PlayerId startingPlayer = players.get(rng.nextInt());
 
-        Map<PlayerId, PlayerState> initialState = new HashMap<>();
-        initialState.put(PlayerId.PLAYER_1, PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
-        fullDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
-        initialState.put(PlayerId.PLAYER_2, PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
-        fullDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+        Deck<Card> fullDeck = Deck.of(Constants.ALL_CARDS, rng);
 
-        PublicCardState initialCardState = new PublicCardState(null, fullDeck.size(), 0);
+        Map<PlayerId, PlayerState> initialState = new HashMap<>();
+
+        for(int i = 0; i < PlayerId.COUNT; i++) {
+            initialState.put(PlayerId.ALL.get(i), PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
+            fullDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+        }
 
         return new GameState(startingPlayer, initialState, null, deckOfTickets, CardState.of(fullDeck));
     }
@@ -150,8 +147,25 @@ public final class GameState extends PublicGameState {
         }
     }
 
+    /**
+     * Returns true if a player has less or equal than 2 cars left
+     * @return true if a player has less or equal than 2 cars left
+     */
+    public boolean lastTurnBegins() {
+        return (playerState.get(currentPlayerId()).carCount() <= 2);
+    }
 
-
-
-
+    /**
+     * ends the current players turn and returns the game state accordingly
+     * @return GameState equivalent to this but if its the last turn, the current player becomes the last player
+     */
+    // TODO: 3/23/2021 ask assistant whether this is correct 
+    public GameState forNextTurn() {
+        if(lastTurnBegins()) {
+            return new GameState(currentPlayerId(), playerState, currentPlayerId(), tickets, cardState);
+        }
+        else {
+            return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState);
+        }
+    }
 }
