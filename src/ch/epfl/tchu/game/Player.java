@@ -67,7 +67,7 @@ public interface Player {
      * in which case the value returned is between 0 and 4 included -, or from the deck - in which case the returned value is Constants.DECK_SLOT(i.e. -1)
      * @return an int depending on from where the locomotive card is picked
      */
-    int drawSlots();
+    int drawSlot();
 
     /**
      * is called when the player has decided to (attempt to) seize a road, in order to know which road it is

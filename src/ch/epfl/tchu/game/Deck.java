@@ -92,7 +92,7 @@ public final class Deck < C extends Comparable <C >>{
 
         Preconditions.checkArgument(count >= 0 && count <= cards.size());
 
-        List<C> cardsAtTop = cards.subList(0, count);
+        List<C> cardsAtTop = new ArrayList<>(cards.subList(0, count));
 
         //Which is the first card? The last one in the cards List<> or the first one?
 
@@ -119,7 +119,7 @@ public final class Deck < C extends Comparable <C >>{
 
         Preconditions.checkArgument(count >= 0 && count <= cards.size());
 
-        List<C> cardsWithoutTop = cards.subList(count, cards.size());
+        List<C> cardsWithoutTop = new ArrayList<>(cards.subList(count, cards.size()));
 
         return new Deck<>(cardsWithoutTop);
 

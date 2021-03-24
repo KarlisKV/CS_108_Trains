@@ -75,7 +75,7 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     *  returnsthe count tickets from the top of the pile
+     *  returns the count tickets from the top of the pile
      * @param count (int) amount of tickets to give back
      * @return SortedBag of tickets
      */
@@ -146,6 +146,82 @@ public final class GameState extends PublicGameState {
             return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState);
         }
     }
+
+
+    //TODO: check that this works
+
+    public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
+
+        Preconditions.checkArgument(this.playerState.get(playerId).tickets().isEmpty());
+
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        newPlayerState.get(playerId).withAddedTickets(chosenTickets);
+
+        return new GameState(playerId, newPlayerState, null, this.tickets, this.cardState);
+    }
+
+
+    //TODO: check that this works
+
+    public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
+
+        Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
+
+        Deck<Ticket> newTickets = Deck.of(tickets.topCards(tickets.size()).difference(chosenTickets), new Random());
+
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        newPlayerState.get(currentPlayerId()).withAddedTickets(chosenTickets);
+
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), newTickets, this.cardState);
+    }
+
+
+    //TODO: check that this works
+
+    public GameState withDrawnFaceUpCard(int slot) {
+
+        Preconditions.checkArgument(canDrawCards());
+
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        newPlayerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot));
+
+        CardState newCardState = cardState.withDrawnFaceUpCard(slot);
+
+
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), this.tickets, newCardState);
+    }
+
+
+    //TODO: check that this works
+
+    public GameState withBlindlyDrawnCard() {
+
+        Preconditions.checkArgument(canDrawCards());
+
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        newPlayerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard());
+
+        CardState newCardState = cardState.withoutTopDeckCard();
+
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), this.tickets, newCardState);
+    }
+
+
+    //TODO: check that this works
+
+    public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
+
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        newPlayerState.get(currentPlayerId()).withClaimedRoute(route, cards);
+
+        CardState newCardState = this.cardState.withMoreDiscardedCards(cards);
+
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), this.tickets, newCardState);
+    }
+
+
+
+
 
     /**
      * Returns true if a player has less or equal than 2 cars left
