@@ -5,6 +5,11 @@ import ch.epfl.tchu.SortedBag;
 
 import java.util.*;
 
+/**
+ * Route class
+ * @author Karlis Velins (325180)
+ * @author Daniel Polka  (326800)
+ */
 public final class GameState extends PublicGameState {
 
 
@@ -136,6 +141,7 @@ public final class GameState extends PublicGameState {
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
 
+        // how to write using ? : operator instead of if else?
         if(cardState.isDeckEmpty()) {
 
             CardState deckFromDiscards = cardState.withDeckRecreatedFromDiscards(rng);
@@ -148,16 +154,15 @@ public final class GameState extends PublicGameState {
     }
 
 
-    //TODO: check that this works
 
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
 
-        Preconditions.checkArgument(this.playerState.get(playerId).tickets().isEmpty());
+        Preconditions.checkArgument(playerState.get(playerId).tickets().isEmpty());
 
-        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.get(playerId).withAddedTickets(chosenTickets);
 
-        return new GameState(playerId, newPlayerState, null, this.tickets, this.cardState);
+        return new GameState(playerId, newPlayerState, null, tickets, cardState);
     }
 
 
@@ -169,10 +174,10 @@ public final class GameState extends PublicGameState {
 
         Deck<Ticket> newTickets = Deck.of(tickets.topCards(tickets.size()).difference(chosenTickets), new Random());
 
-        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.get(currentPlayerId()).withAddedTickets(chosenTickets);
 
-        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), newTickets, this.cardState);
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), newTickets, cardState);
     }
 
 
@@ -182,13 +187,13 @@ public final class GameState extends PublicGameState {
 
         Preconditions.checkArgument(canDrawCards());
 
-        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot));
 
         CardState newCardState = cardState.withDrawnFaceUpCard(slot);
 
 
-        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), this.tickets, newCardState);
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), tickets, newCardState);
     }
 
 
@@ -198,12 +203,12 @@ public final class GameState extends PublicGameState {
 
         Preconditions.checkArgument(canDrawCards());
 
-        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard());
 
         CardState newCardState = cardState.withoutTopDeckCard();
 
-        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), this.tickets, newCardState);
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), tickets, newCardState);
     }
 
 
@@ -211,12 +216,12 @@ public final class GameState extends PublicGameState {
 
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
 
-        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(this.playerState);
+        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.get(currentPlayerId()).withClaimedRoute(route, cards);
 
-        CardState newCardState = this.cardState.withMoreDiscardedCards(cards);
+        CardState newCardState = cardState.withMoreDiscardedCards(cards);
 
-        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), this.tickets, newCardState);
+        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), tickets, newCardState);
     }
 
 
@@ -224,24 +229,27 @@ public final class GameState extends PublicGameState {
 
 
     /**
-     * Returns true if a player has less or equal than 2 cars left
-     * @return true if a player has less or equal than 2 cars left
+     * Returns true if the current player has less or equal than 2 cars left
+     * @return true if the current player has less or equal than 2 cars left
      */
     public boolean lastTurnBegins() {
         return (playerState.get(currentPlayerId()).carCount() <= 2);
     }
 
     /**
-     * ends the current players turn and returns the game state accordingly
+     * ends the current player's turn, ie returns an identical state to the receiver except that
+     * the current player is the one following the current current player;
+     * furthermore, if lastTurnBegins returns true, the current current player becomes the last player.
      * @return GameState equivalent to this but if its the last turn, the current player becomes the last player
+
      */
-    // TODO: 3/23/2021 ask assistant whether this is correct 
+
     public GameState forNextTurn() {
         if(lastTurnBegins()) {
-            return new GameState(currentPlayerId(), playerState, currentPlayerId(), tickets, cardState);
+            return new GameState(currentPlayerId().next(), playerState, currentPlayerId(), tickets, cardState);
         }
         else {
-            return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState);
+            return new GameState(currentPlayerId().next(), playerState, lastPlayer(), tickets, cardState);
         }
     }
 }
