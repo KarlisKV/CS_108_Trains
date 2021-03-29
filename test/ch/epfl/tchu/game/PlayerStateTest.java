@@ -185,7 +185,7 @@ class PlayerStateTest {
         for (var l = 1; l <= 6; l++) {
             var r = new Route(id, s1, s2, l, Level.OVERGROUND, null);
 
-        //    assertEquals(List.of(), emptyPlayerState.possibleClaimCards(r));
+            assertEquals(List.of(), emptyPlayerState.possibleClaimCards(r));
 
             var expectedKBYRL = List.of(
                     SortedBag.of(l, Card.BLACK),

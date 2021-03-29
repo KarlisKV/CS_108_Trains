@@ -46,7 +46,7 @@ public final class GameState extends PublicGameState {
         Deck<Ticket> deckOfTickets = Deck.of(tickets, rng);
 
         List<PlayerId> players = PlayerId.ALL;
-        PlayerId startingPlayer = players.get(rng.nextInt());
+        PlayerId startingPlayer = players.get(rng.nextInt(2));
 
         Deck<Card> fullDeck = Deck.of(Constants.ALL_CARDS, rng);
 
@@ -141,16 +141,12 @@ public final class GameState extends PublicGameState {
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
 
+        CardState deckFromDiscards = cardState.withDeckRecreatedFromDiscards(rng);
         // how to write using ? : operator instead of if else?
-        if(cardState.isDeckEmpty()) {
+        return cardState.isDeckEmpty() ?
+                new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, deckFromDiscards) :
+                new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState);
 
-            CardState deckFromDiscards = cardState.withDeckRecreatedFromDiscards(rng);
-
-            return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, deckFromDiscards);
-        }
-        else {
-            return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState);
-        }
     }
 
 
@@ -245,11 +241,10 @@ public final class GameState extends PublicGameState {
      */
 
     public GameState forNextTurn() {
-        if(lastTurnBegins()) {
-            return new GameState(currentPlayerId().next(), playerState, currentPlayerId(), tickets, cardState);
-        }
-        else {
-            return new GameState(currentPlayerId().next(), playerState, lastPlayer(), tickets, cardState);
-        }
+
+        return lastTurnBegins() ?
+                new GameState(currentPlayerId().next(), playerState, currentPlayerId(), tickets, cardState) :
+                new GameState(currentPlayerId().next(), playerState, lastPlayer(), tickets, cardState);
+
     }
 }
