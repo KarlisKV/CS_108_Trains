@@ -133,6 +133,7 @@ public final class PlayerState extends  PublicPlayerState {
      * @return the list of all sets of cards that the player could use to seize a tunnel
      */
     public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards) {
+
         Map<Card, Integer> twoTypesMax = initialCards.toMap();
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3 && !initialCards.isEmpty() && twoTypesMax.size() <= 2 && drawnCards.size() == 3);
 
