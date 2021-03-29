@@ -54,7 +54,7 @@ public final class GameState extends PublicGameState {
 
         for(int i = 0; i < PlayerId.COUNT; i++) {
             initialState.put(PlayerId.ALL.get(i), PlayerState.initial(fullDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
-            fullDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+            fullDeck = fullDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
         }
 
         return new GameState(startingPlayer, initialState, null, deckOfTickets, CardState.of(fullDeck));
@@ -141,7 +141,12 @@ public final class GameState extends PublicGameState {
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
 
-        CardState deckFromDiscards = cardState.withDeckRecreatedFromDiscards(rng);
+        CardState deckFromDiscards = cardState;
+
+        if(cardState.isDeckEmpty()) {
+            deckFromDiscards = cardState.withDeckRecreatedFromDiscards(rng);
+        }
+
         // how to write using ? : operator instead of if else?
         return cardState.isDeckEmpty() ?
                 new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, deckFromDiscards) :
@@ -150,20 +155,31 @@ public final class GameState extends PublicGameState {
     }
 
 
-
+    /**
+     * returns an identical state to the receiver, except that chosenTickets have been
+     * added to the hand of player playerId
+     * @param playerId ID of the player
+     * @param chosenTickets tickets to add to player playerId
+     * @return an identical state except that player playerId now has chosenTickets
+     */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
 
         Preconditions.checkArgument(playerState.get(playerId).tickets().isEmpty());
 
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
-        newPlayerState.get(playerId).withAddedTickets(chosenTickets);
+        newPlayerState.replace(playerId, newPlayerState.get(playerId).withAddedTickets(chosenTickets));
 
         return new GameState(playerId, newPlayerState, null, tickets, cardState);
     }
 
 
-    //TODO: check that this works
-
+    /**
+     * returns an identical state to the receiver, except that the current player has drawn drawnTickets
+     * and the said player has kept chosenTickets from drawnTickets
+     * @param drawnTickets the tickets drawn by the current player
+     * @param chosenTickets the tickets the player chose to keep
+     * @return an identical state to the receiver, except that the current player has the additional tickets chosenTickets
+     */
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
 
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
@@ -171,20 +187,24 @@ public final class GameState extends PublicGameState {
         Deck<Ticket> newTickets = Deck.of(tickets.topCards(tickets.size()).difference(chosenTickets), new Random());
 
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
-        newPlayerState.get(currentPlayerId()).withAddedTickets(chosenTickets);
+        newPlayerState.replace(currentPlayerId(), newPlayerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
 
         return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), newTickets, cardState);
     }
 
 
-    //TODO: check that this works
-
+    /**
+     * returns an identical state to the receiver, except that the current player has drawn
+     * the selected face up card
+     * @param slot the number of the card that the player chose in the face up cards
+     * @return an identical state to the receiver, except that the current player has drawn the face up card at slot
+     */
     public GameState withDrawnFaceUpCard(int slot) {
 
         Preconditions.checkArgument(canDrawCards());
 
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
-        newPlayerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot));
+        newPlayerState.replace(currentPlayerId(), newPlayerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot)));
 
         CardState newCardState = cardState.withDrawnFaceUpCard(slot);
 
@@ -193,27 +213,32 @@ public final class GameState extends PublicGameState {
     }
 
 
-    //TODO: check that this works
-
+    /**
+     * returns an identical state to the receiver, except that the current player has drawn a card from the top of the deck
+     * @return an identical state to the receiver, except that the current player has drawn a card from the top of the deck
+     */
     public GameState withBlindlyDrawnCard() {
 
         Preconditions.checkArgument(canDrawCards());
 
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
-        newPlayerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard());
-
+        newPlayerState.replace(currentPlayerId(), newPlayerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard()));
         CardState newCardState = cardState.withoutTopDeckCard();
 
         return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), tickets, newCardState);
     }
 
 
-    //TODO: check that this works
-
+    /**
+     * returns an identical state to the receiver, except that the current player claimed Route route with specified cards
+     * @param route the route the current player has claimed
+     * @param cards the cards the current player used to claim Route route
+     * @return an identical state to the receiver, except that the current player claimed Route route with specified cards
+     */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
 
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
-        newPlayerState.get(currentPlayerId()).withClaimedRoute(route, cards);
+        newPlayerState.replace(currentPlayerId(), newPlayerState.get(currentPlayerId()).withClaimedRoute(route, cards));
 
         CardState newCardState = cardState.withMoreDiscardedCards(cards);
 
@@ -232,14 +257,14 @@ public final class GameState extends PublicGameState {
         return (playerState.get(currentPlayerId()).carCount() <= 2);
     }
 
+
+
     /**
      * ends the current player's turn, ie returns an identical state to the receiver except that
      * the current player is the one following the current current player;
      * furthermore, if lastTurnBegins returns true, the current current player becomes the last player.
      * @return GameState equivalent to this but if its the last turn, the current player becomes the last player
-
      */
-
     public GameState forNextTurn() {
 
         return lastTurnBegins() ?

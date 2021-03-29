@@ -54,7 +54,7 @@ public class PublicGameState {
      * @return true iff it is possible to draw tickets, i.e. if the draw pile is not empty,
      */
     public boolean canDrawTickets() {
-        return (cardState.deckSize() != 0);
+        return (ticketsCount != 0);
     }
 
     /**
