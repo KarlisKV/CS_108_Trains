@@ -183,13 +183,9 @@ public final class GameState extends PublicGameState {
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
 
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
+        playerState.replace(currentPlayerId(), playerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
 
-        Deck<Ticket> newTickets = Deck.of(tickets.topCards(tickets.size()).difference(chosenTickets), new Random());
-
-        Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
-        newPlayerState.replace(currentPlayerId(), newPlayerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
-
-        return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), newTickets, cardState);
+        return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets.withoutTopCards(drawnTickets.size()), cardState);
     }
 
 

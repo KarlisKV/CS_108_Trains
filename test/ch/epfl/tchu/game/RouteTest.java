@@ -235,8 +235,7 @@ class RouteTest {
                     SortedBag.of(l, Card.YELLOW),
                     SortedBag.of(l, Card.ORANGE),
                     SortedBag.of(l, Card.RED),
-                    SortedBag.of(l, Card.WHITE),
-                    SortedBag.of(l, Card.LOCOMOTIVE));
+                    SortedBag.of(l, Card.WHITE));
             assertEquals(expected, r.possibleClaimCards());
         }
     }
@@ -257,7 +256,6 @@ class RouteTest {
                     var cars = l - locomotives;
                     expected.add(SortedBag.of(cars, card, locomotives, Card.LOCOMOTIVE));
                 }
-
                 assertEquals(expected, r.possibleClaimCards());
             }
         }
@@ -281,7 +279,6 @@ class RouteTest {
                         expected.add(SortedBag.of(cars, card, locomotives, Card.LOCOMOTIVE));
                 }
             }
-            System.out.println(r.possibleClaimCards());
             assertEquals(expected, r.possibleClaimCards());
         }
     }
