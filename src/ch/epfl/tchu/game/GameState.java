@@ -46,7 +46,7 @@ public final class GameState extends PublicGameState {
         Deck<Ticket> deckOfTickets = Deck.of(tickets, rng);
 
         List<PlayerId> players = PlayerId.ALL;
-        PlayerId startingPlayer = players.get(rng.nextInt(2));
+        PlayerId startingPlayer = players.get(rng.nextInt(PlayerId.COUNT));
 
         Deck<Card> fullDeck = Deck.of(Constants.ALL_CARDS, rng);
 
