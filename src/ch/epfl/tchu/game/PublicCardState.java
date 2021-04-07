@@ -26,7 +26,7 @@ public class PublicCardState {
      */
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) {
         Preconditions.checkArgument(deckSize >= 0 && discardsSize >= 0 && faceUpCards.size() == Constants.FACE_UP_CARDS_COUNT);
-        this.faceUpCards = List.copyOf(faceUpCards);
+        this.faceUpCards = new ArrayList<>(faceUpCards);
         this.deckSize = deckSize;
         this.discardsSize = discardsSize;
     }
@@ -36,7 +36,7 @@ public class PublicCardState {
      * @return List of faceUpCards
      */
     public List<Card> faceUpCards() {
-        return faceUpCards ;
+        return new ArrayList<>(faceUpCards);
     }
 
     /**

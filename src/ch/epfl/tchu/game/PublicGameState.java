@@ -75,7 +75,7 @@ public class PublicGameState {
 
     /**
      * Returns the identity of the current player
-     * @return the identity of the current player,
+     * @return the identity of the current player
      */
     public PlayerId currentPlayerId() {
         return currentPlayerId;

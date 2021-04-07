@@ -26,11 +26,18 @@ class GameStateTest {
             var allGameCardsB = new SortedBag.Builder<Card>();
             for (int slot : List.of(0, 1, 2, 3, 4))
                 allGameCardsB.add(gameState.cardState().faceUpCard(slot));
+
+
             for (var gs = gameState; !gs.cardState().isDeckEmpty(); gs = gs.withoutTopCard())
                 allGameCardsB.add(gs.topCard());
+
+
             allGameCardsB.add(gameState.playerState(PLAYER_1).cards());
             allGameCardsB.add(gameState.playerState(PLAYER_2).cards());
+
             var allGameCards = allGameCardsB.build();
+
+
 
             assertEquals(allCards, allGameCards);
             assertEquals(allTickets, gameState.topTickets(allTickets.size()));
@@ -207,6 +214,7 @@ class GameStateTest {
                     .withoutTopCard()
                     .withMoreDiscardedCards(SortedBag.of(topCard));
         }
+
         assertTrue(gameState.cardState().isDeckEmpty());
         assertEquals(INITIAL_CARD_DECK_SIZE, gameState.cardState().discardsSize());
 
@@ -295,6 +303,7 @@ class GameStateTest {
             var candidateTickets = new ArrayList<>(top3Tickets.toList());
             Collections.shuffle(candidateTickets, rng);
             var chosenTickets = SortedBag.of(candidateTickets.subList(0, chosenTicketsCount));
+
             gameState = gameState.withChosenAdditionalTickets(top3Tickets, chosenTickets);
 
             var expectedPlayerTickets = gameState.currentPlayerId() == PLAYER_1
@@ -303,6 +312,10 @@ class GameStateTest {
             expectedPlayerTickets = expectedPlayerTickets.union(chosenTickets);
             assertEquals(expectedPlayerTickets, gameState.currentPlayerState().tickets());
             assertEquals(drawableTickets.size() - 3, gameState.ticketsCount());
+
+        /* Corrected version of second assertEquals (since the amount of tickets chosen is in between 1 and 3, not always equal to 3)
+         assertEquals(drawableTickets.size() - chosenTicketsCount, gameState.ticketsCount());
+         */
         }
     }
 
@@ -353,7 +366,10 @@ class GameStateTest {
             var drawableCardsCount = INITIAL_CARD_DECK_SIZE - 4;
             for (int j = 0; j < drawableCardsCount; j++)
                 gameState = gameState.withBlindlyDrawnCard();
+
             var finalGameState = gameState;
+
+
             assertThrows(IllegalArgumentException.class, finalGameState::withBlindlyDrawnCard);
             var allCardsB = new SortedBag.Builder<Card>();
             for (var slot : List.of(0, 1, 2, 3, 4))
@@ -364,6 +380,7 @@ class GameStateTest {
             }
             allCardsB.add(finalGameState.playerState(PLAYER_1).cards());
             allCardsB.add(finalGameState.playerState(PLAYER_2).cards());
+
             assertEquals(allCards, allCardsB.build());
 
             playersToTest.remove(gameState.currentPlayerId());
