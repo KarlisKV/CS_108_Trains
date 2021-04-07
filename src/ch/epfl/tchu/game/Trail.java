@@ -116,7 +116,6 @@ public final class Trail {
         return longestTrail;
     }
 
-
     /**
      * Returns the length of the path
      * @return the length of the path
@@ -130,11 +129,11 @@ public final class Trail {
      * @return the first station of the path, or null if (and only if) the path is zero length
      */
     public Station station1() {
-        if (length == 0) {
-            return null;
-        } else {
-            return station1;
-        }
+
+        return length == 0?
+                null:
+                station1;
+
     }
 
     /**
@@ -143,11 +142,10 @@ public final class Trail {
      */
 
     public Station station2() {
-        if (length == 0) {
-            return null;
-        } else {
-            return station2;
-        }
+
+        return length == 0?
+                null:
+                station2;
     }
 
     /**
@@ -157,22 +155,22 @@ public final class Trail {
     @Override
     public String toString() {
 
-        String complete = station1.toString() + " - ";
+        StringBuilder complete = new StringBuilder(station1.toString() + " - ");
         Station station = station1;
 
         for (Route r : Routes) {
-            complete = complete + r.stationOpposite(station).toString();
+            complete.append(r.stationOpposite(station).toString());
             station = r.stationOpposite(station);
 
 
             if(!(Routes.indexOf(r) == (Routes.size() - 1))) {
-                complete = complete + " - ";
+                complete.append(" - ");
             }
         }
 
-        complete = complete + " (" + length + ")";
+        complete.append(" (").append(length).append(")");
 
-        return complete;
+        return complete.toString();
     }
 
 

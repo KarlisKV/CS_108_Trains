@@ -43,25 +43,6 @@ public final class StationPartition implements StationConnectivity {
     }
 
 
-    /*
-
-    * Method for testing whole StationPartition class
-
-    public static StationPartition fullConnectivity() {
-
-        Map<Integer, List<Integer>> fullMap = new HashMap<>();
-        fullMap.put(0, new ArrayList<>());
-
-        for(int i = 0; i < ChMap.stations().size(); ++i) {
-            fullMap.get(0).add(i);
-        }
-
-        return new StationPartition(fullMap);
-    }
-     */
-
-
-
     /**
      * Nested builder class for StationPartition
      */

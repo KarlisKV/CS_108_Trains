@@ -90,12 +90,11 @@ public final class Trip {
      * @return points or -points (int) gained/lost depending whether 2 Stations are connected
      */
     public int points(StationConnectivity connectivity){
-        if(connectivity.connected(from, to)) {
-            return points;
-        }
-        else {
-            return -points;
-        }
+
+        return connectivity.connected(from, to)?
+                points:
+                -points;
+
     }
 
 

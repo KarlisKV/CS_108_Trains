@@ -207,20 +207,4 @@ public final class Route {
     public Color color() {
         return color;
     }
-
-
-
-    //"Illegal method" for now, which is why it's commented out, but could be useful so not deleted
-
-
-
-    /*
-    @Override
-    public String toString() {
-        return "[Route] " + station1.name() + " - " + station2.name() + " (" + length + ")";
-    }
-     */
-
-
-
 }
