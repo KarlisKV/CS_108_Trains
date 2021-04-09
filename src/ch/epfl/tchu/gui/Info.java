@@ -133,7 +133,9 @@ public final class Info {
      * @return the message stating that the player has seized the given route using the given cards
      */
     public String claimedRoute(Route route, SortedBag<Card> cards) {
-        return String.format(StringsFr.CLAIMED_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(cards));
+        return cards.size() == 1 ?
+                String.format(StringsFr.CLAIMED_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardName(cards.get(0), 1)):
+                String.format(StringsFr.CLAIMED_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(cards));
     }
 
     /**
@@ -144,7 +146,9 @@ public final class Info {
      */
 
     public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards) {
-        return String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(initialCards));
+        return initialCards.size() == 1 ?
+                String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardName(initialCards.get(0), 1)):
+                String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(initialCards));
     }
 
 

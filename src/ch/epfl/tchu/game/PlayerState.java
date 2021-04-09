@@ -71,7 +71,7 @@ public final class PlayerState extends  PublicPlayerState {
 
     /**
      * returns an identical state to the receiver, except that the player also has the given cards,
-     * @param additionalCards (SortedBag<Card>) aditional cards that the player has
+     * @param additionalCards (SortedBag<Card>) additional cards that the player has
      * @return an identical state to the receiver, except that the player also has the given cards,
      */
     public PlayerState withAddedCards(SortedBag<Card> additionalCards) {
@@ -98,7 +98,19 @@ public final class PlayerState extends  PublicPlayerState {
             return cardsOfOneColour && this.carCount() >= route.length();
 
         } else {
-            return cards.contains(SortedBag.of(route.length(), Card.of(route.color()))) && this.carCount() >= route.length();
+
+            boolean contains = false;
+
+            for(int i = 0; i <= route.length(); ++i) {
+                if(cards.contains(SortedBag.of(route.length() - i, Card.of(route.color()), i, Card.LOCOMOTIVE))) {
+                    contains = true;
+                }
+                if(route.level().equals(Route.Level.OVERGROUND)) {
+                    i = route.length() + 1;
+                }
+            }
+
+            return contains && this.carCount() >= route.length();
         }
     }
 
@@ -116,8 +128,10 @@ public final class PlayerState extends  PublicPlayerState {
         List<SortedBag<Card>> playerPossibleClaimCards = new ArrayList<>();
 
         for(SortedBag<Card> sc : allPossibleClaimCards) {
-            if(cards.contains(sc) && !(sc.contains(Card.LOCOMOTIVE) && route.level().equals(Route.Level.OVERGROUND))) {
-                playerPossibleClaimCards.add(sc);
+            if(cards.contains(sc)) {
+                if(!(sc.contains(Card.LOCOMOTIVE) && route.level().equals(Route.Level.OVERGROUND))) {
+                    playerPossibleClaimCards.add(sc);
+                }
             }
         }
 

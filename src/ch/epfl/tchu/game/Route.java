@@ -207,4 +207,10 @@ public final class Route {
     public Color color() {
         return color;
     }
+
+    @Override
+    public String toString() {
+        return "[Route]: " + station1 + " - " + station2 + " (" + length + ", " +  color + ", " + level + ")";
+    }
+
 }

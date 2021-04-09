@@ -97,9 +97,9 @@ public interface Player {
 
         DRAW_TICKETS,
         DRAW_CARDS,
-        CLAIM_ROUTES;
+        CLAIM_ROUTE;
 
-        public static List<TurnKind> ALL = List.of(DRAW_TICKETS,DRAW_CARDS, CLAIM_ROUTES );
+        public static List<TurnKind> ALL = List.of(DRAW_TICKETS,DRAW_CARDS, CLAIM_ROUTE);
     }
 
 }

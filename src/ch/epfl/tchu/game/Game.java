@@ -4,9 +4,7 @@ import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.gui.Info;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public final class Game {
 
@@ -47,15 +45,20 @@ public final class Game {
 
 
 
-        //Midgame
+        //Midgame + last turn
+
+        boolean end = false;
 
         do{
 
             PlayerId currentPlayerId = game.currentPlayerId();
             Player currentPlayer = players.get(currentPlayerId);
 
+        //    System.out.println(playerNames.get(currentPlayerId) + ": " + game.currentPlayerState().cards());
+
             if(game.lastTurnBegins()) {
                 allPlayersReceiveInfo(players, info.get(currentPlayerId).lastTurnBegins(game.currentPlayerState().carCount()));
+                end = true;
             }
 
             allPlayersUpdateState(players, game, playerStates);
@@ -96,68 +99,75 @@ public final class Game {
 
 
 
-                case CLAIM_ROUTES:
+                case CLAIM_ROUTE:
 
                     Route routeToClaim = currentPlayer.claimedRoute();
 
-                    allPlayersUpdateState(players, game, playerStates);
+                    if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim)) {
 
-                    SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
-                    game = game.withCardsDeckRecreatedIfNeeded(rng);
+                        allPlayersUpdateState(players, game, playerStates);
 
-                    SortedBag<Card> additionalCards = SortedBag.of();
-                    boolean hasToAddMoreCards = false;
+                        SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
+                        game = game.withCardsDeckRecreatedIfNeeded(rng);
 
-                    if(routeToClaim.level().equals(Route.Level.UNDERGROUND)) {
+                        SortedBag<Card> additionalCards = SortedBag.of();
+                        boolean hasToAddMoreCards = false;
 
-                        allPlayersReceiveInfo(players, info.get(currentPlayerId).attemptsTunnelClaim(routeToClaim, initialClaimCards));
+                        if(routeToClaim.level().equals(Route.Level.UNDERGROUND)) {
 
-                        SortedBag<Card> topCards = SortedBag.of();
+                            allPlayersReceiveInfo(players, info.get(currentPlayerId).attemptsTunnelClaim(routeToClaim, initialClaimCards));
 
-                        if(game.cardState().deckSize() < 3) {
-                            while(!game.cardState().isDeckEmpty()){
+                            SortedBag<Card> topCards = SortedBag.of();
+
+                            if(game.cardState().deckSize() < 3) {
+                                while(!game.cardState().isDeckEmpty()){
+                                    //Just in case to avoid bugs, but shouldn't happen
+                                    game = game.withCardsDeckRecreatedIfNeeded(rng);
+                                    game = game.withMoreDiscardedCards(SortedBag.of(game.topCard()));
+                                }
+                                game = game.withCardsDeckRecreatedIfNeeded(rng);
+                                allPlayersUpdateState(players, game, playerStates);
+                            }
+
+
+                            for(int i = 0; i < Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
+
                                 //Just in case to avoid bugs, but shouldn't happen
                                 game = game.withCardsDeckRecreatedIfNeeded(rng);
-                                game = game.withMoreDiscardedCards(SortedBag.of(game.topCard()));
+
+                                topCards = topCards.union(SortedBag.of(game.topCard()));
+                                game = game.withoutTopCard();
                             }
-                            game = game.withCardsDeckRecreatedIfNeeded(rng);
+
+                            allPlayersUpdateState(players, game, playerStates);
+
+                            if(routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards) > 0) {
+                                additionalCards = currentPlayer.chooseAdditionalCards(game.currentPlayerState().possibleAdditionalCards(routeToClaim.
+                                        additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards, topCards));
+                                hasToAddMoreCards = true;
+                            }
+
+
+                            game = game.withMoreDiscardedCards(topCards);
+
+                        }
+
+                        allPlayersUpdateState(players, game, playerStates);
+
+                        if(hasToAddMoreCards && additionalCards.isEmpty()) {
+                            allPlayersReceiveInfo(players, info.get(currentPlayerId).didNotClaimRoute(routeToClaim));
+                        } else {
+                            game = game.withClaimedRoute(routeToClaim, initialClaimCards.union(additionalCards));
+                            allPlayersReceiveInfo(players, info.get(currentPlayerId).claimedRoute(routeToClaim, initialClaimCards.union(additionalCards)));
                             allPlayersUpdateState(players, game, playerStates);
                         }
 
-
-                        for(int i = 0; i < Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
-
-                            //Just in case to avoid bugs, but shouldn't happen
-                            game = game.withCardsDeckRecreatedIfNeeded(rng);
-
-                            topCards = topCards.union(SortedBag.of(game.topCard()));
-                            game = game.withoutTopCard();
-                        }
-
-                        allPlayersUpdateState(players, game, playerStates);
-
-                        if(routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards) > 0) {
-                            additionalCards = currentPlayer.chooseAdditionalCards(game.currentPlayerState().possibleAdditionalCards(routeToClaim.
-                                    additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards, topCards));
-                            hasToAddMoreCards = true;
-                        }
-
-
-                        game = game.withMoreDiscardedCards(topCards);
-
-                    }
-
-                    allPlayersUpdateState(players, game, playerStates);
-
-                    if(hasToAddMoreCards && additionalCards.isEmpty()) {
-                        allPlayersReceiveInfo(players, info.get(currentPlayerId).didNotClaimRoute(routeToClaim));
                     } else {
-                        game = game.withClaimedRoute(routeToClaim, initialClaimCards.union(additionalCards));
-                        allPlayersReceiveInfo(players, info.get(currentPlayerId).claimedRoute(routeToClaim, initialClaimCards.union(additionalCards)));
-                        allPlayersUpdateState(players, game, playerStates);
+                      //  System.out.println(playerNames.get(currentPlayerId) + " n'a pu s'emparer d'aucune route");
                     }
 
                     break;
+
 
 
 
@@ -180,9 +190,67 @@ public final class Game {
 
             game = game.forNextTurn();
 
-        } while(!game.lastTurnBegins());
+        } while(!end);
 
-        //TODO: Endgame
+        //End of game points and announcements
+
+        Map<PlayerId, Integer> finalPoints = new HashMap<>();
+        Map<PlayerId, Trail> longestTrail = new HashMap<>();
+        Trail longest = Trail.longest(List.of());
+        PlayerId longestTrailPlayerId = PlayerId.PLAYER_1;
+        boolean noBonus = false;
+
+        for(PlayerId p: PlayerId.ALL) {
+            Trail pTrail = Trail.longest(game.playerState(p).routes());
+            finalPoints.put(p, game.playerState(p).finalPoints());
+            longestTrail.put(p, pTrail);
+            if(longest.length() < longestTrail.get(p).length()) {
+                longest = longestTrail.get(p);
+                longestTrailPlayerId = p;
+            } else if(longest.length() == longestTrail.get(p).length() && !longest.equals(pTrail)) {
+                noBonus = true;
+            }
+        }
+
+        if (!noBonus) {
+
+            int pointsAfterLongestTrailBonus = finalPoints.get(longestTrailPlayerId) + Constants.LONGEST_TRAIL_BONUS_POINTS;
+            finalPoints.replace(longestTrailPlayerId, pointsAfterLongestTrailBonus);
+
+            allPlayersReceiveInfo(players, info.get(longestTrailPlayerId).getsLongestTrailBonus(longest));
+
+        } else {
+        //    allPlayersReceiveInfo(players, "Personne n'a reçu de bonus pour le plus long chemin.");
+        }
+
+        int maxPoints = 0;
+        int minPoints = finalPoints.get(PlayerId.PLAYER_1);
+        boolean draw = false;
+        PlayerId winningPlayerId = PlayerId.PLAYER_1;
+        List<String> names = new ArrayList<>();
+
+        for(PlayerId p: PlayerId.ALL) {
+            if(maxPoints < finalPoints.get(p)) {
+                maxPoints = finalPoints.get(p);
+                draw = false;
+                winningPlayerId = p;
+            } else if(maxPoints == finalPoints.get(p)) {
+                draw = true;
+            }
+
+            if(minPoints > finalPoints.get(p)) {
+                minPoints = finalPoints.get(p);
+            }
+
+            names.add(playerNames.get(p));
+        }
+
+        if(!draw) {
+            allPlayersReceiveInfo(players, info.get(winningPlayerId).won(maxPoints, minPoints));
+        } else {
+            allPlayersReceiveInfo(players, Info.draw(names, minPoints));
+        }
+
 
     }
 
