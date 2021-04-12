@@ -337,8 +337,10 @@ class GameTest {
         public void receiveInfo(String info) {
             registerCall(RECEIVE_INFO);
 
+            /*
             System.out.println(playerNames.get(ownId) + ": " + info);
             System.out.println();
+             */
 
             allInfos.addLast(info);
         }

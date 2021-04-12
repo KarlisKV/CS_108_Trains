@@ -9,7 +9,6 @@ import java.util.*;
 public final class Game {
 
 
-
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) {
 
         Preconditions.checkArgument(players.size() == PlayerId.COUNT && playerNames.size() == PlayerId.COUNT);
@@ -32,18 +31,14 @@ public final class Game {
 
         for(PlayerId p : PlayerId.ALL) {
 
-            for (PlayerId playerId : PlayerId.ALL) {
-                players.get(playerId).updateState(game, game.playerState(playerId));
-            }
+            allPlayersUpdateState(players, game);
 
             players.get(p).setInitialTicketChoice(game.topTickets(Constants.INITIAL_TICKETS_COUNT));
         }
 
         for(PlayerId p : PlayerId.ALL) {
 
-            for (PlayerId playerId : PlayerId.ALL) {
-                players.get(playerId).updateState(game, game.playerState(playerId));
-            }
+            allPlayersUpdateState(players, game);
 
             SortedBag<Ticket> keptTickets = players.get(p).chooseInitialTickets();
             game = game.withInitiallyChosenTickets(p, keptTickets);
@@ -60,6 +55,7 @@ public final class Game {
 
         do{
 
+
             PlayerId currentPlayerId = game.currentPlayerId();
             Player currentPlayer = players.get(currentPlayerId);
 
@@ -72,19 +68,20 @@ public final class Game {
                 end = true;
             }
 
-            for (PlayerId playerId : PlayerId.ALL) {
-                players.get(playerId).updateState(game, game.playerState(playerId));
-            }
+            allPlayersUpdateState(players, game);
+
+            //TODO (fix): Routes are multiplying after nextTurn() (WHY THE FUCK BRO)
 
             Player.TurnKind action = currentPlayer.nextTurn();
 
-            for (PlayerId playerId : PlayerId.ALL) {
-                players.get(playerId).updateState(game, game.playerState(playerId));
-            }
+            allPlayersUpdateState(players, game);
 
             switch(action) {
 
                 case DRAW_CARDS:
+
+                    System.out.println("Beginning of draw phase, carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes: " + game.playerState(currentPlayerId).routes());
+
 
                     for(int i = 0; i < 2; ++i) {
 
@@ -104,10 +101,12 @@ public final class Game {
 
                         }
 
-                        for (PlayerId playerId : PlayerId.ALL) {
-                            players.get(playerId).updateState(game, game.playerState(playerId));
-                        }
+                        allPlayersUpdateState(players, game);
+
+
                     }
+
+                    System.out.println("End of draw phase, carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes: " + game.playerState(currentPlayerId).routes());
 
                     break;
 
@@ -115,24 +114,22 @@ public final class Game {
 
                 case CLAIM_ROUTE:
 
+                    System.out.println("Beginning of route claim phase, carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes: " + game.playerState(currentPlayerId).routes());
+
                     Route routeToClaim = currentPlayer.claimedRoute();
 
                     boolean routeIsClaimable = true;
 
-                    for(PlayerId p : PlayerId.ALL) {
-                        for(Route r : game.playerState(p).routes()){
-                            if(r.stations().equals(routeToClaim.stations())) {
-                                routeIsClaimable = false;
-                                break;
-                            }
+                    for(Route r : game.claimedRoutes()){
+                        if(r.stations().equals(routeToClaim.stations())) {
+                            routeIsClaimable = false;
+                            break;
                         }
                     }
 
                     if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim) && routeIsClaimable) {
 
-                        for (PlayerId playerId : PlayerId.ALL) {
-                            players.get(playerId).updateState(game, game.playerState(playerId));
-                        }
+                        allPlayersUpdateState(players, game);
 
                         SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
                         game = game.withCardsDeckRecreatedIfNeeded(rng);
@@ -153,10 +150,8 @@ public final class Game {
                                     game = game.withMoreDiscardedCards(SortedBag.of(game.topCard()));
                                 }
                                 game = game.withCardsDeckRecreatedIfNeeded(rng);
+                                allPlayersUpdateState(players, game);
 
-                                for (PlayerId playerId : PlayerId.ALL) {
-                                    players.get(playerId).updateState(game, game.playerState(playerId));
-                                }
                             }
 
 
@@ -169,10 +164,7 @@ public final class Game {
                                 game = game.withoutTopCard();
                             }
 
-                            for (PlayerId playerId : PlayerId.ALL) {
-                                players.get(playerId).updateState(game, game.playerState(playerId));
-                            }
-
+                            allPlayersUpdateState(players, game);
 
                             if(routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards) > 0) {
 
@@ -189,24 +181,21 @@ public final class Game {
 
                         }
 
-                        for (PlayerId playerId : PlayerId.ALL) {
-                            players.get(playerId).updateState(game, game.playerState(playerId));
-                        }
-
+                        allPlayersUpdateState(players, game);
 
                         if(hasToAddMoreCards && additionalCards.isEmpty()) {
                             allPlayersReceiveInfo(players, info.get(currentPlayerId).didNotClaimRoute(routeToClaim));
                         } else {
                             game = game.withClaimedRoute(routeToClaim, initialClaimCards.union(additionalCards));
                             allPlayersReceiveInfo(players, info.get(currentPlayerId).claimedRoute(routeToClaim, initialClaimCards.union(additionalCards)));
+                            allPlayersUpdateState(players, game);
 
-                            for (PlayerId playerId : PlayerId.ALL) {
-                                players.get(playerId).updateState(game, game.playerState(playerId));
-                            }
 
                         }
 
                     }
+
+                    System.out.println("End of route claim phase, carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes: " + game.playerState(currentPlayerId).routes());
 
                     break;
 
@@ -215,10 +204,15 @@ public final class Game {
 
                 case DRAW_TICKETS:
 
+                    System.out.println("Beginning of ticket draw phase, carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes: " + game.playerState(currentPlayerId).routes());
+
                     SortedBag<Ticket> keptTickets = currentPlayer.chooseTickets(game.topTickets(Constants.IN_GAME_TICKETS_COUNT));
+
                     game = game.withChosenAdditionalTickets(game.topTickets(Constants.IN_GAME_TICKETS_COUNT), keptTickets);
 
                     allPlayersReceiveInfo(players, info.get(currentPlayerId).keptTickets(keptTickets.size()));
+
+                    System.out.println("End of ticket draw phase, carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes: " + game.playerState(currentPlayerId).routes());
 
                     break;
 
@@ -228,14 +222,13 @@ public final class Game {
                     throw new IllegalArgumentException();
             }
 
-            for (PlayerId playerId : PlayerId.ALL) {
-                players.get(playerId).updateState(game, game.playerState(playerId));
-            }
+            allPlayersUpdateState(players, game);
 
 
             if(!end){
                 game = game.forNextTurn();
             }
+
 
             System.out.println("End of turn: " + turn + " | " + playerNames.get(currentPlayerId) + " | carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes " + game.playerState(currentPlayerId).routes());
             System.out.println();
@@ -302,6 +295,7 @@ public final class Game {
         }
 
 
+
     }
 
 
@@ -312,6 +306,12 @@ public final class Game {
     private static void allPlayersReceiveInfo(Map<PlayerId, Player> players, String info) {
         for(PlayerId p : PlayerId.ALL) {
             players.get(p).receiveInfo(info);
+        }
+    }
+
+    private static void allPlayersUpdateState(Map<PlayerId, Player> players, GameState newState) {
+        for (PlayerId playerId : PlayerId.ALL) {
+            players.get(playerId).updateState(newState, newState.playerState(playerId));
         }
     }
 

@@ -84,42 +84,9 @@ public final class PlayerState extends  PublicPlayerState {
      * @return true iff the player can seize the given route
      */
     public boolean canClaimRoute(Route route) {
-/*
-        if(route.color() == null) {
-
-            boolean cardsOfOneColour = false;
-
-            for(Color c : Color.ALL) {
-                if(cards.contains(SortedBag.of(route.length(), Card.of(c)))) {
-                    cardsOfOneColour = true;
-                }
-            }
-
-            return cardsOfOneColour && this.carCount() >= route.length();
-
-        } else {
-
-            boolean contains = false;
-
-            for(int i = 0; i <= route.length(); ++i) {
-                if(cards.contains(SortedBag.of(route.length() - i, Card.of(route.color()), i, Card.LOCOMOTIVE))) {
-                    contains = true;
-                }
-                if(route.level().equals(Route.Level.OVERGROUND)) {
-                    break;
-                }
-            }
-
-            return contains && this.carCount() >= route.length();
-        }
-
-
-     */
-
         return carCount() >= route.length() ?
                 !this.possibleClaimCards(route).isEmpty() :
                 false;
-
     }
 
 
