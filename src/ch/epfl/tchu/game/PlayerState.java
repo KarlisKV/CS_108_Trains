@@ -84,7 +84,7 @@ public final class PlayerState extends  PublicPlayerState {
      * @return true iff the player can seize the given route
      */
     public boolean canClaimRoute(Route route) {
-
+/*
         if(route.color() == null) {
 
             boolean cardsOfOneColour = false;
@@ -106,14 +106,21 @@ public final class PlayerState extends  PublicPlayerState {
                     contains = true;
                 }
                 if(route.level().equals(Route.Level.OVERGROUND)) {
-                    i = route.length() + 1;
+                    break;
                 }
             }
 
             return contains && this.carCount() >= route.length();
         }
-    }
 
+
+     */
+
+        return carCount() >= route.length() ?
+                !this.possibleClaimCards(route).isEmpty() :
+                false;
+
+    }
 
 
     /**

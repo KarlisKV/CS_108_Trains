@@ -210,7 +210,7 @@ public final class Route {
 
     @Override
     public String toString() {
-        return "[Route]: " + station1 + " - " + station2 + " (" + length + ", " +  color + ", " + level + ")";
+        return "[R] " + station1 + " - " + station2 + " (" + length + ", " +  color + ", " + level + ")";
     }
 
 }

@@ -26,18 +26,25 @@ public final class Game {
         //Beginning of game
 
         GameState game = GameState.initial(tickets, rng);
-        Map<PlayerId, PlayerState> playerStates = new HashMap<>();
 
         allPlayersReceiveInfo(players, info.get(game.currentPlayerId()).willPlayFirst());
 
+
         for(PlayerId p : PlayerId.ALL) {
-            playerStates.put(p, game.playerState(p));
-            allPlayersUpdateState(players, game, playerStates);
+
+            for (PlayerId playerId : PlayerId.ALL) {
+                players.get(playerId).updateState(game, game.playerState(playerId));
+            }
+
             players.get(p).setInitialTicketChoice(game.topTickets(Constants.INITIAL_TICKETS_COUNT));
         }
 
         for(PlayerId p : PlayerId.ALL) {
-            allPlayersUpdateState(players, game, playerStates);
+
+            for (PlayerId playerId : PlayerId.ALL) {
+                players.get(playerId).updateState(game, game.playerState(playerId));
+            }
+
             SortedBag<Ticket> keptTickets = players.get(p).chooseInitialTickets();
             game = game.withInitiallyChosenTickets(p, keptTickets);
             allPlayersReceiveInfo(players, info.get(p).keptTickets(keptTickets.size()));
@@ -56,20 +63,24 @@ public final class Game {
             PlayerId currentPlayerId = game.currentPlayerId();
             Player currentPlayer = players.get(currentPlayerId);
 
-        //    System.out.println(playerNames.get(currentPlayerId) + ": " + game.currentPlayerState().cards());
+            ++turn;
+            System.out.println("Beginning of turn: " + turn + " | " + playerNames.get(currentPlayerId) + " | carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes: " + game.playerState(currentPlayerId).routes());
+
 
             if(game.lastTurnBegins()) {
                 allPlayersReceiveInfo(players, info.get(currentPlayerId).lastTurnBegins(game.currentPlayerState().carCount()));
                 end = true;
             }
 
-            allPlayersUpdateState(players, game, playerStates);
+            for (PlayerId playerId : PlayerId.ALL) {
+                players.get(playerId).updateState(game, game.playerState(playerId));
+            }
 
             Player.TurnKind action = currentPlayer.nextTurn();
 
-            allPlayersUpdateState(players, game, playerStates);
-
-
+            for (PlayerId playerId : PlayerId.ALL) {
+                players.get(playerId).updateState(game, game.playerState(playerId));
+            }
 
             switch(action) {
 
@@ -93,8 +104,9 @@ public final class Game {
 
                         }
 
-                        allPlayersUpdateState(players, game, playerStates);
-
+                        for (PlayerId playerId : PlayerId.ALL) {
+                            players.get(playerId).updateState(game, game.playerState(playerId));
+                        }
                     }
 
                     break;
@@ -105,17 +117,22 @@ public final class Game {
 
                     Route routeToClaim = currentPlayer.claimedRoute();
 
-                    boolean routeNotOwned = true;
+                    boolean routeIsClaimable = true;
 
                     for(PlayerId p : PlayerId.ALL) {
-                        if(game.playerState(p).routes().contains(routeToClaim)) {
-                            routeNotOwned = false;
+                        for(Route r : game.playerState(p).routes()){
+                            if(r.stations().equals(routeToClaim.stations())) {
+                                routeIsClaimable = false;
+                                break;
+                            }
                         }
                     }
 
-                    if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim) && routeNotOwned) {
+                    if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim) && routeIsClaimable) {
 
-                        allPlayersUpdateState(players, game, playerStates);
+                        for (PlayerId playerId : PlayerId.ALL) {
+                            players.get(playerId).updateState(game, game.playerState(playerId));
+                        }
 
                         SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
                         game = game.withCardsDeckRecreatedIfNeeded(rng);
@@ -136,7 +153,10 @@ public final class Game {
                                     game = game.withMoreDiscardedCards(SortedBag.of(game.topCard()));
                                 }
                                 game = game.withCardsDeckRecreatedIfNeeded(rng);
-                                allPlayersUpdateState(players, game, playerStates);
+
+                                for (PlayerId playerId : PlayerId.ALL) {
+                                    players.get(playerId).updateState(game, game.playerState(playerId));
+                                }
                             }
 
 
@@ -149,11 +169,18 @@ public final class Game {
                                 game = game.withoutTopCard();
                             }
 
-                            allPlayersUpdateState(players, game, playerStates);
+                            for (PlayerId playerId : PlayerId.ALL) {
+                                players.get(playerId).updateState(game, game.playerState(playerId));
+                            }
+
 
                             if(routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards) > 0) {
-                                additionalCards = currentPlayer.chooseAdditionalCards(game.currentPlayerState().possibleAdditionalCards(routeToClaim.
-                                        additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards, topCards));
+
+                                if((game.currentPlayerState().possibleAdditionalCards(routeToClaim.
+                                        additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards, topCards)).size() > 0) {
+                                    additionalCards = currentPlayer.chooseAdditionalCards(game.currentPlayerState().possibleAdditionalCards(routeToClaim.
+                                            additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards, topCards));
+                                }
                                 hasToAddMoreCards = true;
                             }
 
@@ -162,18 +189,23 @@ public final class Game {
 
                         }
 
-                        allPlayersUpdateState(players, game, playerStates);
+                        for (PlayerId playerId : PlayerId.ALL) {
+                            players.get(playerId).updateState(game, game.playerState(playerId));
+                        }
+
 
                         if(hasToAddMoreCards && additionalCards.isEmpty()) {
                             allPlayersReceiveInfo(players, info.get(currentPlayerId).didNotClaimRoute(routeToClaim));
                         } else {
                             game = game.withClaimedRoute(routeToClaim, initialClaimCards.union(additionalCards));
                             allPlayersReceiveInfo(players, info.get(currentPlayerId).claimedRoute(routeToClaim, initialClaimCards.union(additionalCards)));
-                            allPlayersUpdateState(players, game, playerStates);
+
+                            for (PlayerId playerId : PlayerId.ALL) {
+                                players.get(playerId).updateState(game, game.playerState(playerId));
+                            }
+
                         }
 
-                    } else {
-                      //  System.out.println(playerNames.get(currentPlayerId) + " n'a pu s'emparer d'aucune route");
                     }
 
                     break;
@@ -196,14 +228,17 @@ public final class Game {
                     throw new IllegalArgumentException();
             }
 
-            allPlayersUpdateState(players, game, playerStates);
+            for (PlayerId playerId : PlayerId.ALL) {
+                players.get(playerId).updateState(game, game.playerState(playerId));
+            }
+
 
             if(!end){
                 game = game.forNextTurn();
             }
 
-            ++turn;
-            System.out.println("turn: " + turn + " | " + playerNames.get(currentPlayerId) + " | " + game.playerState(currentPlayerId).routes());
+            System.out.println("End of turn: " + turn + " | " + playerNames.get(currentPlayerId) + " | carCount: " + game.playerState(currentPlayerId).carCount() + " | cards: " + game.playerState(currentPlayerId).cards() + " | routes " + game.playerState(currentPlayerId).routes());
+            System.out.println();
 
         } while(!end);
 
@@ -280,10 +315,5 @@ public final class Game {
         }
     }
 
-    private static void allPlayersUpdateState(Map<PlayerId, Player> players, PublicGameState newGameState, Map<PlayerId, PlayerState> newPlayerStates) {
-        for(PlayerId p : PlayerId.ALL) {
-            players.get(p).updateState(newGameState, newPlayerStates.get(p));
-        }
-    }
 
 }

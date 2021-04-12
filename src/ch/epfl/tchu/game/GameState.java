@@ -147,7 +147,6 @@ public final class GameState extends PublicGameState {
             deckFromDiscards = cardState.withDeckRecreatedFromDiscards(rng);
         }
 
-        // how to write using ? : operator instead of if else?
         return cardState.isDeckEmpty() ?
                 new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, deckFromDiscards) :
                 new GameState(currentPlayerId(), playerState, lastPlayer(), tickets, cardState);

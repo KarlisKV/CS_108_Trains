@@ -134,7 +134,7 @@ public final class Info {
      */
     public String claimedRoute(Route route, SortedBag<Card> cards) {
         return cards.size() == 1 ?
-                String.format(StringsFr.CLAIMED_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardName(cards.get(0), 1)):
+                String.format(StringsFr.CLAIMED_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), "1 " + cardName(cards.get(0), 1)):
                 String.format(StringsFr.CLAIMED_ROUTE, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(cards));
     }
 
@@ -147,7 +147,7 @@ public final class Info {
 
     public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards) {
         return initialCards.size() == 1 ?
-                String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardName(initialCards.get(0), 1)):
+                String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), "1 " + cardName(initialCards.get(0), 1)):
                 String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, playerName, route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2(), cardNames(initialCards));
     }
 
@@ -220,44 +220,66 @@ public final class Info {
     private String cardNames(SortedBag<Card> cards) {
         Preconditions.checkArgument(cards != null);
 
-        Map<Card, Integer> cardTypes = cards.toMap();
+        if(cards.toMap().size() < 2) {
 
-        HashMap<Color, Integer> cardCount = new HashMap<>();
-        StringBuilder cardNameBuilder = new StringBuilder();
+            return cards.size() + " " + cardName(cards.get(0), cards.size());
 
-        for(Card clr : Card.ALL) {
+        } else {
 
-            cardCount.put(clr.color(), 0);
+            HashMap<Color, Integer> cardCountMap = new HashMap<>();
 
-            for(Card c : cards) {
-                if(c.equals(clr)) {
-                    cardCount.put(clr.color(), (cardCount.get(clr.color()) + 1));
-                }
-            }
+            for(Card clr : Card.ALL) {
 
-            //These booleans work because cards is a SortedBag
-            boolean notFirstCard = !cards.get(0).equals(clr);
-            boolean beforeLastCard = cards.get(cards.size() - 2).equals(clr);
-            boolean notLastCard = !cards.get(cards.size() - 1).equals(clr);
+                cardCountMap.put(clr.color(), 0);
 
-            if(beforeLastCard && cardTypes.size() > 1) {
-                cardNameBuilder.append(StringsFr.AND_SEPARATOR);
-            }
+                for (Card c : cards) {
+                    if (c.equals(clr)) {
+                        cardCountMap.put(clr.color(), (cardCountMap.get(clr.color()) + 1));
 
-            if(cardCount.get(clr.color()) > 0) {
-
-                if(notFirstCard && notLastCard && !beforeLastCard) {
-                    cardNameBuilder.append(", ");
+                    }
                 }
 
-                cardNameBuilder.append(cardCount.get(clr.color()));
-                cardNameBuilder.append(" ");
-                cardNameBuilder.append(cardName(clr, cardCount.get(clr.color())));
-
             }
+
+            StringBuilder cardNames = new StringBuilder();
+
+
+            boolean notFirstAddedCard = false;
+            boolean addAndSeparator = false;
+
+            int cardsNamed = 0;
+
+            for(Card clr : Card.ALL) {
+
+
+                if(cardsNamed == cards.toMap().size() - 1 && cardCountMap.get(clr.color()) > 0) {
+                    cardNames.append(StringsFr.AND_SEPARATOR);
+                    addAndSeparator = true;
+                }
+
+                if(cardCountMap.get(clr.color()) > 0) {
+
+
+                    if(notFirstAddedCard && !addAndSeparator) {
+                        cardNames.append(", ");
+                    }
+
+                    cardNames.append(cardCountMap.get(clr.color()));
+                    cardNames.append(" ");
+                    cardNames.append(cardName(clr, cardCountMap.get(clr.color())));
+
+                    ++cardsNamed;
+                    notFirstAddedCard = true;
+                    addAndSeparator = false;
+
+                    }
+
+                }
+
+
+            return cardNames.toString();
         }
 
-        return cardNameBuilder.toString();
     }
 
 }
