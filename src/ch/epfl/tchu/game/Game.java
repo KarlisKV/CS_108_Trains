@@ -49,6 +49,8 @@ public final class Game {
 
         boolean end = false;
 
+        int turn = 0;
+
         do{
 
             PlayerId currentPlayerId = game.currentPlayerId();
@@ -103,7 +105,15 @@ public final class Game {
 
                     Route routeToClaim = currentPlayer.claimedRoute();
 
-                    if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim)) {
+                    boolean routeNotOwned = true;
+
+                    for(PlayerId p : PlayerId.ALL) {
+                        if(game.playerState(p).routes().contains(routeToClaim)) {
+                            routeNotOwned = false;
+                        }
+                    }
+
+                    if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim) && routeNotOwned) {
 
                         allPlayersUpdateState(players, game, playerStates);
 
@@ -188,7 +198,12 @@ public final class Game {
 
             allPlayersUpdateState(players, game, playerStates);
 
-            game = game.forNextTurn();
+            if(!end){
+                game = game.forNextTurn();
+            }
+
+            ++turn;
+            System.out.println("turn: " + turn + " | " + playerNames.get(currentPlayerId) + " | " + game.playerState(currentPlayerId).routes());
 
         } while(!end);
 
