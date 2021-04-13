@@ -267,4 +267,5 @@ public final class GameState extends PublicGameState {
                 new GameState(currentPlayerId().next(), playerState, lastPlayer(), tickets, cardState);
 
     }
+
 }

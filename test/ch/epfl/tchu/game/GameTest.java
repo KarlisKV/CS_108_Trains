@@ -335,6 +335,10 @@ class GameTest {
 
         @Override
         public void receiveInfo(String info) {
+
+            System.out.println();
+            System.out.println(playerNames.get(ownId) + ": " + info);
+
             registerCall(RECEIVE_INFO);
 
             /*
