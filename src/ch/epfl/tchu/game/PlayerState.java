@@ -84,9 +84,7 @@ public final class PlayerState extends  PublicPlayerState {
      * @return true iff the player can seize the given route
      */
     public boolean canClaimRoute(Route route) {
-        return carCount() >= route.length() ?
-                !this.possibleClaimCards(route).isEmpty() :
-                false;
+        return carCount() >= route.length() && !this.possibleClaimCards(route).isEmpty();
     }
 
 

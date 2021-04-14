@@ -91,19 +91,12 @@ public final class Deck < C extends Comparable <C >>{
     public SortedBag<C> topCards(int count) {
 
         Preconditions.checkArgument(count >= 0 && count <= cards.size());
-
         List<C> cardsAtTop = new ArrayList<>(cards.subList(0, count));
-
-        //Which is the first card? The last one in the cards List<> or the first one?
-
-    //    List<C> cardsAtTop = cards.subList(cards.size() - count, cards.size());
-
-
         SortedBag.Builder<C> cardsToReturn = new SortedBag.Builder<>();
+
         for(int i = 0; i < count; ++i) {
             cardsToReturn.add(cardsAtTop.get(i));
         }
-
 
         return cardsToReturn.build();
 

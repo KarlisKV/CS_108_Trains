@@ -241,9 +241,6 @@ public final class GameState extends PublicGameState {
     }
 
 
-
-
-
     /**
      * Returns true if the current player has less or equal than 2 cars left
      * @return true if the current player has less or equal than 2 cars left
