@@ -7,8 +7,7 @@ import java.util.*;
 
 
 /**
- * Game class
- *
+ * Game class summarizes all of the classes and combines them into one method 'play'
  * @author Daniel Polka (326800)
  * @author Karlis Velins (325180)
  */
@@ -21,6 +20,8 @@ public final class Game {
      * @param playerNames HashMap mapping a player's PlayerId to the player's name
      * @param tickets SortedBag containing the Tickets used for the game
      * @param rng Random used for the game
+     * @throws IllegalArgumentException if given amount of players are not equal to the default setting and also the length of the player
+     * names are equal to the set player count
      */
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) {
 

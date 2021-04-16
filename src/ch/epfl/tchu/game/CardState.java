@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * CardState class
+ * CardState class responsible for the different combinations of cards
+ * needed for the game
  * @author Daniel Polka  (326800)
  */
 
@@ -37,6 +38,7 @@ public class CardState extends PublicCardState {
      * Method returns a state in which the 5 cards placed face up are the first 5 of the given pile,
      * the draw pile consists of the remaining cards of the pile, and the discard pile is empty
      * @param deck (Deck<Card>) the deck
+     * @throws IllegalArgumentException if deckSize is smaller than the face up card count
      * @return returns the CardState explained above
      */
     public static CardState of(Deck<Card> deck) {
@@ -56,6 +58,8 @@ public class CardState extends PublicCardState {
      * been replaced by the one at the top of the draw pile, which is removed at the same time
      * @param slot (int) index of the face-up card
      * @return a set with the removed face-up card slot
+     * @throws IllegalArgumentException if deck is empty
+     * @throws  IndexOutOfBoundsException if FACE_UP_CARDS_COUNT is not
      */
     public CardState withDrawnFaceUpCard(int slot) {
         Preconditions.checkArgument(!deck.isEmpty());
@@ -72,6 +76,7 @@ public class CardState extends PublicCardState {
     /**
      * turns over the card at the top of the draw pile
      * @return the card at the top of the draw pile
+     * @throws IllegalArgumentException if the deck is empty
      */
     public Card topDeckCard() {
         Preconditions.checkArgument(!deck.isEmpty());
@@ -82,6 +87,7 @@ public class CardState extends PublicCardState {
     /**
      * returns a set of cards identical to the receiver ( this), but without the card at the top of the deck
      * @return set of cards identical to the receiver ( this), but without the card at the top of the deck
+     * @throws IllegalArgumentException if the deck is empty
      */
     public CardState withoutTopDeckCard() {
         Preconditions.checkArgument(!deck.isEmpty());
@@ -93,6 +99,7 @@ public class CardState extends PublicCardState {
      * from the discard pile have been shuffled by means of the given random generator
      * @param rng (Random) randomizer for shuffling the cards
      * @return a shuffled set of identical cards to the receiver ( this)
+     * @throws IllegalArgumentException if the deck is empty
      */
     public CardState withDeckRecreatedFromDiscards(Random rng) {
         Preconditions.checkArgument(deck.isEmpty());

@@ -6,7 +6,7 @@ import ch.epfl.tchu.SortedBag;
 import java.util.*;
 
 /**
- * Route class
+ * GameState class responsible for the private part of each players game extends PublicGameState
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */
@@ -83,6 +83,7 @@ public final class GameState extends PublicGameState {
      *  returns the count tickets from the top of the pile
      * @param count (int) amount of tickets to give back
      * @return SortedBag of tickets
+     * @throws IllegalArgumentException if the count is negative or larger than the total amount of tickets
      */
     public SortedBag<Ticket> topTickets(int count) {
 
@@ -95,6 +96,7 @@ public final class GameState extends PublicGameState {
      * returns an identical state to the receiver, but without the count tickets from the top of the pile
      * @param count (int) amount of cards to remove from the top
      * @return an identical state to the receiver, but without the count tickets from the top of the pile
+     * @throws IllegalArgumentException if the count is negative or larger than the total amount of tickets
      */
     public GameState withoutTopTickets(int count) {
 
@@ -107,14 +109,12 @@ public final class GameState extends PublicGameState {
      * Returns the top card of the draw pile
      * @return the top card of the draw pile
      */
-    public Card topCard() {
-
-        return cardState.topDeckCard();
-    }
+    public Card topCard() { return cardState.topDeckCard(); }
 
     /**
      * returns an identical state to the receiver but without the card at the top of the draw pile
      * @return an identical state to the receiver but without the card at the top of the draw pile
+     * @throws IllegalArgumentException if the deck is empty
      */
     public GameState withoutTopCard() {
 
@@ -160,6 +160,7 @@ public final class GameState extends PublicGameState {
      * @param playerId ID of the player
      * @param chosenTickets tickets to add to player playerId
      * @return an identical state except that player playerId now has chosenTickets
+     * @throws IllegalArgumentException if the players tickets are empty
      */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
 
@@ -178,6 +179,7 @@ public final class GameState extends PublicGameState {
      * @param drawnTickets the tickets drawn by the current player
      * @param chosenTickets the tickets the player chose to keep
      * @return an identical state to the receiver, except that the current player has the additional tickets chosenTickets
+     * @throws IllegalArgumentException if the drawn tickets contain the chosenTickets
      */
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
 
@@ -193,6 +195,7 @@ public final class GameState extends PublicGameState {
      * the selected face up card
      * @param slot the number of the card that the player chose in the face up cards
      * @return an identical state to the receiver, except that the current player has drawn the face up card at slot
+     * @throws IllegalArgumentException if the player can't draw any cards
      */
     public GameState withDrawnFaceUpCard(int slot) {
 
@@ -211,6 +214,7 @@ public final class GameState extends PublicGameState {
     /**
      * returns an identical state to the receiver, except that the current player has drawn a card from the top of the deck
      * @return an identical state to the receiver, except that the current player has drawn a card from the top of the deck
+     * @throws IllegalArgumentException if the player can't draw any cards
      */
     public GameState withBlindlyDrawnCard() {
 

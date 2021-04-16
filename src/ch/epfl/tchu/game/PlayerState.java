@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * PlayerState class represents the private part of each player's state, extends publicPlayerState
+ * @author Daniel Polka (326800)
+ * @author Karlis Velins (325180)
+ */
 public final class PlayerState extends  PublicPlayerState {
 
 
@@ -29,6 +34,7 @@ public final class PlayerState extends  PublicPlayerState {
      * in this initial state, the player does not yet have any tickets, and has not taken any road
      * @param initialCards (SortedBag<Card>) initial 4 cards the player has
      * @return the initial state of a player to whom the given initial cards were dealt
+     * @throws IllegalArgumentException if the given initialCards count doesn't correspond to the preset amount
      */
     public static PlayerState initial(SortedBag<Card> initialCards) {
         Preconditions.checkArgument(initialCards.size() == Constants.INITIAL_CARDS_COUNT);
@@ -39,9 +45,7 @@ public final class PlayerState extends  PublicPlayerState {
      * Returns the players tickets
      * @return the players tickets
      */
-    public SortedBag<Ticket> tickets() {
-        return tickets;
-    }
+    public SortedBag<Ticket> tickets() { return tickets; }
 
     /**
      * returns an identical state to the receiver, except that the player also has the given tickets,
@@ -56,9 +60,7 @@ public final class PlayerState extends  PublicPlayerState {
      * Returns the player's wagon / locomotive cards
      * @return the player's wagon / locomotive cards
      */
-    public SortedBag<Card> cards() {
-        return cards;
-    }
+    public SortedBag<Card> cards() { return cards; }
 
     /**
      * returns an identical state to the receiver, except that the player also has the given card
@@ -92,6 +94,7 @@ public final class PlayerState extends  PublicPlayerState {
      * returns the list of all the sets of cards the player could use to take possession of the given route
      * @param route (Route) given route
      * @return the list of all the sets of cards the player could use to take possession of the given route
+     * @throws IllegalArgumentException if the player doesn't have enough cars to grab the road
      */
     public List<SortedBag<Card>> possibleClaimCards(Route route) {
         Preconditions.checkArgument(this.carCount() >= route.length());
@@ -117,6 +120,8 @@ public final class PlayerState extends  PublicPlayerState {
      * @param initialCards (SortedBag<Card>) initially placed cards
      * @param drawnCards (SortedBag<Card>) 3 drawn cards from the top puke
      * @return the list of all sets of cards that the player could use to seize a tunnel
+     * @throws IllegalArgumentException if the number of additional cards is not between 1 and 3 (inclusive), if the set of initial cards is
+     * empty or contains more than 2 different types of cards, or if the set of cards drawn does not contain exactly 3 cards
      */
     public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards) {
 

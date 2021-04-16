@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * PublicCardState class
+ * PublicCardState class represents the public part of the cardsState
  * @author Daniel Polka  (326800)
  */
 
 public class PublicCardState {
-
 
     private final List<Card> faceUpCards;
     private final int deckSize;
@@ -23,6 +22,7 @@ public class PublicCardState {
      * @param faceUpCards (List<Card>) list of faceUpCards
      * @param deckSize (int) size of deck
      * @param discardsSize (int) discard pile
+     * @throws IllegalArgumentException if the deckSize or discardSize is negative and if the given faceUpCard size doesn't equal the preset
      */
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) {
         Preconditions.checkArgument(deckSize >= 0 && discardsSize >= 0 && faceUpCards.size() == Constants.FACE_UP_CARDS_COUNT);
@@ -67,6 +67,7 @@ public class PublicCardState {
      * turns the card face up at the given index
      * @param slot (int) index of card to turn over
      * @return the card face up at the given index
+     * @throws IndexOutOfBoundsException if the index is not between 0 included and 5 excluded
      */
     public Card faceUpCard(int slot) {
         Objects.checkIndex(slot, Constants.FACE_UP_CARDS_COUNT);
@@ -80,6 +81,4 @@ public class PublicCardState {
     public int totalSize() {
         return deckSize + discardsSize + faceUpCards.size();
     }
-
-
 }

@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * PublicPlayerState class
- *
+ * PublicPlayerState class represents the public part of the playerState
  * @author Karlis Velins (325180)
  */
 public class PublicPlayerState {
@@ -24,6 +23,7 @@ public class PublicPlayerState {
      * @param ticketCount (int) number of tickets
      * @param cardCount (int) number of cards
      * @param routes (List<Route>) list of routes
+     * @throws IllegalArgumentException if ticketCount or cardCount is negative
      */
     public PublicPlayerState(int ticketCount, int cardCount, List<Route> routes) {
 

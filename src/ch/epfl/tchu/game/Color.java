@@ -2,8 +2,7 @@ package ch.epfl.tchu.game;
 import java.util.List;
 
 /**
- * Color enum
- *
+ * Color enum represents the different colors used in the game
  * @author Karlis Velins (325180)
  */
 public enum  Color {

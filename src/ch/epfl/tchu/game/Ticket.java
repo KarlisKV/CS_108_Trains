@@ -6,7 +6,7 @@ import ch.epfl.tchu.Preconditions;
 import java.util.*;
 
 /**
- * Tickets
+ * Tickets represents the tickets used in the game
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */
@@ -19,6 +19,7 @@ public final class Ticket implements Comparable<Ticket> {
     /**
      * Primary constructor for Ticket class
      * @param trips (List<Trip>) list of trips in the Ticket
+     * @throws IllegalArgumentException if the list of trips are empty or if the departure station names are the same
      */
     public Ticket(List<Trip> trips) {
 
@@ -41,11 +42,7 @@ public final class Ticket implements Comparable<Ticket> {
      * @param to (Station) arrival station
      * @param points (int) points for connecting stations
      */
-    public Ticket(Station from, Station to, int points) {
-
-        this(List.of(new Trip(from, to, points)));
-
-    }
+    public Ticket(Station from, Station to, int points) { this(List.of(new Trip(from, to, points))); }
 
     /**
      * computeText sets up the strings of the names of the departures-arrivals with
@@ -107,10 +104,7 @@ public final class Ticket implements Comparable<Ticket> {
      * and zero if the two are equal
      */
     @Override
-    public int compareTo(Ticket that) {
-
-        return this.text().compareTo(that.text());
-    }
+    public int compareTo(Ticket that) { return this.text().compareTo(that.text()); }
 
     /**
      * Returns the text created from the computeText method

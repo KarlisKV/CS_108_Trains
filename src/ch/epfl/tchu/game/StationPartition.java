@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * StationPartition and Builder
- *
+ * StationPartition and Builder helps to build/connect the stations and see if stations are connected
  * @author Daniel Polka  (326800)
  */
 
@@ -42,7 +41,6 @@ public final class StationPartition implements StationConnectivity {
         }
     }
 
-
     /**
      * Nested builder class for StationPartition
      */
@@ -55,6 +53,7 @@ public final class StationPartition implements StationConnectivity {
         /**
          * Public constructor for Builder class
          * @param stationCount (int) number of stations
+         * @throws IllegalArgumentException if the identification number is strictly negative
          */
         public Builder(int stationCount) {
             Preconditions.checkArgument(stationCount >= 0);
@@ -155,11 +154,7 @@ public final class StationPartition implements StationConnectivity {
 
             return b;
         }
-
-
-
     }
-
 
     /**
      * Private representative method for the builder
@@ -182,8 +177,4 @@ public final class StationPartition implements StationConnectivity {
 
         return ID;
     }
-
-
-
-
 }

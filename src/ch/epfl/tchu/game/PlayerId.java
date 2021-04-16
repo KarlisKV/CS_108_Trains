@@ -1,11 +1,9 @@
 package ch.epfl.tchu.game;
-
 import java.util.List;
 
-
 /**
- * PlayerId enum
- *
+ * PlayerId enum sets how many players are in the game and has a
+ * method that says which player goes next
  * @author Karlis Velins (325180)
  */
 public enum PlayerId {

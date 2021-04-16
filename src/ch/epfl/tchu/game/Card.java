@@ -3,8 +3,7 @@ package ch.epfl.tchu.game;
 import java.util.List;
 
 /**
- * Card enum
- *
+ * Card enum represents the cards used in the game
  * @author Karlis Velins (325180)
  */
 public enum Card {

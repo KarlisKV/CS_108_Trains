@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Trail class
+ * Trail class represents a path in a player's network
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */

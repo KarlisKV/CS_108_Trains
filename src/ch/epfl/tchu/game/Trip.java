@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Trips
- *
+ * Trip class represents the trips in the game
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */
@@ -23,6 +22,8 @@ public final class Trip {
      * @param from (Station) Departure station
      * @param to (Station) Arrival station
      * @param points (int) points for connecting the 2 stations
+     * @throws NullPointerException if one of the two stations is zero and
+     * IllegalArgumentException if the number of points is not strictly positive
      */
     public Trip(Station from, Station to, int points) {
 
@@ -38,6 +39,7 @@ public final class Trip {
      * @param from (Station) Departure station
      * @param to (Station) Arrival station
      * @param points (int) points for connecting the 2 stations
+     * @throws IllegalArgumentException if one of the lists is empty, or if the number of points is not strictly positive
      * @return possibleTrips List<Trip> returns list of all possible trips between 2 stations
      */
     public static List<Trip> all(List<Station> from, List<Station> to, int points) {
@@ -96,7 +98,4 @@ public final class Trip {
                 -points;
 
     }
-
-
-
 }

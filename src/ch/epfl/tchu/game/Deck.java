@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Deck class
+ * Deck class represents all of the possible decks of cards
+ * used during the game
  * @author Karlis Velins (325180)
  */
 
@@ -27,7 +28,6 @@ public final class Deck < C extends Comparable <C >>{
     public static <C extends Comparable<C>> Deck<C> of(SortedBag<C> cards, Random rng) {
 
         List<C> shuffledCards = cards.toList();
-
         Collections.shuffle(shuffledCards, rng);
 
         return new Deck<>(shuffledCards);
@@ -37,11 +37,7 @@ public final class Deck < C extends Comparable <C >>{
      * Private constructor of Deck class
      * @param cards (List<C>) list of cards
      */
-    public Deck(List<C> cards) {
-
-        this.cards = cards;
-
-    }
+    public Deck(List<C> cards) { this.cards = cards; }
 
     /**
      * Returns the size of the deck
@@ -55,14 +51,12 @@ public final class Deck < C extends Comparable <C >>{
      * Returns true if the deck is empty
      * @return true if the deck is empty
      */
-    public boolean isEmpty() {
-
-        return cards.isEmpty();
-    }
+    public boolean isEmpty() { return cards.isEmpty(); }
 
     /**
      * returns a multiset containing the card at the top of the pile
      * @return a multiset containing the card at the top of the pile
+     * @throws IllegalArgumentException if the deck is empty
      */
     public C topCard() {
         Preconditions.checkArgument(!isEmpty());
@@ -72,6 +66,7 @@ public final class Deck < C extends Comparable <C >>{
     /**
      * withoutTopCard returns deck without top card
      * @return Deck<C> without top card
+     * @throws IllegalArgumentException if the deck is empty
      */
     public Deck<C> withoutTopCard() {
         Preconditions.checkArgument(!isEmpty());
@@ -87,6 +82,7 @@ public final class Deck < C extends Comparable <C >>{
      * topCards returns a multiset containing the top (count) cards from a deck
      * @param count (int) amount of cards to return
      * @return count amount of cards from the top of the deck
+     * @throws IllegalArgumentException if the count is negative or larger than the total number of cards
      */
     public SortedBag<C> topCards(int count) {
 
@@ -106,6 +102,7 @@ public final class Deck < C extends Comparable <C >>{
      * Returns a deck without the top cards
      * @param count (int) amount of cards to remove from new deck
      * @return a deck without the top cards
+     * @throws IllegalArgumentException if the count is negative or larger than the total number of cards
      */
 
     public Deck<C> withoutTopCards(int count) {

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * PublicGameState class
+ * PublicGameState class represents the public part of the gameState
  * @author Karlis Velins (325180)
  */
 
@@ -26,6 +26,8 @@ public class PublicGameState {
      * @param currentPlayerId (PlayerId) id of the current player (either PLAYER_1 or PLAYER_2
      * @param playerState (Map<PlayerId, PublicPlayerState>) state of player
      * @param lastPlayer (PlayerId) id of player who played last, can be null
+     * @throws IllegalArgumentException if ticketsCount is negative or playerState size doesn't equal the preset
+     * @throws NullPointerException if cardState or currentPlayerId is null
      */
     public PublicGameState(int ticketsCount, PublicCardState cardState, PlayerId currentPlayerId, Map<PlayerId, PublicPlayerState> playerState, PlayerId lastPlayer) {
 
@@ -45,9 +47,7 @@ public class PublicGameState {
      * Returns the ticket count
      * @return the ticket count
      */
-    public int ticketsCount() {
-        return ticketsCount;
-    }
+    public int ticketsCount() { return ticketsCount; }
 
     /**
      * Returns true iff it is possible to draw tickets, i.e. if the draw pile is not empty,
@@ -117,5 +117,4 @@ public class PublicGameState {
     public PlayerId lastPlayer() {
         return lastPlayer;
     }
-
 }

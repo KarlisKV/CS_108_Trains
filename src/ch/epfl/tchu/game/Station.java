@@ -3,8 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 
 /**
- * Station
- *
+ * Station represents the stations that the game has
  * @author Daniel Polka  (326800)
  */
 public final class Station {

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Route class
+ * Route class represents the routes used for the game
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */
@@ -37,6 +37,9 @@ public final class Route {
      * @param length (int) length of the route
      * @param level (Level) whether the route is underground or not
      * @param color (Color) of the route
+     * @throws IllegalArgumentException if the two stations are equal (in the sense of the method equals)
+     * or if the length is not within the acceptable limits (provided by the interface Constants),
+     * @throws NullPointerException if the identity, one of the two stations or the level are zero.
      */
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) {
         Preconditions.checkArgument(!station1.equals(station2) &&
@@ -66,6 +69,7 @@ public final class Route {
      * Given one of the 2 stations, returns the opposite station of the selected
      * @param station (Station) given station
      * @return the opposite station of the selected
+     * @throws IllegalArgumentException if the given station is neither the first nor the second station of the route
      */
     public Station stationOpposite(Station station) {
         Preconditions.checkArgument(station.equals(station1) || station.equals(station2));
@@ -133,6 +137,7 @@ public final class Route {
      * @param claimCards (SortedBag<Card>) list of played cards to claim the route
      * @param drawnCards (SortedBag<Card>) list of cards to draw after playing
      * @return number of drawn cards that correspond to the played cards
+     * @throws IllegalArgumentException if the road to which it is applied is not a tunnel, or if drawnCardsdoes not contain exactly 3 maps
      */
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
 
