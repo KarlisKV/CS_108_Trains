@@ -3,15 +3,30 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.gui.Info;
-
 import java.util.*;
 
+
+/**
+ * Game class
+ *
+ * @author Daniel Polka (326800)
+ * @author Karlis Velins (325180)
+ */
 public final class Game {
 
 
+    /**
+     * The method where all the magic happens. This method calls all other methods in order for the players to actually play the game
+     * @param players  HashMap mapping a player's PlayerId to Player
+     * @param playerNames HashMap mapping a player's PlayerId to the player's name
+     * @param tickets SortedBag containing the Tickets used for the game
+     * @param rng Random used for the game
+     */
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) {
 
         Preconditions.checkArgument(players.size() == PlayerId.COUNT && playerNames.size() == PlayerId.COUNT);
+
+        //Initialising players and info map
 
         Map<PlayerId, Info> info = new HashMap<>();
 
@@ -19,8 +34,6 @@ public final class Game {
             players.get(p).initPlayers(p, playerNames);
             info.put(p, new Info(playerNames.get(p)));
         }
-
-
 
         //Beginning of game
 
@@ -48,7 +61,7 @@ public final class Game {
 
 
 
-        //Midgame + 2 last turns
+        //Mid-game and 2 last turns
 
         boolean end = false;
         boolean lastTurnsBegin = false;
@@ -70,8 +83,6 @@ public final class Game {
             allPlayersReceiveInfo(players, info.get(currentPlayerId).canPlay());
 
             allPlayersUpdateState(players, game);
-
-            //TODO (added temporary fix in allPlayersUpdateState): Routes are multiplying after nextTurn (WHY THE FUCK BRO)
 
             Player.TurnKind action = currentPlayer.nextTurn();
 
@@ -306,17 +317,28 @@ public final class Game {
 
 
 
+    /**
+     * Method which is called whenever there is information to announce, and announces it to
+     * both players at once to avoid code duplication
+     * @param players  HashMap mapping a player's PlayerId to Player
+     * @param info the String of information each player is going to receive
+     */
     private static void allPlayersReceiveInfo(Map<PlayerId, Player> players, String info) {
         for(PlayerId p : PlayerId.ALL) {
             players.get(p).receiveInfo(info);
         }
     }
 
+    /**
+     * Method which is called whenever the status of the game has changed to update both player's state
+     * at the same time and avoid code duplication
+     * @param players  HashMap mapping a player's PlayerId to Player
+     * @param newState the new public GameState
+     */
     private static void allPlayersUpdateState(Map<PlayerId, Player> players, GameState newState) {
 
-        //TODO: Find another (not temporary/shitty) way to fix stupid arse bug
-        for(Route fakeRoute : newState.playerState(newState.currentPlayerId().next()).routes()) {
-            newState.playerState(newState.currentPlayerId()).routes().remove(fakeRoute);
+        for(Route r : newState.playerState(newState.currentPlayerId().next()).routes()) {
+            newState.playerState(newState.currentPlayerId()).routes().remove(r);
         }
 
         for (PlayerId playerId : PlayerId.ALL) {

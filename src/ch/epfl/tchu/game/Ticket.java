@@ -68,13 +68,12 @@ public final class Ticket implements Comparable<Ticket> {
         if(trips.size() > 1) {
             tempText += "{" + tempString + "}";
 
-            return tempText;
         }
         else {
             tempText += tempString;
-            return tempText;
         }
 
+        return tempText;
     }
 
 
