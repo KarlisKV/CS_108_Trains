@@ -10,6 +10,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class PublicCardStateTest {
     private static final List<Card> FACE_UP_CARDS =
             List.of(Card.BLUE, Card.BLACK, Card.ORANGE, Card.ORANGE, Card.RED);
