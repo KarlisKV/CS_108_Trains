@@ -1,4 +1,9 @@
 package ch.epfl.tchu.net;
+
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -16,8 +21,6 @@ import ch.epfl.tchu.game.Ticket;
 import ch.epfl.tchu.game.Player.TurnKind;
 import ch.epfl.test.TestRandomizer;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SerdeTest {
 
     private static final String alphabet = "abcdefghijklmnopqrstuvwxyz";
