@@ -34,7 +34,7 @@ public class Serdes {
     public static final Serde<SortedBag<Ticket>> TICKET_SORTED_BAG_SERDE = Serde.bagOf(TICKET_SERDE, ',');
     public static final Serde<List<SortedBag<Card>>> LIST_SORTED_BAG_CARD_SERDE = Serde.listOf(CARD_SORTED_BAG_SERDE, ';');
 
-    public static final Serde<PublicCardState> PUBLIC_CARD_STATE_SERDE = Serde.of(cardState -> String.format("%s; %s; %s",
+    public static final Serde<PublicCardState> PUBLIC_CARD_STATE_SERDE = Serde.of(cardState -> String.format("%s;%s;%s",
             CARD_LIST_SERDE.serialize(cardState.faceUpCards()),
             INTEGER_SERDE.serialize(cardState.deckSize()),
             INTEGER_SERDE.serialize(cardState.discardsSize())),
@@ -46,7 +46,7 @@ public class Serdes {
             }));
 
 
-    public static final Serde<PublicPlayerState> PUBLIC_PLAYER_STATE_SERDE = Serde.of(publicPlayerState -> String.format("%s; %s; %s",
+    public static final Serde<PublicPlayerState> PUBLIC_PLAYER_STATE_SERDE = Serde.of(publicPlayerState -> String.format("%s;%s;%s",
             INTEGER_SERDE.serialize(publicPlayerState.ticketCount()),
             INTEGER_SERDE.serialize(publicPlayerState.cardCount()),
             ROUTE_LIST_SERDE.serialize(publicPlayerState.routes())),
@@ -57,7 +57,7 @@ public class Serdes {
                         INTEGER_SERDE.deserialize(tempString[1]), ROUTE_LIST_SERDE.deserialize(tempString[2]));
             }));
 
-    public static final Serde<PlayerState> PLAYER_STATE_SERDE = Serde.of(playerState -> String.format("%s; %s; %s",
+    public static final Serde<PlayerState> PLAYER_STATE_SERDE = Serde.of(playerState -> String.format("%s;%s;%s",
             TICKET_SORTED_BAG_SERDE.serialize(playerState.tickets()),
             CARD_SORTED_BAG_SERDE.serialize(playerState.cards()),
             ROUTE_LIST_SERDE.serialize(playerState.routes())),
@@ -68,10 +68,33 @@ public class Serdes {
                         CARD_SORTED_BAG_SERDE.deserialize(tempString[1]), ROUTE_LIST_SERDE.deserialize(tempString[2]));
             }));
 
+    public static final Serde<PublicGameState> PUBLIC_GAME_STATE_SERDE = Serde.of(
+            publicGameState -> {
+                String lastPlayer = (publicGameState.lastPlayer() == null) ? " " : PLAYER_ID_SERDE.serialize(publicGameState.lastPlayer());
 
+                return String.format("%s:%s:%s:%s:%s:%s",
+                        INTEGER_SERDE.serialize(publicGameState.ticketsCount()),
+                        PUBLIC_CARD_STATE_SERDE.serialize(publicGameState.cardState()),
+                        PLAYER_ID_SERDE.serialize(publicGameState.currentPlayerId()),
+                        PUBLIC_PLAYER_STATE_SERDE.serialize(publicGameState.playerState(PlayerId.PLAYER_1)),
+                        PUBLIC_PLAYER_STATE_SERDE.serialize(publicGameState.playerState(PlayerId.PLAYER_2)),
+                        lastPlayer);
+                },
+            (string -> {
+                String [] tempString = string.split(Pattern.quote(":"), -1);
+                Map<PlayerId, PublicPlayerState> playerStateMap = new EnumMap<>(PlayerId.class);
+                playerStateMap.put(PlayerId.PLAYER_1, PUBLIC_PLAYER_STATE_SERDE.deserialize(tempString[3]));
+                playerStateMap.put(PlayerId.PLAYER_2, PUBLIC_PLAYER_STATE_SERDE.deserialize(tempString[4]));
+                PlayerId lastPlayer = (tempString[5].equals(" ")) ? null : PLAYER_ID_SERDE.deserialize(tempString[5]);
 
+                return new PublicGameState(
+                        INTEGER_SERDE.deserialize(tempString[0]),
+                        PUBLIC_CARD_STATE_SERDE.deserialize(tempString[1]),
+                        PLAYER_ID_SERDE.deserialize(tempString[2]),
+                        playerStateMap, lastPlayer
+                );
 
-
+            }));
 }
 
 
