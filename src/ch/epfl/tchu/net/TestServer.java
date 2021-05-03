@@ -1,7 +1,10 @@
 package ch.epfl.tchu.net;
 
+import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Player;
 import ch.epfl.tchu.game.PlayerId;
+import ch.epfl.tchu.game.Station;
+import ch.epfl.tchu.game.Ticket;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -20,7 +23,7 @@ public final class TestServer {
             Player playerProxy = new RemotePlayerProxy(socket);
             var playerNames = Map.of(PLAYER_1, "Ada",
                     PLAYER_2, "Charles");
-            System.out.println(playerProxy.chooseInitialTickets());
+            System.out.println(playerProxy.chooseTickets(SortedBag.of(new Ticket(new Station(1, "gay"), new Station(2, "nigger"), 420))));
         }
         System.out.println("Server done!");
     }

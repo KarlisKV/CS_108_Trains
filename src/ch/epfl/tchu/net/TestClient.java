@@ -58,27 +58,27 @@ public final class TestClient {
 
         @Override
         public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-            return null;
+            return options;
         }
 
         @Override
         public int drawSlot() {
-            return 0;
+            return 3;
         }
 
         @Override
         public Route claimedRoute() {
-            return null;
+            return ChMap.routes().get(3);
         }
 
         @Override
         public SortedBag<Card> initialClaimCards() {
-            return null;
+            return SortedBag.of(2, Card.BLUE, 1, Card.LOCOMOTIVE);
         }
 
         @Override
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-            return null;
+            return options.get(0);
         }
     }
 }
