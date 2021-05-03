@@ -14,9 +14,27 @@ public class RemotePlayerProxy implements Player {
 
     private static final String sep = " ";
     private final Socket socket;
+    private final BufferedWriter writer;
+    private final BufferedReader reader;
 
     public RemotePlayerProxy(Socket socket) {
         this.socket = socket;
+
+        try {
+
+            reader = new BufferedReader(
+                            new InputStreamReader(socket.getInputStream(),
+                                    US_ASCII));
+
+            writer = new BufferedWriter(
+                            new OutputStreamWriter(socket.getOutputStream(),
+                                    US_ASCII));
+
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+
     }
 
     @Override
@@ -126,14 +144,17 @@ public class RemotePlayerProxy implements Player {
         return Serdes.CARD_SORTED_BAG_SERDE.deserialize(additCards);
     }
 
+
+
+
+
+
     private void send(String serialised) {
-        try (BufferedWriter w =
-                     new BufferedWriter(
-                             new OutputStreamWriter(socket.getOutputStream(),
-                                     US_ASCII))) {
-            w.write(serialised);
-            w.write('\n');
-            w.flush();
+        try  {
+
+            writer.write(serialised);
+            writer.write('\n');
+            writer.flush();
 
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -142,14 +163,10 @@ public class RemotePlayerProxy implements Player {
 
     private String receive() {
 
-        try (
-             BufferedReader r =
-                     new BufferedReader(
-                             new InputStreamReader(socket.getInputStream(),
-                                     US_ASCII));) {
+        try{
 
-                                        String serialised = r.readLine();
-                                        return serialised;
+             String serialised = reader.readLine();
+             return serialised;
 
         } catch (IOException e) {
             throw new UncheckedIOException(e);

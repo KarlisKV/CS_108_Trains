@@ -20,7 +20,7 @@ public final class TestServer {
             Player playerProxy = new RemotePlayerProxy(socket);
             var playerNames = Map.of(PLAYER_1, "Ada",
                     PLAYER_2, "Charles");
-            playerProxy.receiveInfo("PLAYER_1, playerNames");
+            System.out.println(playerProxy.chooseInitialTickets());
         }
         System.out.println("Server done!");
     }

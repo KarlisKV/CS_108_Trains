@@ -48,7 +48,7 @@ public final class TestClient {
 
         @Override
         public SortedBag<Ticket> chooseInitialTickets() {
-            return null;
+            return SortedBag.of(1, ChMap.tickets().get(0), 1, ChMap.tickets().get(1));
         }
 
         @Override

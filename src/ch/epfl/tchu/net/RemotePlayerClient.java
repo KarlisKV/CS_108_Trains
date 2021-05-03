@@ -4,13 +4,9 @@ import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
@@ -77,37 +73,68 @@ public class RemotePlayerClient {
 
                         case "UPDATE_STATE":
 
+                            PublicGameState newState = Serdes.PUBLIC_GAME_STATE_SERDE.deserialize(typeAndArgs[1]);
+                            PlayerState newPlayerState = Serdes.PLAYER_STATE_SERDE.deserialize(typeAndArgs[2]);
+
+                            player.updateState(newState, newPlayerState);
+
                             break;
 
                         case "SET_INITIAL_TICKETS":
+
+                            SortedBag<Ticket> tickets = Serdes.TICKET_SORTED_BAG_SERDE.deserialize(typeAndArgs[1]);
+                            player.setInitialTicketChoice(tickets);
 
                             break;
 
                         case "CHOOSE_INITIAL_TICKETS":
 
+                            SortedBag<Ticket> chosenTickets = player.chooseInitialTickets();
+                            send(Serdes.TICKET_SORTED_BAG_SERDE.serialize(chosenTickets));
+
                             break;
 
                         case "NEXT_TURN":
+
+                            Player.TurnKind turnKind = player.nextTurn();
+                            send(Serdes.TURN_KIND_SERDE.serialize(turnKind));
 
                             break;
 
                         case "CHOOSE_TICKETS":
 
+                            SortedBag<Ticket> options = Serdes.TICKET_SORTED_BAG_SERDE.deserialize(typeAndArgs[1]);
+                            SortedBag<Ticket> keptTickets = player.chooseTickets(options);
+                            send(Serdes.TICKET_SORTED_BAG_SERDE.serialize(keptTickets));
+
                             break;
 
                         case "DRAW_SLOT":
+
+                            int drawSlot = player.drawSlot();
+                            send(Serdes.INTEGER_SERDE.serialize(drawSlot));
 
                             break;
 
                         case "ROUTE":
 
+                            Route claimedRoute = player.claimedRoute();
+                            send(Serdes.ROUTE_SERDE.serialize(claimedRoute));
+
                             break;
 
                         case "CARDS":
 
+                            SortedBag<Card> initCC = player.initialClaimCards();
+                            send(Serdes.CARD_SORTED_BAG_SERDE.serialize(initCC));
+
                             break;
 
                         case "CHOOSE_ADDITIONAL_CARDS":
+
+                            List<SortedBag<Card>> possibleAdditCards = Serdes.LIST_SORTED_BAG_CARD_SERDE.deserialize(typeAndArgs[1]);
+                            SortedBag<Card> additCards = player.chooseAdditionalCards(possibleAdditCards);
+                            send(Serdes.CARD_SORTED_BAG_SERDE.serialize(additCards));
 
                             break;
 
