@@ -21,7 +21,7 @@ public final class TestClient {
         System.out.println("Client done!");
     }
 
-    public final static class TestPlayer implements Player {
+    private final static class TestPlayer implements Player {
         @Override
         public void initPlayers(PlayerId ownId,
                                 Map<PlayerId, String> names) {
@@ -31,6 +31,8 @@ public final class TestClient {
 
         @Override
         public void receiveInfo(String info) {
+
+            System.out.println(info);
 
         }
 
@@ -78,7 +80,5 @@ public final class TestClient {
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
             return null;
         }
-
-        // … autres méthodes de Player
     }
 }

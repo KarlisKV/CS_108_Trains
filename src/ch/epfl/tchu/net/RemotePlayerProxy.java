@@ -142,15 +142,13 @@ public class RemotePlayerProxy implements Player {
 
     private String receive() {
 
-        String serialised;
-
         try (
              BufferedReader r =
                      new BufferedReader(
                              new InputStreamReader(socket.getInputStream(),
                                      US_ASCII));) {
 
-                                        serialised = r.readLine();
+                                        String serialised = r.readLine();
                                         return serialised;
 
         } catch (IOException e) {

@@ -8,6 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
+import static ch.epfl.tchu.game.PlayerId.PLAYER_1;
+import static ch.epfl.tchu.game.PlayerId.PLAYER_2;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 public final class TestServer {
@@ -16,9 +18,9 @@ public final class TestServer {
         try (ServerSocket serverSocket = new ServerSocket(5108);
              Socket socket = serverSocket.accept()) {
             Player playerProxy = new RemotePlayerProxy(socket);
-            var playerNames = Map.of(PlayerId.PLAYER_1, "Ada",
-                    PlayerId.PLAYER_2, "Charles");
-            playerProxy.initPlayers(PlayerId.PLAYER_1, playerNames);
+            var playerNames = Map.of(PLAYER_1, "Ada",
+                    PLAYER_2, "Charles");
+            playerProxy.receiveInfo("PLAYER_1, playerNames");
         }
         System.out.println("Server done!");
     }
