@@ -14,7 +14,7 @@ import java.util.Random;
  * @author Karlis Velins (325180)
  */
 
-public final class Deck < C extends Comparable <C >>{
+public final class Deck < C extends Comparable <C>>{
 
     private final List<C> cards;
 

@@ -38,6 +38,8 @@ public final class Game {
 
         //Beginning of game
 
+        // TODO: 02.05.21 start server?
+
         GameState game = GameState.initial(tickets, rng);
 
         allPlayersReceiveInfo(players, info.get(game.currentPlayerId()).willPlayFirst());

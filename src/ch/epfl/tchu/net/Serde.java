@@ -29,7 +29,7 @@ public interface Serde<T> {
     }
 
     static <T> Serde<T> oneOf(List<T> all) {
-        Function<T,String> serialize = s  -> Integer.toString(all.indexOf(s));
+        Function<T,String> serialize = s -> Integer.toString(all.indexOf(s));
         Function<String, T> deserialize = d -> all.get(Integer.parseInt(d));
         return Serde.of(serialize, deserialize);
     }

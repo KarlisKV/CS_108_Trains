@@ -53,6 +53,8 @@ public class SerdeTest {
     private static final Serde<SortedBag<Card>> cardBagSerde = Serde.bagOf(cardSerde, ',');
     private static final Serde<SortedBag<Ticket>> ticketBagSerde = Serde.bagOf(ticketSerde, ',');
 
+
+
     @Test
     void ofWorks() {
         for(int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
@@ -170,4 +172,6 @@ public class SerdeTest {
             assertEquals(deserializedTicketBag, ticketBagSerde.deserialize(serializedTicketBag));
         }
     }
+
+
 }
