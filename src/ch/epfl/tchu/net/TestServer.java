@@ -23,7 +23,7 @@ public final class TestServer {
             Player playerProxy = new RemotePlayerProxy(socket);
             var playerNames = Map.of(PLAYER_1, "Ada",
                     PLAYER_2, "Charles");
-            System.out.println(playerProxy.chooseTickets(SortedBag.of(new Ticket(new Station(1, "gay"), new Station(2, "nigger"), 420))));
+            System.out.println(playerProxy.chooseTickets(SortedBag.of(new Ticket(new Station(1, "bruh"), new Station(2, "bruh2"), 420))));
         }
         System.out.println("Server done!");
     }
