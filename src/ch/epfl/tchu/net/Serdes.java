@@ -70,7 +70,7 @@ public class Serdes {
 
     public static final Serde<PublicGameState> PUBLIC_GAME_STATE_SERDE = Serde.of(
             publicGameState -> {
-                String lastPlayer = (publicGameState.lastPlayer() == null) ? " " : PLAYER_ID_SERDE.serialize(publicGameState.lastPlayer());
+                String lastPlayer = PLAYER_ID_SERDE.serialize(publicGameState.lastPlayer());
 
                 return String.format("%s:%s:%s:%s:%s:%s",
                         INTEGER_SERDE.serialize(publicGameState.ticketsCount()),
@@ -85,7 +85,7 @@ public class Serdes {
                 Map<PlayerId, PublicPlayerState> playerStateMap = new EnumMap<>(PlayerId.class);
                 playerStateMap.put(PlayerId.PLAYER_1, PUBLIC_PLAYER_STATE_SERDE.deserialize(tempString[3]));
                 playerStateMap.put(PlayerId.PLAYER_2, PUBLIC_PLAYER_STATE_SERDE.deserialize(tempString[4]));
-                PlayerId lastPlayer = (tempString[5].equals(" ")) ? null : PLAYER_ID_SERDE.deserialize(tempString[5]);
+                PlayerId lastPlayer = PLAYER_ID_SERDE.deserialize(tempString[5]);
 
                 return new PublicGameState(
                         INTEGER_SERDE.deserialize(tempString[0]),
