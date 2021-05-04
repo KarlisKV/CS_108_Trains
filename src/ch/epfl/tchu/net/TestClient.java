@@ -3,12 +3,9 @@ package ch.epfl.tchu.net;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 
-import java.io.*;
-import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
 
 public final class TestClient {
     public static void main(String[] args) {
@@ -38,11 +35,13 @@ public final class TestClient {
 
         @Override
         public void updateState(PublicGameState newState, PlayerState ownState) {
+            System.out.println(newState + " / " + ownState);
 
         }
 
         @Override
         public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
+            System.out.println(tickets);
 
         }
 
@@ -53,7 +52,7 @@ public final class TestClient {
 
         @Override
         public TurnKind nextTurn() {
-            return null;
+            return TurnKind.DRAW_CARDS;
         }
 
         @Override
@@ -63,7 +62,7 @@ public final class TestClient {
 
         @Override
         public int drawSlot() {
-            return 3;
+            return 420;
         }
 
         @Override
@@ -73,7 +72,7 @@ public final class TestClient {
 
         @Override
         public SortedBag<Card> initialClaimCards() {
-            return SortedBag.of(2, Card.BLUE, 1, Card.LOCOMOTIVE);
+            return SortedBag.of(2, Card.BLUE, 500, Card.LOCOMOTIVE);
         }
 
         @Override

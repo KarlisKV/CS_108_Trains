@@ -1,19 +1,13 @@
 package ch.epfl.tchu.net;
 
 import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.Player;
-import ch.epfl.tchu.game.PlayerId;
-import ch.epfl.tchu.game.Station;
-import ch.epfl.tchu.game.Ticket;
+import ch.epfl.tchu.game.*;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
+import java.util.Random;
 
-import static ch.epfl.tchu.game.PlayerId.PLAYER_1;
-import static ch.epfl.tchu.game.PlayerId.PLAYER_2;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 
 public final class TestServer {
     public static void main(String[] args) throws IOException {
@@ -21,9 +15,20 @@ public final class TestServer {
         try (ServerSocket serverSocket = new ServerSocket(5108);
              Socket socket = serverSocket.accept()) {
             Player playerProxy = new RemotePlayerProxy(socket);
-            var playerNames = Map.of(PLAYER_1, "Ada",
-                    PLAYER_2, "Charles");
-            System.out.println(playerProxy.chooseTickets(SortedBag.of(new Ticket(new Station(1, "bruh"), new Station(2, "bruh2"), 420))));
+
+            PlayerState playerState = PlayerState.initial(SortedBag.of(4, Card.BLUE));
+
+            playerState = playerState.withAddedCard(Card.RED);
+            playerState = playerState.withAddedCards(SortedBag.of(2,Card.RED));
+            playerState = playerState.withClaimedRoute(ChMap.routes().get(2), SortedBag.of(3, Card.RED));
+
+            GameState state = GameState.initial(SortedBag.of(ChMap.tickets()), new Random());
+            state = state.withBlindlyDrawnCard();
+            state = state.withDrawnFaceUpCard(2);
+            state = state.withBlindlyDrawnCard();
+            state = state.withClaimedRoute(ChMap.routes().get(2),SortedBag.of(3, Card.RED));
+
+            playerProxy.updateState(state, playerState);
         }
         System.out.println("Server done!");
     }

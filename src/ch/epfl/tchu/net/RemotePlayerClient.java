@@ -46,101 +46,106 @@ public class RemotePlayerClient {
 
                 String received = reader.readLine();
 
-                if(received.length() > 0) {
+                if(received != null) {
 
-                    String[] typeAndArgs = received.split(" ");
-                    String type = typeAndArgs[0];
+                    if(received.length() > 0) {
 
-                    switch (type) {
+                        String[] typeAndArgs = received.split(" ");
+                        String type = typeAndArgs[0];
 
-                        case "INIT_PLAYERS":
+                        switch (type) {
 
-                            PlayerId ownId = Serdes.PLAYER_ID_SERDE.deserialize(typeAndArgs[1]);
-                            String[] serNames = typeAndArgs[2].split(",");
+                            case "INIT_PLAYERS":
 
-                            Map<PlayerId, String> playerNames = Map.of(PlayerId.PLAYER_1, Serdes.STRING_SERDE.deserialize(serNames[0]),
-                                    PlayerId.PLAYER_2, Serdes.STRING_SERDE.deserialize(serNames[1]));
+                                PlayerId ownId = Serdes.PLAYER_ID_SERDE.deserialize(typeAndArgs[1]);
+                                String[] serNames = typeAndArgs[2].split(",");
 
-                            player.initPlayers(ownId, playerNames);
+                                Map<PlayerId, String> playerNames = Map.of(PlayerId.PLAYER_1, Serdes.STRING_SERDE.deserialize(serNames[0]),
+                                        PlayerId.PLAYER_2, Serdes.STRING_SERDE.deserialize(serNames[1]));
 
-                            break;
+                                player.initPlayers(ownId, playerNames);
 
-                        case "RECEIVE_INFO":
+                                break;
 
-                            player.receiveInfo(Serdes.STRING_SERDE.deserialize(typeAndArgs[1]));
+                            case "RECEIVE_INFO":
 
-                            break;
+                                player.receiveInfo(Serdes.STRING_SERDE.deserialize(typeAndArgs[1]));
 
-                        case "UPDATE_STATE":
+                                break;
 
-                            PublicGameState newState = Serdes.PUBLIC_GAME_STATE_SERDE.deserialize(typeAndArgs[1]);
-                            PlayerState newPlayerState = Serdes.PLAYER_STATE_SERDE.deserialize(typeAndArgs[2]);
+                            case "UPDATE_STATE":
 
-                            player.updateState(newState, newPlayerState);
+                                System.out.println(typeAndArgs[1]);
 
-                            break;
+                                PublicGameState newState = Serdes.PUBLIC_GAME_STATE_SERDE.deserialize(typeAndArgs[1]);
+                                PlayerState newPlayerState = Serdes.PLAYER_STATE_SERDE.deserialize(typeAndArgs[2]);
 
-                        case "SET_INITIAL_TICKETS":
+                                player.updateState(newState, newPlayerState);
 
-                            SortedBag<Ticket> tickets = Serdes.TICKET_SORTED_BAG_SERDE.deserialize(typeAndArgs[1]);
-                            player.setInitialTicketChoice(tickets);
+                                break;
 
-                            break;
+                            case "SET_INITIAL_TICKETS":
 
-                        case "CHOOSE_INITIAL_TICKETS":
+                                SortedBag<Ticket> tickets = Serdes.TICKET_SORTED_BAG_SERDE.deserialize(typeAndArgs[1]);
+                                player.setInitialTicketChoice(tickets);
 
-                            SortedBag<Ticket> chosenTickets = player.chooseInitialTickets();
-                            send(Serdes.TICKET_SORTED_BAG_SERDE.serialize(chosenTickets));
+                                break;
 
-                            break;
+                            case "CHOOSE_INITIAL_TICKETS":
 
-                        case "NEXT_TURN":
+                                SortedBag<Ticket> chosenTickets = player.chooseInitialTickets();
+                                send(Serdes.TICKET_SORTED_BAG_SERDE.serialize(chosenTickets));
 
-                            Player.TurnKind turnKind = player.nextTurn();
-                            send(Serdes.TURN_KIND_SERDE.serialize(turnKind));
+                                break;
 
-                            break;
+                            case "NEXT_TURN":
 
-                        case "CHOOSE_TICKETS":
+                                Player.TurnKind turnKind = player.nextTurn();
+                                send(Serdes.TURN_KIND_SERDE.serialize(turnKind));
 
-                            SortedBag<Ticket> options = Serdes.TICKET_SORTED_BAG_SERDE.deserialize(typeAndArgs[1]);
-                            SortedBag<Ticket> keptTickets = player.chooseTickets(options);
-                            send(Serdes.TICKET_SORTED_BAG_SERDE.serialize(keptTickets));
+                                break;
 
-                            break;
+                            case "CHOOSE_TICKETS":
 
-                        case "DRAW_SLOT":
+                                SortedBag<Ticket> options = Serdes.TICKET_SORTED_BAG_SERDE.deserialize(typeAndArgs[1]);
+                                SortedBag<Ticket> keptTickets = player.chooseTickets(options);
+                                send(Serdes.TICKET_SORTED_BAG_SERDE.serialize(keptTickets));
 
-                            int drawSlot = player.drawSlot();
-                            send(Serdes.INTEGER_SERDE.serialize(drawSlot));
+                                break;
 
-                            break;
+                            case "DRAW_SLOT":
 
-                        case "ROUTE":
+                                int drawSlot = player.drawSlot();
+                                send(Serdes.INTEGER_SERDE.serialize(drawSlot));
 
-                            Route claimedRoute = player.claimedRoute();
-                            send(Serdes.ROUTE_SERDE.serialize(claimedRoute));
+                                break;
 
-                            break;
+                            case "ROUTE":
 
-                        case "CARDS":
+                                Route claimedRoute = player.claimedRoute();
+                                send(Serdes.ROUTE_SERDE.serialize(claimedRoute));
 
-                            SortedBag<Card> initCC = player.initialClaimCards();
-                            send(Serdes.CARD_SORTED_BAG_SERDE.serialize(initCC));
+                                break;
 
-                            break;
+                            case "CARDS":
 
-                        case "CHOOSE_ADDITIONAL_CARDS":
+                                SortedBag<Card> initCC = player.initialClaimCards();
+                                send(Serdes.CARD_SORTED_BAG_SERDE.serialize(initCC));
 
-                            List<SortedBag<Card>> possibleAdditCards = Serdes.LIST_SORTED_BAG_CARD_SERDE.deserialize(typeAndArgs[1]);
-                            SortedBag<Card> additCards = player.chooseAdditionalCards(possibleAdditCards);
-                            send(Serdes.CARD_SORTED_BAG_SERDE.serialize(additCards));
+                                break;
 
-                            break;
+                            case "CHOOSE_ADDITIONAL_CARDS":
 
-                        default:
-                            throw new IOException("Communication error");
+                                List<SortedBag<Card>> possibleAdditCards = Serdes.LIST_SORTED_BAG_CARD_SERDE.deserialize(typeAndArgs[1]);
+                                SortedBag<Card> additCards = player.chooseAdditionalCards(possibleAdditCards);
+                                send(Serdes.CARD_SORTED_BAG_SERDE.serialize(additCards));
 
+                                break;
+
+                            default:
+                                throw new IOException("Communication error");
+
+                        }
                     }
                 }
 
