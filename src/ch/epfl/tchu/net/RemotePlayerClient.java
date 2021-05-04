@@ -76,8 +76,6 @@ public class RemotePlayerClient {
 
                             case "UPDATE_STATE":
 
-                                System.out.println(typeAndArgs[1]);
-
                                 PublicGameState newState = Serdes.PUBLIC_GAME_STATE_SERDE.deserialize(typeAndArgs[1]);
                                 PlayerState newPlayerState = Serdes.PLAYER_STATE_SERDE.deserialize(typeAndArgs[2]);
 

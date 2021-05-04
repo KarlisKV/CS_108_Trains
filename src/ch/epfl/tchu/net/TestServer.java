@@ -14,19 +14,25 @@ public final class TestServer {
         System.out.println("Starting server!");
         try (ServerSocket serverSocket = new ServerSocket(5108);
              Socket socket = serverSocket.accept()) {
-            Player playerProxy = new RemotePlayerProxy(socket);
+             Player playerProxy = new RemotePlayerProxy(socket);
 
-            PlayerState playerState = PlayerState.initial(SortedBag.of(4, Card.BLUE));
-
+         //   PlayerState playerState = PlayerState.initial(SortedBag.of(4, Card.BLUE));
+/*
             playerState = playerState.withAddedCard(Card.RED);
             playerState = playerState.withAddedCards(SortedBag.of(2,Card.RED));
             playerState = playerState.withClaimedRoute(ChMap.routes().get(2), SortedBag.of(3, Card.RED));
 
+ */
+
             GameState state = GameState.initial(SortedBag.of(ChMap.tickets()), new Random());
-            state = state.withBlindlyDrawnCard();
+
+         /*   state = state.withBlindlyDrawnCard();
             state = state.withDrawnFaceUpCard(2);
             state = state.withBlindlyDrawnCard();
             state = state.withClaimedRoute(ChMap.routes().get(2),SortedBag.of(3, Card.RED));
+            */
+
+            PlayerState playerState = state.playerState(PlayerId.PLAYER_2);
 
             playerProxy.updateState(state, playerState);
         }
