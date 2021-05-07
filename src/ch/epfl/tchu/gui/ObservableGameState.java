@@ -24,7 +24,7 @@ public class ObservableGameState {
     private List<Route> otherDudesRoutes = gameState.playerState(PID.next()).routes();
 
 
-    ObservableGameState(PlayerId PID) {
+    public ObservableGameState(PlayerId PID) {
         this.PID = PID;
     }
 
