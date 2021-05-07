@@ -23,6 +23,7 @@ public class RemotePlayerClient {
         this.player = player;
 
         try {
+
             socket = new Socket(hostName, port);
 
             writer = new BufferedWriter(
@@ -151,6 +152,8 @@ public class RemotePlayerClient {
 
             } while (reader.readLine() != null);
 
+            closeAll();
+
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -169,4 +172,8 @@ public class RemotePlayerClient {
         }
     }
 
+    private void closeAll() throws IOException {
+        reader.close();
+        writer.close();
+    }
 }

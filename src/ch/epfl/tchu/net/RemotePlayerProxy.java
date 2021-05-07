@@ -173,4 +173,9 @@ public class RemotePlayerProxy implements Player {
         }
     }
 
+    public void closeAll() throws IOException {
+        reader.close();
+        writer.close();
+    }
+
 }
