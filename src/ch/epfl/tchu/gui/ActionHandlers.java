@@ -35,7 +35,7 @@ public interface ActionHandlers {
      */
     @FunctionalInterface
     interface ClaimRouteHandler {
-        void onClaimRoute(Route route, SortedBag<Ticket> tickets);
+        void onClaimRoute(Route route, SortedBag<Card> cards);
     }
 
     /**

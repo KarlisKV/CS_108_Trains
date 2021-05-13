@@ -1,5 +1,6 @@
 package ch.epfl.tchu.game;
 
+import ch.epfl.tchu.net.Serde;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ColorTest {
     @Test
     void colorValuesAreDefinedInTheRightOrder() {
-        var expectedValues = new Color[]{
-                BLACK, VIOLET, BLUE, GREEN, YELLOW, ORANGE, RED, WHITE
-        };
-        assertArrayEquals(expectedValues, Color.values());
+        Serde<Integer> intSerde = null;
+        
+        assertEquals ( "2021" , intSerde.serialize ( 2021 ));
+        assertEquals ( 2021 , intSerde.deserialize ( "2021" ));
     }
 
     @Test
