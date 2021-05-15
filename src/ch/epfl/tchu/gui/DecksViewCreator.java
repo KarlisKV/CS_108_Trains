@@ -2,9 +2,7 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.property.ObjectProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -64,7 +62,7 @@ public final class DecksViewCreator{
         mainBox.getStylesheets().add("colors.css");
         mainBox.setId("card-pane");
 
-        int ticketsCount = 0, cardsCount = 0;
+        double ticketsCount = 0, cardsCount = 0;
         List<Card> faceUpCards = new ArrayList<>();
 
         if (state.getGameState() != null) {
@@ -73,19 +71,20 @@ public final class DecksViewCreator{
             faceUpCards = state.getGameState().cardState().faceUpCards();
         }
 
-        Button ticketsButton = drawButton(ticketsCount / ChMap.tickets().size() * 50);
+        Button ticketsButton = drawButton((ticketsCount / ChMap.tickets().size()) * 50);
         mainBox.getChildren().add(ticketsButton);
-        Button cardsButton = drawButton(cardsCount / Constants.TOTAL_CARDS_COUNT * 50);
-        mainBox.getChildren().add(cardsButton);
 
         List<StackPane> stackPanes = cardStackPanes(faceUpCards, false);
         for(StackPane pane : stackPanes) mainBox.getChildren().add(pane);
+
+        Button cardsButton = drawButton((cardsCount / Constants.TOTAL_CARDS_COUNT) * 50);
+        mainBox.getChildren().add(cardsButton);
 
         return mainBox;
     }
 
 
-    private static Button drawButton(int gaugeSize) {
+    private static Button drawButton(double gaugeSize) {
 
         Button b = new Button();
         b.getStyleClass().add("gauged");
@@ -115,6 +114,9 @@ public final class DecksViewCreator{
         HashSet<Card> set = new HashSet<>(copy);
         if(stackSameCards) copy = SortedBag.of(new ArrayList<>(set)).toList();
 
+        System.out.printf("cardsToShow: %s | copy: %s | stackSameCards: %s", cardsToShow, copy, stackSameCards);
+        System.out.println();
+
         for(Card card : copy) {
 
             StackPane pane = new StackPane();
@@ -126,11 +128,16 @@ public final class DecksViewCreator{
 
             Rectangle outside = new Rectangle(60, 90);
             outside.getStyleClass().add("outside");
+            pane.getChildren().add(outside);
+
             Rectangle filledInside = new Rectangle(40, 70);
             filledInside.getStyleClass().add("filled");
             filledInside.getStyleClass().add("inside");
+            pane.getChildren().add(filledInside);
+
             Rectangle trainImage = new Rectangle(40, 70);
             trainImage.getStyleClass().add("train-image");
+            pane.getChildren().add(trainImage);
 
             if(stackSameCards) {
                 Text counter = new Text(String.valueOf(SortedBag.of(cardsToShow).countOf(card)));

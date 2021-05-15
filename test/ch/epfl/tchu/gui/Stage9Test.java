@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static ch.epfl.tchu.game.PlayerId.PLAYER_1;
 import static ch.epfl.tchu.game.PlayerId.PLAYER_2;
@@ -23,6 +24,12 @@ public final class Stage9Test extends Application {
     @Override
     public void start(Stage primaryStage) {
         ObservableGameState gameState = new ObservableGameState(PLAYER_1);
+
+
+        gameState.setState(GameState.initial(SortedBag.of(ChMap.tickets()), new Random()), PlayerState.initial(SortedBag.of(2, Card.BLUE, 2, Card.LOCOMOTIVE)));
+        gameState.setState(gameState.getGameState(), gameState.getPlayerState().withAddedTickets(SortedBag.of(ChMap.tickets().get(0))));
+        System.out.println(gameState.getGameState().cardState().faceUpCards());
+
 
         ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
                 new SimpleObjectProperty<>(Stage9Test::claimRoute);
@@ -40,11 +47,15 @@ public final class Stage9Test extends Application {
 
         BorderPane mainPane =
                 new BorderPane(mapView, null, cardsView, handView, null);
+
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();
 
         setState(gameState);
     }
+
+
+
 
     private void setState(ObservableGameState gameState) {
         PlayerState p1State =
