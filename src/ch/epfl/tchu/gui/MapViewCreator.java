@@ -23,17 +23,6 @@ public final class MapViewCreator {
 
     private MapViewCreator(){}
 
-    public static void main(String[] args) {
-
-        Node node = createMapView(new ObservableGameState(PlayerId.PLAYER_1), new SimpleObjectProperty<>(), new CardChooser() {
-            @Override
-            public void chooseCards(List<SortedBag<Card>> options, ChooseCardsHandler handler) {
-
-            }
-        });
-
-    }
-
 
     public static Node createMapView(ObservableGameState observableGameState, ObjectProperty<ClaimRouteHandler> handlerObjectProperty, CardChooser cardChooser) {
 
