@@ -38,8 +38,8 @@ public final class DecksViewCreator{
             cardsToShow = state.getPlayerState().cards().toList();
         }
 
-        ObservableList<Ticket> obsTickets = new ObservableListWrapper<>(playerTickets);
-        ListView<Ticket> tickets = new ListView<>(obsTickets);
+        ListView<Ticket> tickets = new ListView<>();
+        tickets.getItems().addAll(playerTickets);
         tickets.setId("tickets");
         mainBox.getChildren().add(tickets);
 

@@ -89,8 +89,11 @@ public final class MapViewCreator {
         Group group = new Group();
         group.setId(route.id());
         group.getStyleClass().add("route");
-        group.getStyleClass().add("UNDERGROUND");
-        group.getStyleClass().add("NEUTRAL");
+        if(route.level().equals(Route.Level.UNDERGROUND)) group.getStyleClass().add("UNDERGROUND");
+
+        if(route.color() == null) group.getStyleClass().add("NEUTRAL");
+        else group.getStyleClass().add(route.color().toString());
+
         List<Group> groups = getCaseGroups(route);
         for (Group g : groups) group.getChildren().add(g);
 
