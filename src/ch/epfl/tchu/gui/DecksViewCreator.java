@@ -2,17 +2,14 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-import com.sun.javafx.collections.ImmutableObservableList;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -21,12 +18,11 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Stack;
-import java.util.function.Predicate;
 
 public final class DecksViewCreator{
 
     private DecksViewCreator() {}
+
 
     public static Node createHandView(ObservableGameState state){
 
@@ -36,12 +32,12 @@ public final class DecksViewCreator{
 
         ObservableList<Ticket> obsTickets = new ObservableListWrapper<>(state.getPlayerState().tickets().toList());
         ListView<Ticket> tickets = new ListView<>(obsTickets);
-        tickets.getStyleClass().add("tickets");
+        tickets.setId("tickets");
         mainBox.getChildren().add(tickets);
 
         //Second HBox (bigger group)
         HBox secBox = new HBox();
-        secBox.getStyleClass().add("hand-pane");
+        secBox.setId("hand-pane");
 
         List<StackPane> cardPanes = cardStackPanes(state.getPlayerState().cards().toList(), true);
 
@@ -58,7 +54,7 @@ public final class DecksViewCreator{
         VBox mainBox = new VBox();
         mainBox.getStylesheets().add("decks.css");
         mainBox.getStylesheets().add("colors.css");
-        mainBox.getStyleClass().add("card-pane");
+        mainBox.setId("card-pane");
 
         Button ticketsButton = drawButton(state.getGameState().ticketsCount() / ChMap.tickets().size() * 50);
         mainBox.getChildren().add(ticketsButton);
@@ -70,8 +66,6 @@ public final class DecksViewCreator{
 
         return mainBox;
     }
-
-
 
 
     private static Button drawButton(int gaugeSize) {
@@ -132,6 +126,8 @@ public final class DecksViewCreator{
 
         return cardPanes;
     }
+
+
 
 
 }

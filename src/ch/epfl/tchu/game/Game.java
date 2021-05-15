@@ -100,27 +100,25 @@ public final class Game {
 
                         int drawSlot = currentPlayer.drawSlot();
 
-                        if(drawSlot >= 0 && drawSlot < Constants.FACE_UP_CARDS_COUNT) {
+                         if(drawSlot == Constants.DECK_SLOT) {
 
-                            game = game.withCardsDeckRecreatedIfNeeded(rng);
-                            allPlayersReceiveInfo(players, info.get(currentPlayerId).drewVisibleCard(game.cardState().faceUpCards().get(drawSlot)));
-                            game = game.withDrawnFaceUpCard(drawSlot);
+                             game = game.withCardsDeckRecreatedIfNeeded(rng);
+                             game = game.withBlindlyDrawnCard();
+                             allPlayersReceiveInfo(players, info.get(currentPlayerId).drewBlindCard());
 
-                        } else {
+                         } else {
 
-                            game = game.withCardsDeckRecreatedIfNeeded(rng);
-                            game = game.withBlindlyDrawnCard();
-                            allPlayersReceiveInfo(players, info.get(currentPlayerId).drewBlindCard());
+                             game = game.withCardsDeckRecreatedIfNeeded(rng);
+                             game = game.withDrawnFaceUpCard(drawSlot);
+                             allPlayersReceiveInfo(players, info.get(currentPlayerId).drewVisibleCard(game.cardState().faceUpCards().get(drawSlot)));
 
-                        }
+                         }
 
                         allPlayersUpdateState(players, game);
-
 
                     }
 
                     break;
-
 
 
                 case CLAIM_ROUTE:

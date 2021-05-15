@@ -3,20 +3,18 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
-import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.Route;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import ch.epfl.tchu.gui.ActionHandlers.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 
 import javafx.scene.image.ImageView ;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public final class MapViewCreator {
@@ -31,7 +29,7 @@ public final class MapViewCreator {
         pane.getStylesheets().add("colors.css");
         ImageView imageView = new ImageView("map.png");
         pane.getChildren().add(imageView);
-        for(Route r : ChMap.routes()) pane.getChildren().add(getRouteGroup(r.id()));
+        for(Route r : ChMap.routes()) pane.getChildren().add(getRouteGroup(r));
 
         return pane;
     }
@@ -71,21 +69,31 @@ public final class MapViewCreator {
         return group;
     }
 
-    private static Group getCaseGroup(String id) {
-        Group group = new Group();
-        group.setId(id);
-        group.getChildren().add(createVoieRectangle());
-        group.getChildren().add(getWagonGroup());
-        return group;
+    private static List<Group> getCaseGroups(Route route) {
+
+        List<Group> groups = new ArrayList<>();
+
+        for (int i = 1; i <= route.length(); i++) {
+            Group group = new Group();
+            group.setId(route.id() + "_" + i);
+            group.getChildren().add(createVoieRectangle());
+            group.getChildren().add(getWagonGroup());
+            groups.add(group);
+        }
+
+        return groups;
     }
 
-    private static Group getRouteGroup(String id) {
+    private static Group getRouteGroup(Route route) {
+
         Group group = new Group();
-        group.setId(id);
+        group.setId(route.id());
         group.getStyleClass().add("route");
         group.getStyleClass().add("UNDERGROUND");
         group.getStyleClass().add("NEUTRAL");
-        group.getChildren().add(getCaseGroup(id));
+        List<Group> groups = getCaseGroups(route);
+        for (Group g : groups) group.getChildren().add(g);
+
         return group;
     }
 
