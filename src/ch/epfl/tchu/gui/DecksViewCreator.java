@@ -30,7 +30,15 @@ public final class DecksViewCreator{
         mainBox.getStylesheets().add("decks.css");
         mainBox.getStylesheets().add("colors.css");
 
-        ObservableList<Ticket> obsTickets = new ObservableListWrapper<>(state.getPlayerState().tickets().toList());
+        List<Ticket> playerTickets = new ArrayList<>();
+        List<Card> cardsToShow = new ArrayList<>();
+
+        if(state.getPlayerState() != null) {
+            playerTickets = state.getPlayerState().tickets().toList();
+            cardsToShow = state.getPlayerState().cards().toList();
+        }
+
+        ObservableList<Ticket> obsTickets = new ObservableListWrapper<>(playerTickets);
         ListView<Ticket> tickets = new ListView<>(obsTickets);
         tickets.setId("tickets");
         mainBox.getChildren().add(tickets);
@@ -39,7 +47,7 @@ public final class DecksViewCreator{
         HBox secBox = new HBox();
         secBox.setId("hand-pane");
 
-        List<StackPane> cardPanes = cardStackPanes(state.getPlayerState().cards().toList(), true);
+        List<StackPane> cardPanes = cardStackPanes(cardsToShow, true);
 
         for(StackPane pane : cardPanes) secBox.getChildren().add(pane);
 
@@ -56,12 +64,21 @@ public final class DecksViewCreator{
         mainBox.getStylesheets().add("colors.css");
         mainBox.setId("card-pane");
 
-        Button ticketsButton = drawButton(state.getGameState().ticketsCount() / ChMap.tickets().size() * 50);
+        int ticketsCount = 0, cardsCount = 0;
+        List<Card> faceUpCards = new ArrayList<>();
+
+        if (state.getGameState() != null) {
+            ticketsCount = state.getGameState().ticketsCount();
+            cardsCount = state.getGameState().cardState().deckSize();
+            faceUpCards = state.getGameState().cardState().faceUpCards();
+        }
+
+        Button ticketsButton = drawButton(ticketsCount / ChMap.tickets().size() * 50);
         mainBox.getChildren().add(ticketsButton);
-        Button cardsButton = drawButton(state.getGameState().cardState().deckSize() / Constants.TOTAL_CARDS_COUNT * 50);
+        Button cardsButton = drawButton(cardsCount / Constants.TOTAL_CARDS_COUNT * 50);
         mainBox.getChildren().add(cardsButton);
 
-        List<StackPane> stackPanes = cardStackPanes(state.getGameState().cardState().faceUpCards(), false);
+        List<StackPane> stackPanes = cardStackPanes(faceUpCards, false);
         for(StackPane pane : stackPanes) mainBox.getChildren().add(pane);
 
         return mainBox;
