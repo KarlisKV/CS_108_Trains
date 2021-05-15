@@ -28,8 +28,7 @@ public final class Stage9Test extends Application {
 
         gameState.setState(GameState.initial(SortedBag.of(ChMap.tickets()), new Random()), PlayerState.initial(SortedBag.of(2, Card.BLUE, 2, Card.LOCOMOTIVE)));
         gameState.setState(gameState.getGameState(), gameState.getPlayerState().withAddedTickets(SortedBag.of(ChMap.tickets().get(0))));
-        System.out.println(gameState.getGameState().cardState().faceUpCards());
-
+        gameState.setState(gameState.getGameState(), gameState.getPlayerState().withAddedTickets(SortedBag.of(ChMap.tickets().get(1))));
 
         ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
                 new SimpleObjectProperty<>(Stage9Test::claimRoute);

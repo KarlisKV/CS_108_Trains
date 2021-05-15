@@ -2,7 +2,17 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -13,9 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public final class DecksViewCreator{
 
@@ -29,11 +37,11 @@ public final class DecksViewCreator{
         mainBox.getStylesheets().add("colors.css");
 
         List<Ticket> playerTickets = new ArrayList<>();
-        List<Card> cardsToShow = new ArrayList<>();
+        SortedBag<Card> cardsToShow = SortedBag.of();
 
         if(state.getPlayerState() != null) {
             playerTickets = state.getPlayerState().tickets().toList();
-            cardsToShow = state.getPlayerState().cards().toList();
+            cardsToShow = state.getPlayerState().cards();
         }
 
         ListView<Ticket> tickets = new ListView<>();
@@ -45,9 +53,23 @@ public final class DecksViewCreator{
         HBox secBox = new HBox();
         secBox.setId("hand-pane");
 
-        List<StackPane> cardPanes = cardStackPanes(cardsToShow, true);
+        final SortedBag<Card> cts = SortedBag.of(cardsToShow);
+        final List<StackPane> lsp = new ArrayList<>();
 
-        for(StackPane pane : cardPanes) secBox.getChildren().add(pane);
+        for(Card c : Card.ALL) {
+            StackPane p = cardPane(c, cardsToShow.countOf(c));
+            lsp.add(p);
+            secBox.getChildren().add(p);
+        }
+
+        ObservableValue<List<Card>> obsPCards = new SimpleObjectProperty<>(state.getGameState().cardState().faceUpCards());
+        obsPCards.addListener((o, oV, nV) -> {
+            mainBox.getChildren().removeAll(lsp);
+            lsp.clear();
+            for(Card c : Card.ALL) secBox.getChildren().add(cardPane(c, cts.countOf(c)));
+
+            System.out.println("success in handView");
+        });
 
         mainBox.getChildren().add(secBox);
 
@@ -72,16 +94,35 @@ public final class DecksViewCreator{
         }
 
         Button ticketsButton = drawButton((ticketsCount / ChMap.tickets().size()) * 50);
+        ticketsButton.setOnAction((e) -> {
+            state.setState(GameState.initial(SortedBag.of(ChMap.tickets()), new Random()), state.getPlayerState().withAddedCard(Card.LOCOMOTIVE));
+            System.out.println(state.getGameState().cardState().faceUpCards());
+        });
         mainBox.getChildren().add(ticketsButton);
 
-        List<StackPane> stackPanes = cardStackPanes(faceUpCards, false);
-        for(StackPane pane : stackPanes) mainBox.getChildren().add(pane);
+
+        final List<Card> copyOfFUC = List.copyOf(faceUpCards);
+
+        for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i) {
+            StackPane p = cardPane(faceUpCards.get(i));
+            mainBox.getChildren().add(p);
+        }
+
+        ObservableValue<List<Card>> obsPCards = new SimpleObjectProperty<>(state.getGameState().cardState().faceUpCards());
+        obsPCards.addListener((o, oV, nV) -> {
+            for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i) {
+                StackPane p = cardPane(copyOfFUC.get(i));
+              //  mainBox.getChildren().set(mainBox.getChildren().indexOf(), p);
+            }
+            System.out.println("success in cardsView");
+        });
 
         Button cardsButton = drawButton((cardsCount / Constants.TOTAL_CARDS_COUNT) * 50);
         mainBox.getChildren().add(cardsButton);
 
         return mainBox;
     }
+
 
 
     private static Button drawButton(double gaugeSize) {
@@ -105,50 +146,46 @@ public final class DecksViewCreator{
         return b;
     }
 
+    private static StackPane cardPane(Card card) {
+        return cardPane(card, -1);
+    }
 
-    private static List<StackPane> cardStackPanes(List<Card> cardsToShow, boolean stackSameCards){
+    private static StackPane cardPane(Card card, int count) {
 
-        List<StackPane> cardPanes = new ArrayList<>();
+        StackPane pane = new StackPane();
 
-        List<Card> copy = List.copyOf(cardsToShow);
-        HashSet<Card> set = new HashSet<>(copy);
-        if(stackSameCards) copy = SortedBag.of(new ArrayList<>(set)).toList();
+        pane.getStyleClass().add("card");
 
-        System.out.printf("cardsToShow: %s | copy: %s | stackSameCards: %s", cardsToShow, copy, stackSameCards);
-        System.out.println();
+        if(card.equals(Card.LOCOMOTIVE)) pane.getStyleClass().add("NEUTRAL");
+        else pane.getStyleClass().add(card.toString());
 
-        for(Card card : copy) {
+        Rectangle outside = new Rectangle(60, 90);
+        outside.getStyleClass().add("outside");
+        pane.getChildren().add(outside);
 
-            StackPane pane = new StackPane();
+        Rectangle filledInside = new Rectangle(40, 70);
+        filledInside.getStyleClass().add("filled");
+        filledInside.getStyleClass().add("inside");
+        pane.getChildren().add(filledInside);
 
-            pane.getStyleClass().add("card");
+        Rectangle trainImage = new Rectangle(40, 70);
+        trainImage.getStyleClass().add("train-image");
+        pane.getChildren().add(trainImage);
 
-            if(card.equals(Card.LOCOMOTIVE)) pane.getStyleClass().add("NEUTRAL");
-            else pane.getStyleClass().add(card.toString());
 
-            Rectangle outside = new Rectangle(60, 90);
-            outside.getStyleClass().add("outside");
-            pane.getChildren().add(outside);
+        if(count != -1) {
 
-            Rectangle filledInside = new Rectangle(40, 70);
-            filledInside.getStyleClass().add("filled");
-            filledInside.getStyleClass().add("inside");
-            pane.getChildren().add(filledInside);
+            ReadOnlyIntegerProperty readOnlyCount = new SimpleIntegerProperty(count);
+            pane.visibleProperty().bind(Bindings.greaterThan(readOnlyCount, 0));
 
-            Rectangle trainImage = new Rectangle(40, 70);
-            trainImage.getStyleClass().add("train-image");
-            pane.getChildren().add(trainImage);
-
-            if(stackSameCards) {
-                Text counter = new Text(String.valueOf(SortedBag.of(cardsToShow).countOf(card)));
-                counter.getStyleClass().add("count");
-                pane.getChildren().add(counter);
-            }
-
-            cardPanes.add(pane);
+            Text num = new Text(String.valueOf(readOnlyCount.getValue()));
+            num.getStyleClass().add("count");
+            num.textProperty().bind(Bindings.convert(readOnlyCount));
+            num.visibleProperty().bind(Bindings.greaterThan(readOnlyCount, 0));
+            pane.getChildren().add(num);
         }
 
-        return cardPanes;
+        return pane;
     }
 
 

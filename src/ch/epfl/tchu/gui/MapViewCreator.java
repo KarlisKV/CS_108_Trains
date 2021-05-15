@@ -5,6 +5,8 @@ import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
 import ch.epfl.tchu.game.Route;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -29,7 +31,10 @@ public final class MapViewCreator {
         pane.getStylesheets().add("colors.css");
         ImageView imageView = new ImageView("map.png");
         pane.getChildren().add(imageView);
-        for(Route r : ChMap.routes()) pane.getChildren().add(getRouteGroup(r));
+        for(Route r : ChMap.routes()) {
+            Group rg = getRouteGroup(r);
+            pane.getChildren().add(getRouteGroup(r));
+        }
 
         return pane;
     }
