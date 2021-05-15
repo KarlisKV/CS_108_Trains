@@ -32,7 +32,7 @@ public final class GameState extends PublicGameState {
 
         this.cardState = cardState;
         this.tickets = tickets;
-        this.playerState = playerState;
+        this.playerState = Map.copyOf(playerState);
     }
 
     /**
@@ -184,9 +184,9 @@ public final class GameState extends PublicGameState {
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
 
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
-        playerState.replace(currentPlayerId(), playerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
+        Map<PlayerId, PlayerState> playerStateCopy = Map.of(currentPlayerId().next(), playerState.get(currentPlayerId().next()), currentPlayerId(), playerState.get(currentPlayerId()).withAddedTickets(chosenTickets));
 
-        return new GameState(currentPlayerId(), playerState, lastPlayer(), tickets.withoutTopCards(drawnTickets.size()), cardState);
+        return new GameState(currentPlayerId(), playerStateCopy, lastPlayer(), tickets.withoutTopCards(drawnTickets.size()), cardState);
     }
 
 
@@ -250,7 +250,7 @@ public final class GameState extends PublicGameState {
      * @return true if the current player has less or equal than 2 cars left
      */
     public boolean lastTurnBegins() {
-        return (playerState.get(currentPlayerId()).carCount() <= 2);
+        return playerState.get(currentPlayerId()).carCount() <= 2 && lastPlayer() == null;
     }
 
 

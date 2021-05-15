@@ -2,8 +2,10 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
-import javax.naming.directory.Attributes;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ObservableGameState {
@@ -23,6 +25,8 @@ public class ObservableGameState {
 
     private List<Route> myRoutes = null;
     private List<Route> otherDudesRoutes = null;
+
+    private final List<SimpleObjectProperty<Card>> faceUpCards = createFaceUpCards();
 
 
     public ObservableGameState(PlayerId PID) {
@@ -49,6 +53,29 @@ public class ObservableGameState {
         myRoutes = playerState.routes();
         otherDudesRoutes = gameState.playerState(PID.next()).routes();
 
+    }
+
+
+
+
+
+    private static List<SimpleObjectProperty<Card>> createFaceUpCards() {
+
+        List<SimpleObjectProperty<Card>> cards = new ArrayList<>();
+        for(int slot : Constants.FACE_UP_CARD_SLOTS)
+            cards.add(new SimpleObjectProperty<>());
+
+        return cards;
+
+    }
+
+
+    public PublicGameState getGameState() {
+        return gameState;
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
     }
 
 }

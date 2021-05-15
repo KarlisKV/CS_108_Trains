@@ -26,7 +26,7 @@ public class PublicCardState {
      */
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) {
         Preconditions.checkArgument(deckSize >= 0 && discardsSize >= 0 && faceUpCards.size() == Constants.FACE_UP_CARDS_COUNT);
-        this.faceUpCards = new ArrayList<>(faceUpCards);
+        this.faceUpCards = List.copyOf(faceUpCards);
         this.deckSize = deckSize;
         this.discardsSize = discardsSize;
     }

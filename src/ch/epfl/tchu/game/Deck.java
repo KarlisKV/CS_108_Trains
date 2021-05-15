@@ -69,13 +69,7 @@ public final class Deck < C extends Comparable <C>>{
      * @throws IllegalArgumentException if the deck is empty
      */
     public Deck<C> withoutTopCard() {
-        Preconditions.checkArgument(!isEmpty());
-
-        List<C> cardsWithoutTop = new ArrayList<>(cards);
-        cardsWithoutTop.remove(0);
-
-
-        return new Deck<>(cardsWithoutTop);
+        return withoutTopCards(1);
     }
 
     /**

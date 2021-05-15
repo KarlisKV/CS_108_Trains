@@ -59,7 +59,6 @@ public final class Trail {
         Trail longestTrail = new Trail(null, null, null);
         int maxLength = 0;
 
-
         do{
 
 
@@ -155,20 +154,30 @@ public final class Trail {
     @Override
     public String toString() {
 
-        StringBuilder complete = new StringBuilder(station1.toString() + " - ");
-        Station station = station1;
-
-        for (Route r : Routes) {
-            complete.append(r.stationOpposite(station).toString());
-            station = r.stationOpposite(station);
-
-
-            if(!(Routes.indexOf(r) == (Routes.size() - 1))) {
+        Station station;
+        StringBuilder complete = new StringBuilder();
+        if (Routes != null)
+            if (!Routes.isEmpty()) {
+                station = station1;
+                complete.append(station1.toString());
                 complete.append(" - ");
+
+
+            for (Route r : Routes) {
+                complete.append(r.stationOpposite(station).toString());
+                station = r.stationOpposite(station);
+
+
+                if (!(Routes.indexOf(r) == (Routes.size() - 1))) {
+                    complete.append(" - ");
+                }
             }
         }
 
-        complete.append(" (").append(length).append(")");
+        if(Routes != null) {
+            if(!Routes.isEmpty()) complete.append(" (").append(length).append(")");
+            else complete.append("Empty trail");
+        } else complete.append("Empty trail");
 
         return complete.toString();
     }

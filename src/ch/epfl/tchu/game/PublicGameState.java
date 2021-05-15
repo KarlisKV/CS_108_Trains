@@ -2,6 +2,7 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +40,7 @@ public class PublicGameState {
         this.cardState = cardState;
         this.currentPlayerId = currentPlayerId;
         this.lastPlayer = lastPlayer;
-        this.playerState = playerState;
+        this.playerState = Map.copyOf(playerState);
         this.ticketsCount = ticketsCount;
     }
 
@@ -103,7 +104,7 @@ public class PublicGameState {
      * @return List of routes both of the players have seized
      */
     public List<Route> claimedRoutes() {
-        List<Route> listOfCombinedRoutes = playerState.get(currentPlayerId).routes();
+        List<Route> listOfCombinedRoutes = new ArrayList<>(playerState.get(currentPlayerId).routes());
         PlayerId nextPlayer = currentPlayerId.next();
         listOfCombinedRoutes.addAll(playerState.get(nextPlayer).routes());
 

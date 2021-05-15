@@ -3,7 +3,10 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
+import ch.epfl.tchu.game.PlayerId;
+import ch.epfl.tchu.game.Route;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -18,6 +21,19 @@ import java.util.List;
 
 public final class MapViewCreator {
 
+    private MapViewCreator(){}
+
+    public static void main(String[] args) {
+
+        Node node = createMapView(new ObservableGameState(PlayerId.PLAYER_1), new SimpleObjectProperty<>(), new CardChooser() {
+            @Override
+            public void chooseCards(List<SortedBag<Card>> options, ChooseCardsHandler handler) {
+
+            }
+        });
+
+    }
+
 
     public static Node createMapView(ObservableGameState observableGameState, ObjectProperty<ClaimRouteHandler> handlerObjectProperty, CardChooser cardChooser) {
 
@@ -26,10 +42,8 @@ public final class MapViewCreator {
         pane.getStylesheets().add("colors.css");
         ImageView imageView = new ImageView("map.png");
         pane.getChildren().add(imageView);
-        for(int i = 0; i < ChMap.routes().size(); i++)  {
+        for(Route r : ChMap.routes()) pane.getChildren().add(getRouteGroup(r.id()));
 
-            pane.getChildren().add(getRouteGroup(ChMap.routes().get(i).id()));
-        }
         return pane;
     }
 
@@ -40,6 +54,7 @@ public final class MapViewCreator {
         r.getStyleClass().add("filled");
         return r;
     }
+
     private static Rectangle createVoieRectangle() {
         Rectangle r = new Rectangle();
         r.setWidth(36);

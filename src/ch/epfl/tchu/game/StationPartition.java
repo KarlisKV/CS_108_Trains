@@ -126,17 +126,17 @@ public final class StationPartition implements StationConnectivity {
 
         private int representative(int stationID) {
 
-            int ID = -1;
+            int id = -1;
 
             for(int i = 0; i < stationCount; ++i) {
                 if(stationMap.containsKey(i)) {
                     if(stationMap.get(i).contains(stationID)) {
-                        ID = i;
+                        id = i;
                     }
                 }
             }
 
-            return ID;
+            return id;
         }
 
         private boolean stationsAlreadyInDifferentMapGroups(Station s1, Station s2) {
@@ -163,18 +163,18 @@ public final class StationPartition implements StationConnectivity {
      */
     private int representative(int stationID) {
 
-        int ID = -1;
+        int id = -1;
 
         int maximumStation = ChMap.stations().size();
 
         for(int i = 0; i < maximumStation; ++i) {
             if(stationMap.containsKey(i)) {
                 if(stationMap.get(i).contains(stationID)) {
-                    ID = i;
+                    id = i;
                 }
             }
         }
 
-        return ID;
+        return id;
     }
 }

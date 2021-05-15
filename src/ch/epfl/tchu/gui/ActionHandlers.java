@@ -5,8 +5,6 @@ import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Ticket;
 
-import java.util.List;
-
 /**
  * Public interface that contains five nested functional interfaces representing different "action managers"
  * @author Karlis Velins (325180)

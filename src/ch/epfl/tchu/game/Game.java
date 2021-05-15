@@ -13,6 +13,7 @@ import java.util.*;
  */
 public final class Game {
 
+    private Game(){}
 
     /**
      * The method where all the magic happens. This method calls all other methods in order for the players to actually play the game
@@ -151,7 +152,7 @@ public final class Game {
 
                             SortedBag<Card> topCards = SortedBag.of();
 
-                            if(game.cardState().deckSize() < 3) {
+                            if(game.cardState().deckSize() < Constants.ADDITIONAL_TUNNEL_CARDS) {
                                 while(!game.cardState().isDeckEmpty()){
                                     //Just in case to avoid bugs, but shouldn't happen
                                     game = game.withCardsDeckRecreatedIfNeeded(rng);
