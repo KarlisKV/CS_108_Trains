@@ -31,12 +31,40 @@ public final class MapViewCreator {
         pane.getStylesheets().add("colors.css");
         ImageView imageView = new ImageView("map.png");
         pane.getChildren().add(imageView);
-        for(Route r : ChMap.routes()) {
-            Group rg = getRouteGroup(r);
-            pane.getChildren().add(getRouteGroup(r));
+        for (Route route : ChMap.routes()) {
+            Group routeGroup = getRouteGroup(route);
+            // Add action handler to route group before adding it to the pane
+            routeGroup.setOnMouseClicked(event -> handleRouteClick(route, observableGameState, handlerObjectProperty));
+            pane.getChildren().add(routeGroup);
         }
 
         return pane;
+    }
+
+    /** 
+     * Route onClick handler (3.4.3 Gestionnaires d'événements)
+     * @param route (Route)
+     * @param observableGameState (ObservableGameState)
+     * @param handlerObjectProperty (ObjectProperty<ClaimRouteHandler>)
+     */
+    private static void handleRouteClick(Route route, ObservableGameState observableGameState, ObjectProperty<ClaimRouteHandler> handlerObjectProperty) {
+        List<SortedBag<Card>> possibleClaimCards = observableGameState.getPlayerState().possibleClaimCards(route);
+
+        // Logging purposes
+        System.out.println(possibleClaimCards);
+
+        // If cases to implement...
+        if (possibleClaimCards.size() == 1) {
+            // La méthode onClaimRoute du gestionnaire d'action passé à
+            // createMapView peut être appelée avec la route et l'ensemble
+            // de cartes.
+            // ClaimRouteHandler claimRouteH = …;
+            // handlerObjectProperty.set(claimRouteH);
+        } else if (!possibleClaimCards.isEmpty()) {
+            // ClaimRouteHandler claimRouteH = …;
+            // ChooseCardsHandler chooseCardsH = chosenCards -> claimRouteH.onClaimRoute(route, chosenCards);
+            // cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
+        }
     }
 
     private static Rectangle createWagonRectangle() {
@@ -104,7 +132,6 @@ public final class MapViewCreator {
 
         return group;
     }
-
 
     @FunctionalInterface
     public
