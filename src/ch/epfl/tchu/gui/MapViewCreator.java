@@ -5,8 +5,6 @@ import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
 import ch.epfl.tchu.game.Route;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -48,7 +46,7 @@ public final class MapViewCreator {
      * @param handlerObjectProperty (ObjectProperty<ClaimRouteHandler>)
      */
     private static void handleRouteClick(Route route, ObservableGameState observableGameState, ObjectProperty<ClaimRouteHandler> handlerObjectProperty) {
-        List<SortedBag<Card>> possibleClaimCards = observableGameState.getPlayerState().possibleClaimCards(route);
+        List<SortedBag<Card>> possibleClaimCards = observableGameState.playerState().get().possibleClaimCards(route);
 
         // Logging purposes
         System.out.println(possibleClaimCards);

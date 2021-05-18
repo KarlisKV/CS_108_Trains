@@ -10,27 +10,20 @@ import java.util.List;
 
 public class ObservableGameState {
 
-    private PublicGameState gameState;
-    private PlayerState playerState;
-    private PlayerId PID;
+ //   private PublicGameState gameState;
+ //   private PlayerState playerState;
 
-    private int myCarCount = 0;
-    private int otherDudesCarCount = 0;
-
-    private SortedBag<Card> myCards = null;
-    private int otherDudesCardCount = 0;
-
-    private SortedBag<Ticket> myTickets = null;
-    private int otherDudesTicketCount = 0;
-
-    private List<Route> myRoutes = null;
-    private List<Route> otherDudesRoutes = null;
+    private ObjectProperty<PlayerState> playerState;
+    private ObjectProperty<PublicGameState> gameState;
+    private final PlayerId PID;
 
     private final List<SimpleObjectProperty<Card>> faceUpCards = createFaceUpCards();
 
 
     public ObservableGameState(PlayerId PID) {
         this.PID = PID;
+        playerState = new SimpleObjectProperty<>();
+        gameState = new SimpleObjectProperty<>();
     }
 
 
@@ -38,20 +31,8 @@ public class ObservableGameState {
 
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
 
-        gameState = newGameState;
-        playerState = newPlayerState;
-
-        myCarCount = playerState.carCount();
-        otherDudesCarCount = gameState.playerState(PID.next()).carCount();
-
-        myCards = playerState.cards();
-        gameState.playerState(PID.next()).cardCount();
-
-        myTickets = playerState.tickets();
-        otherDudesTicketCount = gameState.playerState(PID.next()).ticketCount();
-
-        myRoutes = playerState.routes();
-        otherDudesRoutes = gameState.playerState(PID.next()).routes();
+        gameState.setValue(newGameState);
+        playerState.setValue(newPlayerState);
 
     }
 
@@ -70,11 +51,11 @@ public class ObservableGameState {
     }
 
 
-    public PublicGameState getGameState() {
+    public ObjectProperty<PublicGameState> gameState() {
         return gameState;
     }
 
-    public PlayerState getPlayerState() {
+    public ObjectProperty<PlayerState> playerState() {
         return playerState;
     }
 
