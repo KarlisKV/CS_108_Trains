@@ -32,7 +32,7 @@ public final class MapViewCreator {
         for (Route route : ChMap.routes()) {
             Group routeGroup = getRouteGroup(route);
             // Add action handler to route group before adding it to the pane
-            routeGroup.setOnMouseClicked(event -> handleRouteClick(route, observableGameState, handlerObjectProperty));
+            routeGroup.setOnMouseClicked(event -> handleRouteClick(route, observableGameState, handlerObjectProperty, cardChooser));
             pane.getChildren().add(routeGroup);
         }
 
@@ -43,25 +43,21 @@ public final class MapViewCreator {
      * Route onClick handler (3.4.3 Gestionnaires d'événements)
      * @param route (Route)
      * @param observableGameState (ObservableGameState)
-     * @param handlerObjectProperty (ObjectProperty<ClaimRouteHandler>)
+     * @param claimRouteH (ObjectProperty<ClaimRouteHandler>)
+     * @param cardChooser (CardChooser)
      */
-    private static void handleRouteClick(Route route, ObservableGameState observableGameState, ObjectProperty<ClaimRouteHandler> handlerObjectProperty) {
+    private static void handleRouteClick(Route route, ObservableGameState observableGameState,
+                                         ObjectProperty<ClaimRouteHandler> claimRouteH, CardChooser cardChooser) {
+
         List<SortedBag<Card>> possibleClaimCards = observableGameState.playerState().get().possibleClaimCards(route);
 
-        // Logging purposes
-        System.out.println(possibleClaimCards);
 
-        // If cases to implement...
         if (possibleClaimCards.size() == 1) {
-            // La méthode onClaimRoute du gestionnaire d'action passé à
-            // createMapView peut être appelée avec la route et l'ensemble
-            // de cartes.
-            // ClaimRouteHandler claimRouteH = …;
-            // handlerObjectProperty.set(claimRouteH);
+            claimRouteH.get().onClaimRoute(route, possibleClaimCards.get(0));
+
         } else if (!possibleClaimCards.isEmpty()) {
-            // ClaimRouteHandler claimRouteH = …;
-            // ChooseCardsHandler chooseCardsH = chosenCards -> claimRouteH.onClaimRoute(route, chosenCards);
-            // cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
+            ChooseCardsHandler chooseCardsH = chosenCards -> claimRouteH.get().onClaimRoute(route, chosenCards);
+            cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
         }
     }
 
