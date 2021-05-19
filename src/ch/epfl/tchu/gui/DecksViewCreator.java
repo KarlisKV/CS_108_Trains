@@ -47,11 +47,11 @@ public final class DecksViewCreator {
         final List<StackPane> panes = new ArrayList<>();
         final List<IntegerProperty> ipl = new ArrayList<>();
 
-        for (Card c : Card.ALL) {
+        for (int i = 0; i < Card.ALL.size(); i++) {
+            StackPane p = getCardPane(Card.ALL.get(i), i);
 
-            StackPane p = cardPane(c);
-
-            IntegerProperty ip = new SimpleIntegerProperty(state.playerState().getValue().cards().countOf(c));
+            IntegerProperty ip = new SimpleIntegerProperty(
+                    state.playerState().getValue().cards().countOf(Card.ALL.get(i)));
             ipl.add(ip);
             ReadOnlyIntegerProperty count = new SimpleIntegerProperty(ip.get());
 
@@ -78,8 +78,9 @@ public final class DecksViewCreator {
             }
 
             SortedBag<Ticket> newTickets = nV.tickets().difference(oV.tickets());
-            if (!newTickets.isEmpty())
+            if (!newTickets.isEmpty()) {
                 tickets.getItems().addAll(newTickets.toList());
+            }
 
         });
 
@@ -107,22 +108,15 @@ public final class DecksViewCreator {
         }
 
         Button ticketsButton = getButton("Billets", (ticketsCount / ChMap.tickets().size()) * 50);
-        ticketsButton.setOnAction(event -> {
-
-            int bound = new Random().nextInt(5);
-            gs = gs.withDrawnFaceUpCard(bound);
-            System.out.println(gs.topTickets(3));
-            gs = gs.withChosenAdditionalTickets(gs.topTickets(3), gs.topTickets(3));
-
-            state.setState(gs, gs.currentPlayerState());
-        });
+        ticketsButton.setOnMouseClicked(event -> handleTicketsButtonClick(state, ticketsHandler));
 
         mainBox.getChildren().add(ticketsButton);
 
         final List<StackPane> panes = new ArrayList<>();
 
         for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i) {
-            StackPane p = cardPane(faceUpCards.get(i));
+            StackPane p = getCardPane(faceUpCards.get(i), i);
+            p.setOnMouseClicked(event -> handleCardPaneClick(event, cardsHandler));
             panes.add(p);
         }
 
@@ -133,19 +127,22 @@ public final class DecksViewCreator {
             List<Integer> changedSlots = new ArrayList<>();
 
             for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i)
-                if (!oV.cardState().faceUpCard(i).equals(nV.cardState().faceUpCard(i)))
+                if (!oV.cardState().faceUpCard(i).equals(nV.cardState().faceUpCard(i))) {
                     changedSlots.add(i);
+                }
 
             for (Integer cs : changedSlots) {
-                if (oV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE))
+                if (oV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE)) {
                     panes.get(cs).getStyleClass().remove("NEUTRAL");
-                else
+                } else {
                     panes.get(cs).getStyleClass().remove(oV.cardState().faceUpCard(cs).color().toString());
+                }
 
-                if (nV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE))
+                if (nV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE)) {
                     panes.get(cs).getStyleClass().add("NEUTRAL");
-                else
+                } else {
                     panes.get(cs).getStyleClass().add(nV.cardState().faceUpCard(cs).color().toString());
+                }
             }
 
         });
@@ -157,7 +154,7 @@ public final class DecksViewCreator {
     }
 
     /**
-     * Returns constructed javafx Button object
+     * Returns javafx Button object
      * 
      * @param label     (String)
      * @param gaugeSize (double)
@@ -184,16 +181,25 @@ public final class DecksViewCreator {
         return b;
     }
 
-    private static StackPane cardPane(Card card) {
+    /**
+     * Returns javafx StackPane object
+     * 
+     * @param card (Card)
+     * @param slot (int)
+     * @return StackPane
+     */
+    private static StackPane getCardPane(Card card, int slot) {
 
         StackPane pane = new StackPane();
+        pane.setId(String.valueOf(slot));
 
         pane.getStyleClass().add("card");
 
-        if (card.equals(Card.LOCOMOTIVE))
+        if (card.equals(Card.LOCOMOTIVE)) {
             pane.getStyleClass().add("NEUTRAL");
-        else
+        } else {
             pane.getStyleClass().add(card.toString());
+        }
 
         Rectangle outside = new Rectangle(60, 90);
         outside.getStyleClass().add("outside");
@@ -209,6 +215,44 @@ public final class DecksViewCreator {
         pane.getChildren().add(trainImage);
 
         return pane;
+    }
+    
+
+    // ================================================================================
+    // Handlers
+    // ================================================================================
+
+    /**
+     * Handler for javafx TicketsButton onMouseClick event
+     * Draws new tickets
+     * 
+     * @param state          (ObservableGameState)
+     * @param ticketsHandler (ObjectProperty<ActionHandlers.DrawTicketsHandler>)
+     */
+    private static void handleTicketsButtonClick(ObservableGameState state,
+            ObjectProperty<ActionHandlers.DrawTicketsHandler> ticketsHandler) {
+        int bound = new Random().nextInt(5);
+        gs = gs.withDrawnFaceUpCard(bound);
+        System.out.println(gs.topTickets(3));
+        // TODO: Bug to be fixed - Line below throws exception when player has too many cards
+        gs = gs.withChosenAdditionalTickets(gs.topTickets(3), gs.topTickets(3));
+
+        state.setState(gs, gs.currentPlayerState());
+        ticketsHandler.get().onDrawTickets();
+    }
+
+    /**
+     * Handler for javafx CardPane onMouseClick event
+     * Picks 1 card from the face-up cards
+     * 
+     * @param event        (EventObject)
+     * @param cardsHandler (ObjectProperty<ActionHandlers.DrawCardHandler>)
+     */
+    private static void handleCardPaneClick(EventObject event,
+            ObjectProperty<ActionHandlers.DrawCardHandler> cardsHandler) {
+        final Node source = (Node) event.getSource();
+        String id = source.getId();
+        cardsHandler.get().onDrawCard(Integer.parseInt(id));
     }
 
 }
