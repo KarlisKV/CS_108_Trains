@@ -49,7 +49,7 @@ public final class MapViewCreator {
     private static void handleRouteClick(Route route, ObservableGameState observableGameState,
                                          ObjectProperty<ClaimRouteHandler> claimRouteH, CardChooser cardChooser) {
 
-        List<SortedBag<Card>> possibleClaimCards = observableGameState.playerState().get().possibleClaimCards(route);
+        List<SortedBag<Card>> possibleClaimCards = observableGameState.playerStateProperty().get().possibleClaimCards(route);
 
 
         if (possibleClaimCards.size() == 1) {

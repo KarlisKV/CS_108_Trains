@@ -16,14 +16,14 @@ import javafx.scene.text.Text;
 
 import java.util.*;
 
-public final class DecksViewCreator {
+public final class DecksViewCreator{
 
-    private DecksViewCreator() {
-    }
+    private DecksViewCreator() {}
+
 
     private static GameState gs = GameState.initial(SortedBag.of(ChMap.tickets()), new Random());
 
-    public static Node createHandView(ObservableGameState state) {
+    public static Node createHandView(ObservableGameState state){
 
         HBox mainBox = new HBox();
         mainBox.getStylesheets().add("decks.css");
@@ -31,8 +31,8 @@ public final class DecksViewCreator {
 
         List<Ticket> playerTickets = new ArrayList<>();
 
-        if (state.playerState() != null) {
-            playerTickets = state.playerState().get().tickets().toList();
+        if(state.playerStateProperty() != null) {
+            playerTickets = state.playerStateProperty().get().tickets().toList();
         }
 
         ListView<Ticket> tickets = new ListView<>();
@@ -40,18 +40,18 @@ public final class DecksViewCreator {
         tickets.setId("tickets");
         mainBox.getChildren().add(tickets);
 
-        // Second HBox (bigger group)
+        //Second HBox (bigger group)
         HBox secBox = new HBox();
         secBox.setId("hand-pane");
 
         final List<StackPane> panes = new ArrayList<>();
         final List<IntegerProperty> ipl = new ArrayList<>();
 
-        for (int i = 0; i < Card.ALL.size(); i++) {
-            StackPane p = getCardPane(Card.ALL.get(i), i);
+        for(Card c : Card.ALL) {
 
-            IntegerProperty ip = new SimpleIntegerProperty(
-                    state.playerState().getValue().cards().countOf(Card.ALL.get(i)));
+            StackPane p = cardPane(c);
+
+            IntegerProperty ip = new SimpleIntegerProperty(state.playerStateProperty().getValue().cards().countOf(c));
             ipl.add(ip);
             ReadOnlyIntegerProperty count = new SimpleIntegerProperty(ip.get());
 
@@ -68,19 +68,17 @@ public final class DecksViewCreator {
 
         secBox.getChildren().addAll(panes);
 
-        state.playerState().addListener((o, oV, nV) -> {
+        state.playerStateProperty().addListener((o, oV, nV) -> {
 
             SortedBag<Card> newCards = nV.cards();
 
-            for (int i = 0; i < Card.ALL.size(); ++i) {
+            for(int i = 0; i < Card.ALL.size(); ++i) {
                 Card c = Card.ALL.get(i);
                 ipl.get(i).setValue(newCards.countOf(c));
             }
 
             SortedBag<Ticket> newTickets = nV.tickets().difference(oV.tickets());
-            if (!newTickets.isEmpty()) {
-                tickets.getItems().addAll(newTickets.toList());
-            }
+            if(!newTickets.isEmpty()) tickets.getItems().addAll(newTickets.toList());
 
         });
 
@@ -98,69 +96,69 @@ public final class DecksViewCreator {
         mainBox.getStylesheets().add("colors.css");
         mainBox.setId("card-pane");
 
-        double ticketsCount = 0, cardsCount = 0;
-        List<Card> faceUpCards = new ArrayList<>();
+        DoubleProperty ticketsGauge = new SimpleDoubleProperty(0);
+        DoubleProperty cardsGauge = new SimpleDoubleProperty(0);
 
-        if (state.gameState() != null) {
-            ticketsCount = state.gameState().get().ticketsCount();
-            cardsCount = state.gameState().get().cardState().deckSize();
-            faceUpCards = state.gameState().get().cardState().faceUpCards();
-        }
-
-        Button ticketsButton = getButton("Billets", (ticketsCount / ChMap.tickets().size()) * 50);
+        Button ticketsButton = drawButton(ticketsGauge, "Billets");
         ticketsButton.setOnMouseClicked(event -> handleTicketsButtonClick(state, ticketsHandler));
+
 
         mainBox.getChildren().add(ticketsButton);
 
         final List<StackPane> panes = new ArrayList<>();
 
         for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i) {
-            StackPane p = getCardPane(faceUpCards.get(i), i);
+            StackPane p = cardPane(state.faceUpCard(i).get());
             p.setOnMouseClicked(event -> handleCardPaneClick(event, cardsHandler));
             panes.add(p);
         }
 
         mainBox.getChildren().addAll(panes);
 
-        state.gameState().addListener((o, oV, nV) -> {
+        state.gameStateProperty().addListener((o, oV, nV) -> {
 
             List<Integer> changedSlots = new ArrayList<>();
 
-            for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i)
-                if (!oV.cardState().faceUpCard(i).equals(nV.cardState().faceUpCard(i))) {
-                    changedSlots.add(i);
-                }
+            for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i) if(!oV.cardState().faceUpCard(i).equals(nV.cardState().faceUpCard(i))) changedSlots.add(i);
 
-            for (Integer cs : changedSlots) {
-                if (oV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE)) {
-                    panes.get(cs).getStyleClass().remove("NEUTRAL");
-                } else {
-                    panes.get(cs).getStyleClass().remove(oV.cardState().faceUpCard(cs).color().toString());
-                }
+            for(Integer cs : changedSlots) {
+                if(oV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE)) panes.get(cs).getStyleClass().remove("NEUTRAL");
+                else panes.get(cs).getStyleClass().remove(oV.cardState().faceUpCard(cs).color().toString());
 
-                if (nV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE)) {
-                    panes.get(cs).getStyleClass().add("NEUTRAL");
-                } else {
-                    panes.get(cs).getStyleClass().add(nV.cardState().faceUpCard(cs).color().toString());
-                }
+                if(nV.cardState().faceUpCard(cs).equals(Card.LOCOMOTIVE)) panes.get(cs).getStyleClass().add("NEUTRAL");
+                else panes.get(cs).getStyleClass().add(nV.cardState().faceUpCard(cs).color().toString());
             }
+
+            ticketsGauge.setValue(nV.ticketsCount() / (double) ChMap.tickets().size() * 50);
+            cardsGauge.setValue((nV.cardState().deckSize() / (double) Constants.TOTAL_CARDS_COUNT * 50));
 
         });
 
-        Button cardsButton = getButton("Cartes", (cardsCount / Constants.TOTAL_CARDS_COUNT) * 50);
+        Button cardsButton = drawButton(cardsGauge, "Cartes");
+        cardsButton.setOnAction((e -> {
+
+            int bound = new Random().nextInt(5);
+            gs = gs.withDrawnFaceUpCard(bound);
+            gs = gs.withChosenAdditionalTickets(gs.topTickets(3), gs.topTickets(1));
+
+            state.setState(gs, gs.currentPlayerState());
+
+        }));
+
         mainBox.getChildren().add(cardsButton);
 
         return mainBox;
     }
 
+
     /**
      * Returns javafx Button object
-     * 
+     *
+     * @param gaugeSize (ReadOnlyDoubleProperty)
      * @param label     (String)
-     * @param gaugeSize (double)
      * @return Button
      */
-    private static Button getButton(String label, double gaugeSize) {
+    private static Button drawButton(ReadOnlyDoubleProperty gaugeSize, String label) {
 
         Button b = new Button(label);
         b.getStyleClass().add("gauged");
@@ -169,7 +167,9 @@ public final class DecksViewCreator {
         int h = 5;
         Rectangle br = new Rectangle(50, h);
         br.getStyleClass().add("background");
-        Rectangle fr = new Rectangle(gaugeSize, h);
+        Rectangle fr = new Rectangle(gaugeSize.get(), h);
+        gaugeSize.addListener((o, oV, nV) -> fr.setWidth(nV.doubleValue()));
+
         fr.getStyleClass().add("foreground");
 
         bGroup.getChildren().add(br);
@@ -181,25 +181,18 @@ public final class DecksViewCreator {
         return b;
     }
 
-    /**
-     * Returns javafx StackPane object
-     * 
-     * @param card (Card)
-     * @param slot (int)
-     * @return StackPane
-     */
-    private static StackPane getCardPane(Card card, int slot) {
+
+
+
+    private static StackPane cardPane(Card card) {
 
         StackPane pane = new StackPane();
-        pane.setId(String.valueOf(slot));
+    //    pane.setId(String.valueOf(slot));
 
         pane.getStyleClass().add("card");
 
-        if (card.equals(Card.LOCOMOTIVE)) {
-            pane.getStyleClass().add("NEUTRAL");
-        } else {
-            pane.getStyleClass().add(card.toString());
-        }
+        if(card.equals(Card.LOCOMOTIVE)) pane.getStyleClass().add("NEUTRAL");
+        else pane.getStyleClass().add(card.toString());
 
         Rectangle outside = new Rectangle(60, 90);
         outside.getStyleClass().add("outside");
@@ -216,7 +209,7 @@ public final class DecksViewCreator {
 
         return pane;
     }
-    
+
 
     // ================================================================================
     // Handlers
@@ -225,7 +218,7 @@ public final class DecksViewCreator {
     /**
      * Handler for javafx TicketsButton onMouseClick event
      * Draws new tickets
-     * 
+     *
      * @param state          (ObservableGameState)
      * @param ticketsHandler (ObjectProperty<ActionHandlers.DrawTicketsHandler>)
      */
@@ -244,7 +237,7 @@ public final class DecksViewCreator {
     /**
      * Handler for javafx CardPane onMouseClick event
      * Picks 1 card from the face-up cards
-     * 
+     *
      * @param event        (EventObject)
      * @param cardsHandler (ObjectProperty<ActionHandlers.DrawCardHandler>)
      */
