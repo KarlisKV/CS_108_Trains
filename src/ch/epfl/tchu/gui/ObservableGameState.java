@@ -58,11 +58,19 @@ public final class ObservableGameState {
 
         for(int ignore : Constants.FACE_UP_CARD_SLOTS) faceUpCards.add(new SimpleObjectProperty<>());
 
-        for(Route r : ChMap.routes()) {
-            routesMap.put(r, null);
+        MapProperty<Route, PlayerId> initRoutesMap = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
-            canClaimRoute.put(r, false);
+        MapProperty<Route, Boolean> initCanClaimCards = new SimpleMapProperty<>(FXCollections.observableHashMap());
+
+        for(Route r : ChMap.routes()) {
+            initRoutesMap.put(r, null);
+
+            initCanClaimCards.put(r, false);
         }
+
+        routesMap.setValue(initRoutesMap);
+
+        canClaimRoute.setValue(initCanClaimCards);
 
 
         for(PlayerId ignore : PlayerId.ALL) {
@@ -117,9 +125,9 @@ public final class ObservableGameState {
             }
         }
 
-        routesMap.setValue(newRoutesMap);
+        if(!routesMap.equals(newRoutesMap)) routesMap.setValue(newRoutesMap);
 
-        canClaimRoute.setValue(newClaimMap);
+        if(!newClaimMap.equals(canClaimRoute)) canClaimRoute.setValue(newClaimMap);
 
 
 
