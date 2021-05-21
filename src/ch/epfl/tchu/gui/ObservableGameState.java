@@ -84,13 +84,15 @@ public final class ObservableGameState {
 
     }
 
+
+
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
 
         gameStateProperty.setValue(newGameState);
         playerStateProperty.setValue(newPlayerState);
 
-        ticketsGauge.setValue(newGameState.ticketsCount() / (double) ChMap.tickets().size() * 100);
-        cardsGauge.setValue((newGameState.cardState().deckSize() / (double) Constants.TOTAL_CARDS_COUNT * 100));
+        ticketsGauge.setValue(newGameState.ticketsCount() / (double) ChMap.tickets().size() * 50);
+        cardsGauge.setValue((newGameState.cardState().deckSize() / (double) Constants.TOTAL_CARDS_COUNT * 50));
 
         for (int slot : Constants.FACE_UP_CARD_SLOTS) {
             Card newCard = newGameState.cardState().faceUpCard(slot);
@@ -119,7 +121,28 @@ public final class ObservableGameState {
 
                 newRoutesMap.put(r, null);
 
-                if(newPlayerState.canClaimRoute(r)) newClaimMap.put(r, true);
+
+
+                boolean sideRouteNotClaimed = true;
+
+                if(ChMap.routes().indexOf(r) > 0 && ChMap.routes().indexOf(r) < ChMap.routes().size() - 1) {
+
+                    Route lastRoute = ChMap.routes().get(ChMap.routes().indexOf(r) - 1);
+                    Route nextRoute = ChMap.routes().get(ChMap.routes().indexOf(r) + 1);
+
+                    if(lastRoute.stations().equals(r.stations())) {
+                        for(PlayerId pid : PlayerId.ALL) if(newGameState.playerState(pid).routes().contains(lastRoute)) sideRouteNotClaimed = false;
+
+                    } else if (nextRoute.stations().equals(r.stations())) {
+                        for(PlayerId pid : PlayerId.ALL) if(newGameState.playerState(pid).routes().contains(nextRoute)) sideRouteNotClaimed = false;
+
+                    }
+                } else if(ChMap.routes().indexOf(r) == ChMap.routes().size() - 1)
+                    for(PlayerId pid : PlayerId.ALL)
+                        if(newGameState.playerState(pid).routes().contains(ChMap.routes().get(ChMap.routes().indexOf(r) - 1))) sideRouteNotClaimed = false;
+
+
+                if(newPlayerState.canClaimRoute(r) && sideRouteNotClaimed) newClaimMap.put(r, true);
                 else newClaimMap.put(r, false);
 
             }
@@ -141,17 +164,7 @@ public final class ObservableGameState {
 
         tickets.addAll((newPlayerState.tickets().difference(SortedBag.of(new ArrayList<>(tickets)))).toList());
 
-        for(Card c : Card.ALL) if(newPlayerState.cards().contains(c)) cardAmount.set(Card.ALL.indexOf(c), newPlayerState.cards().countOf(c));
-    }
-
-
-
-    public ObjectProperty<PublicGameState> gameStateProperty() {
-        return gameStateProperty;
-    }
-
-    public ObjectProperty<PlayerState> playerStateProperty() {
-        return playerStateProperty;
+        for(Card c : Card.ALL) cardAmount.set(Card.ALL.indexOf(c), newPlayerState.cards().countOf(c));
     }
 
 

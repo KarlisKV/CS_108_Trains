@@ -4,7 +4,9 @@ import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
 import ch.epfl.tchu.game.Route;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -17,12 +19,12 @@ import javafx.scene.image.ImageView ;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MapViewCreator {
+final class MapViewCreator {
 
     private MapViewCreator(){}
 
 
-    public static Node createMapView(ObservableGameState observableGameState, ObjectProperty<ClaimRouteHandler> handlerObjectProperty, CardChooser cardChooser) {
+    public static Node createMapView(ObservableGameState state, ObjectProperty<ClaimRouteHandler> handlerObjectProperty, CardChooser cardChooser) {
 
         Pane pane = new Pane();
         pane.getStylesheets().add("map.css");
@@ -31,8 +33,13 @@ public final class MapViewCreator {
         pane.getChildren().add(imageView);
         for (Route route : ChMap.routes()) {
             Group routeGroup = getRouteGroup(route);
+
+            BooleanProperty actionnable = new SimpleBooleanProperty(handlerObjectProperty.isNull().get() || (!state.canClaimRoute().get(route)));
+            state.canClaimRoute().addListener((o, oV, nV) -> actionnable.setValue(!nV.get(route) || handlerObjectProperty.isNull().get()));
+            routeGroup.disableProperty().bind(actionnable);
+
             // Add action handler to route group before adding it to the pane
-            routeGroup.setOnMouseClicked(event -> handleRouteClick(route, observableGameState, handlerObjectProperty, cardChooser));
+            routeGroup.setOnMouseClicked(event -> handleRouteClick(route, state, handlerObjectProperty, cardChooser));
             pane.getChildren().add(routeGroup);
         }
 
@@ -40,17 +47,16 @@ public final class MapViewCreator {
     }
 
     /** 
-     * Route onClick handler (3.4.3 Gestionnaires d'événements)
+     * Route onClick handler (3.4.3 Event handler)
      * @param route (Route)
-     * @param observableGameState (ObservableGameState)
+     * @param state (ObservableGameState)
      * @param claimRouteH (ObjectProperty<ClaimRouteHandler>)
      * @param cardChooser (CardChooser)
      */
-    private static void handleRouteClick(Route route, ObservableGameState observableGameState,
+    private static void handleRouteClick(Route route, ObservableGameState state,
                                          ObjectProperty<ClaimRouteHandler> claimRouteH, CardChooser cardChooser) {
 
-        List<SortedBag<Card>> possibleClaimCards = observableGameState.playerStateProperty().get().possibleClaimCards(route);
-
+        List<SortedBag<Card>> possibleClaimCards = state.possibleClaimCards(route);
 
         if (possibleClaimCards.size() == 1) {
             claimRouteH.get().onClaimRoute(route, possibleClaimCards.get(0));
