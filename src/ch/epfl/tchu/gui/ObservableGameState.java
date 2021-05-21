@@ -8,6 +8,10 @@ import javafx.collections.FXCollections;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ObservableGameSate, represents the observable part of the GameState
+ * @author Daniel Polka  (326800)
+ */
 public final class ObservableGameState {
 
     //Public stats of the game:
@@ -45,9 +49,10 @@ public final class ObservableGameState {
     private final ObjectProperty<PublicGameState> gameStateProperty;
 
 
-
-
-
+    /**
+     * Default constructor of ObservableGameState
+     * @param PID
+     */
     public ObservableGameState(PlayerId PID) {
 
         this.PID = PID;

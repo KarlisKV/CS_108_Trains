@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ch.epfl.tchu.game.Constants.DECK_SLOT;
+
 /**
  * StationPartition and Builder helps to build/connect the stations and see if stations are connected
  * @author Daniel Polka  (326800)
@@ -32,9 +34,9 @@ public final class StationPartition implements StationConnectivity {
     @Override
     public boolean connected(Station s1, Station s2) {
 
-        if(representative(s1.id()) != -1) {
+        if(representative(s1.id()) != DECK_SLOT) {
             return stationMap.get(representative(s1.id())).contains(s2.id());
-        } else if(representative(s2.id()) != -1) {
+        } else if(representative(s2.id()) != DECK_SLOT) {
             return stationMap.get(representative(s2.id())).contains(s1.id());
         } else {
             return s1.equals(s2);
@@ -124,13 +126,13 @@ public final class StationPartition implements StationConnectivity {
             return new StationPartition(stationMap);
         }
 
-        private int representative(int stationID) {
+        private int representative(int stationId) {
 
             int id = -1;
 
             for(int i = 0; i < stationCount; ++i) {
                 if(stationMap.containsKey(i)) {
-                    if(stationMap.get(i).contains(stationID)) {
+                    if(stationMap.get(i).contains(stationId)) {
                         id = i;
                     }
                 }
@@ -158,10 +160,10 @@ public final class StationPartition implements StationConnectivity {
 
     /**
      * Private representative method for the builder
-     * @param stationID (int) id number of a station
+     * @param stationId (int) id number of a station
      * @return the id of the representative of the sub-assembly containing it.
      */
-    private int representative(int stationID) {
+    private int representative(int stationId) {
 
         int id = -1;
 
@@ -169,7 +171,7 @@ public final class StationPartition implements StationConnectivity {
 
         for(int i = 0; i < maximumStation; ++i) {
             if(stationMap.containsKey(i)) {
-                if(stationMap.get(i).contains(stationID)) {
+                if(stationMap.get(i).contains(stationId)) {
                     id = i;
                 }
             }

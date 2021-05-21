@@ -10,6 +10,10 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+/**
+ * RemotePlayerProxy represents the remote player proxy. It implements the interface Player
+ * @author Daniel Polka (326800)
+ */
 public class RemotePlayerProxy implements Player {
 
     private static final String sep = " ";
@@ -17,6 +21,10 @@ public class RemotePlayerProxy implements Player {
     private final BufferedWriter writer;
     private final BufferedReader reader;
 
+    /**
+     * Constructor of the RemotePlayerProxy class
+     * @param socket (Socket) used to communicate messages through the network with the client
+     */
     public RemotePlayerProxy(Socket socket) {
         this.socket = socket;
 
@@ -36,7 +44,12 @@ public class RemotePlayerProxy implements Player {
 
 
     }
-
+// TODO: 5/22/2021 add javaDoc for initPlayers 
+    /**
+     * 
+     * @param ownId (PlayerId) id of the player
+     * @param playerNames (Map<PlayerId, String> playerNames) names of the players
+     */
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
 

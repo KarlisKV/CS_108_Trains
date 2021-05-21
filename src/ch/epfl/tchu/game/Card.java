@@ -18,8 +18,11 @@ public enum Card {
     WHITE (Color.WHITE),
     LOCOMOTIVE (null);
 
+    //List of all cards
     public static final List<Card> ALL = List.of(BLACK, VIOLET, BLUE, GREEN, YELLOW, ORANGE, RED, WHITE, LOCOMOTIVE);
+    //Size of the enum
     public static final int COUNT = ALL.size();
+    //List of all cars (without the locomotives)
     public static final List<Card> CARS = List.of(BLACK, VIOLET, BLUE, GREEN, YELLOW, ORANGE, RED, WHITE);
 
     private final Color color;

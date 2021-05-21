@@ -6,13 +6,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-
+/**
+ * Serde interface used to serialize and deserialize information during the game
+ * @author Karlis Velins (325180)
+ */
 public interface Serde<T> {
 
+    /**
+     * Abstract serialize method
+     * @param object (T) an object to serialize
+     * @return returns the corresponding string
+     */
     String serialize(T object);
 
+    /**
+     * Abstract deserialize method
+     * @param string respective String
+     * @return the corresponding Object
+     */
     T deserialize(String string);
 
+    /**
+     * Generic method 'of'
+     * @param serialization a serialization function
+     * @param deserialization a deserialization function
+     * @return the created Serde
+     */
     static <T> Serde<T> of(Function<T, String> serialization, Function<String, T> deserialization) {
 
         return new Serde<>() {
@@ -28,13 +47,23 @@ public interface Serde<T> {
         };
     }
 
+    /**
+     * oneOf method creates a serde taking the list of all of the values of an enum
+     * @param all List of a set of enumerated values
+     * @return a Serde
+     */
     static <T> Serde<T> oneOf(List<T> all) {
         Function<T,String> serialize = s -> Integer.toString(all.indexOf(s));
         Function<String, T> deserialize = d -> all.get(Integer.parseInt(d));
         return Serde.of(serialize, deserialize);
     }
 
-
+    /**
+     * listOf method for de (serializing) lists of values by the given serde
+     * @param serde a Serde
+     * @param separator a seperator for the serde
+     * @return a serde capable of (de) serializing lists of values (de) serialized by the given serde,
+     */
     static <T> Serde<List<T>> listOf(Serde<T> serde, char separator) {
 
         return new Serde<>() {
@@ -64,7 +93,12 @@ public interface Serde<T> {
         };
     }
 
-
+    /**
+     * Same as listOf but instead of a list it returns a SortedBag
+     * @param serde given Serde
+     * @param separator seperator (Char)
+     * @return  a SortedBag of a serde capable of (de) serializing lists of values
+     */
     static <T extends Comparable<T>> Serde <SortedBag<T>> bagOf(Serde <T> serde, char separator) {
 
         return new Serde<>() {

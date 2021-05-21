@@ -46,15 +46,16 @@ public final class Trip {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
         Preconditions.checkArgument(points > 0);
-
+        Preconditions.checkArgument(!from.isEmpty());
+        Preconditions.checkArgument(!to.isEmpty());
         List<Trip> possibleTrips = new ArrayList<>();
 
         //Goes through all the stations in from and to and adds the trip to the list if the trip isn't already in that list
         for(Station s1 : from) {
             for (Station s2 : to) {
-                if(!possibleTrips.contains(new Trip(s1, s2, points))) {
-                    possibleTrips.add(new Trip(s1, s2, points));
-                }
+
+                possibleTrips.add(new Trip(s1, s2, points));
+
             }
         }
 

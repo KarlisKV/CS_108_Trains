@@ -11,6 +11,10 @@ import java.util.Random;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+/**
+ * RemotePlayerClient represent the remote player client
+ * @author Daniel Polka (326800)
+ */
 public class RemotePlayerClient {
 
     private final Player player;

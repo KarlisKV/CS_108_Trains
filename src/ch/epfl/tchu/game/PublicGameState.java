@@ -34,11 +34,9 @@ public class PublicGameState {
 
         Preconditions.checkArgument(ticketsCount >= 0);
         Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
-        Objects.requireNonNull(cardState);
-        Objects.requireNonNull(currentPlayerId);
 
-        this.cardState = cardState;
-        this.currentPlayerId = currentPlayerId;
+        this.cardState = Objects.requireNonNull(cardState);
+        this.currentPlayerId = Objects.requireNonNull(currentPlayerId);
         this.lastPlayer = lastPlayer;
         this.playerState = Map.copyOf(playerState);
         this.ticketsCount = ticketsCount;
