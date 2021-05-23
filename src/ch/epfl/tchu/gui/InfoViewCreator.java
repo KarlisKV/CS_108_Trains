@@ -1,6 +1,9 @@
 package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.game.PlayerId;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringExpression;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -9,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+
 import java.util.Map;
 
 /**
@@ -46,10 +50,12 @@ final class InfoViewCreator {
         // TODO: 5/23/2021 not sure if have to add this using the parameter PlayerId or not like do I add 1 here
         // or do I add both at the same time.
         for(int i = 0; i < PlayerId.COUNT; i++) {
-            statsVbox.getChildren().add(playerStatistics(PlayerId.ALL.get(i)));
+            statsVbox.getChildren().add(playerStatistics(PlayerId.ALL.get(i), playerNames.get(PlayerId.ALL.get(i)) ,gameState));
         }
 
         mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
+        //TODO: for(Text t : infos) mainVbox.getChildren().add(t);
+
         return mainVbox;
 
     }
@@ -59,7 +65,8 @@ final class InfoViewCreator {
      * @param playerId (PlayerId) of the given player
      * @return TextFlow for playerStatistics
      */
-    private static TextFlow playerStatistics(PlayerId playerId) {
+    private static TextFlow playerStatistics(PlayerId playerId, String playerName,  ObservableGameState state) {
+
         TextFlow textFlow = new TextFlow();
         textFlow.getStyleClass().add(String.valueOf(playerId));
 
@@ -68,10 +75,20 @@ final class InfoViewCreator {
         circle.getStyleClass().add("filled");
         textFlow.getChildren().add(circle);
 
+        ReadOnlyIntegerProperty ticketCount = state.playersTicketCount().get(PlayerId.ALL.indexOf(playerId));
+        ReadOnlyIntegerProperty cardCount = state.playersCardCount().get(PlayerId.ALL.indexOf(playerId));
+        ReadOnlyIntegerProperty carCount = state.playersCarCount().get(PlayerId.ALL.indexOf(playerId));
+        ReadOnlyIntegerProperty points = state.playerPoints().get(PlayerId.ALL.indexOf(playerId));
+
+        StringExpression playerInfo = Bindings.format(StringsFr.PLAYER_STATS, playerName, ticketCount, cardCount, carCount, points);
+
         Text text = new Text();
+        text.textProperty().bind(playerInfo);
         text.getStyleClass().add("filled");
         textFlow.getChildren().add(text);
+
         return textFlow;
     }
+
 
 }

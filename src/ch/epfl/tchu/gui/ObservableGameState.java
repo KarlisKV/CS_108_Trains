@@ -126,8 +126,6 @@ public final class ObservableGameState {
 
                 newRoutesMap.put(r, null);
 
-
-
                 boolean sideRouteNotClaimed = true;
 
                 if(ChMap.routes().indexOf(r) > 0 && ChMap.routes().indexOf(r) < ChMap.routes().size() - 1) {
@@ -146,12 +144,13 @@ public final class ObservableGameState {
                     for(PlayerId pid : PlayerId.ALL)
                         if(newGameState.playerState(pid).routes().contains(ChMap.routes().get(ChMap.routes().indexOf(r) - 1))) sideRouteNotClaimed = false;
 
-
-                if(newPlayerState.canClaimRoute(r) && sideRouteNotClaimed) newClaimMap.put(r, true);
-                else newClaimMap.put(r, false);
+                        if(newPlayerState.canClaimRoute(r) && sideRouteNotClaimed) newClaimMap.put(r, true);
+                        else newClaimMap.put(r, false);
 
             }
         }
+
+        System.out.println();
 
         if(!routesMap.equals(newRoutesMap)) routesMap.setValue(newRoutesMap);
 
@@ -205,7 +204,7 @@ public final class ObservableGameState {
         return new ArrayList<>(playersCarCount);
     }
 
-    public List<ReadOnlyIntegerProperty> playersPointsCount() {
+    public List<ReadOnlyIntegerProperty> playerPoints() {
         return new ArrayList<>(playersPointsCount);
     }
 
