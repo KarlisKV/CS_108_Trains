@@ -37,11 +37,8 @@ public class GraphicalPlayer {
         Node handView = DecksViewCreator
                 .createHandView(gameState);
 
-        BorderPane borderPane = new BorderPane();
-        borderPane.setBottom(handView);
-        borderPane.setCenter(mapView);
-        borderPane.setLeft(infoView);
-        borderPane.setRight(cardsView);
+        BorderPane borderPane = new BorderPane(mapView, null, cardsView, handView, infoView);
+
 
         Scene scene = new Scene(borderPane);
         Stage stage = new Stage();
