@@ -2,6 +2,8 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.game.Player;
 import ch.epfl.tchu.game.PlayerId;
+import ch.epfl.tchu.game.PlayerState;
+import ch.epfl.tchu.game.PublicGameState;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -44,8 +46,22 @@ public class GraphicalPlayer {
         Stage stage = new Stage();
         stage.setTitle("tCHu\u2014"+playerNames.get(playerId));
         stage.setScene(scene);
+    }
+
+    /**
+     * doing nothing but calling this method on the observable state of the player
+     * @param newGameState (PublicGameState) given public part of the game state
+     * @param newPlayerState (PlayerState) given playerState
+     */
+    public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
+        gameState.setState(newGameState, newPlayerState);
+    }
+//todo no idea how to write this, need to add messages to info part but how?
+    public void receiveInfo(String message) {
 
     }
+
+
 
 
 
