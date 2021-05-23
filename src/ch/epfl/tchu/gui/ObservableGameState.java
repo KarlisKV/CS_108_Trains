@@ -33,29 +33,29 @@ public final class ObservableGameState {
 
 
 
-    //Private stats of player PID:
+    //Private stats of player PlayerId:
 
     private final ListProperty<Ticket> tickets = new SimpleListProperty<>(FXCollections.observableArrayList());
-    //Quantity of each type of card the player PID has (in the order of the Card Enum)
+    //Quantity of each type of card the player PlayerId has (in the order of the Card Enum)
     private final ListProperty<Integer> cardAmount = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final MapProperty<Route, Boolean> canClaimRoute = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
 
 
-    //Other:
+    //Properties
 
-    private final PlayerId PID;
+    private final PlayerId playerId;
     private final ObjectProperty<PlayerState> playerStateProperty;
     private final ObjectProperty<PublicGameState> gameStateProperty;
 
 
     /**
      * Default constructor of ObservableGameState
-     * @param PID
+     * @param playerId the Id of the given player
      */
-    public ObservableGameState(PlayerId PID) {
+    public ObservableGameState(PlayerId playerId) {
 
-        this.PID = PID;
+        this.playerId= playerId;
 
         playerStateProperty = new SimpleObjectProperty<>();
         gameStateProperty = new SimpleObjectProperty<>();
@@ -110,15 +110,15 @@ public final class ObservableGameState {
 
         for(Route r : ChMap.routes()) {
 
-            if(newGameState.playerState(PID).routes().contains(r)) {
+            if(newGameState.playerState(playerId).routes().contains(r)) {
 
-                newRoutesMap.put(r, PID);
+                newRoutesMap.put(r, playerId);
 
                 newClaimMap.put(r, false);
 
-            } else if(newGameState.playerState(PID.next()).routes().contains(r)) {
+            } else if(newGameState.playerState(playerId.next()).routes().contains(r)) {
 
-                newRoutesMap.put(r, PID.next());
+                newRoutesMap.put(r, playerId.next());
 
                 newClaimMap.put(r, false);
 
