@@ -13,7 +13,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * InfoViewCreator represents the GUI Information in the left part of the game
@@ -40,6 +43,10 @@ final class InfoViewCreator {
         //Messages at start empty
         TextFlow textFlow = new TextFlow();
         textFlow.setId("game-info");
+        // Display max 4 messages
+        for (Text t : infos.subList(infos.size() - 4, infos.size())) {
+            textFlow.getChildren().add(t);
+        }
         //Separator (horizontal)
         Separator separator = new Separator();
         separator.setOrientation(Orientation.HORIZONTAL);
@@ -47,14 +54,14 @@ final class InfoViewCreator {
         VBox statsVbox = new VBox();
         statsVbox.setId("player-stats");
 
-        // TODO: 5/23/2021 not sure if have to add this using the parameter PlayerId or not like do I add 1 here
-        // or do I add both at the same time.
-        for(int i = 0; i < PlayerId.COUNT; i++) {
-            statsVbox.getChildren().add(playerStatistics(PlayerId.ALL.get(i), playerNames.get(PlayerId.ALL.get(i)) ,gameState));
+        // Set in first order the current player in the Vbox
+        List<PlayerId> sortedEnumList = PlayerId.ALL.stream().collect(Collectors.toList());
+        sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 0 : 1));
+        for (PlayerId id : sortedEnumList) {
+            statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
         }
 
         mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
-        //TODO: for(Text t : infos) mainVbox.getChildren().add(t);
 
         return mainVbox;
 
@@ -84,7 +91,6 @@ final class InfoViewCreator {
 
         Text text = new Text();
         text.textProperty().bind(playerInfo);
-        text.getStyleClass().add("filled");
         textFlow.getChildren().add(text);
 
         return textFlow;
