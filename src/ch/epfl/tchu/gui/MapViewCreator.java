@@ -38,6 +38,10 @@ final class MapViewCreator {
             state.canClaimRoute().addListener((o, oV, nV) -> actionnable.setValue(!nV.get(route) || handlerObjectProperty.isNull().get()));
             routeGroup.disableProperty().bind(actionnable);
 
+            state.routesMapProperty().addListener((o, oV, nV) -> {
+                if(oV.get(route) == null && nV.get(route) != null) routeGroup.getStyleClass().add(nV.get(route).toString());
+            });
+
             // Add action handler to route group before adding it to the pane
             routeGroup.setOnMouseClicked(event -> handleRouteClick(route, state, handlerObjectProperty, cardChooser));
             pane.getChildren().add(routeGroup);
