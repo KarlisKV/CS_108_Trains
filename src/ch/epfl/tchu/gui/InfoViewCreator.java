@@ -14,10 +14,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * InfoViewCreator represents the GUI Information in the left part of the game
@@ -46,10 +46,7 @@ final class InfoViewCreator {
         //Messages at start empty
         TextFlow textFlow = new TextFlow();
         textFlow.setId("game-info");
-        // Display max 4 messages
-        for (Text t : infos.subList(infos.size() - 4, infos.size())) {
-            textFlow.getChildren().add(t);
-        }
+
         //Separator (horizontal)
         Separator separator = new Separator();
         separator.setOrientation(Orientation.HORIZONTAL);
@@ -58,24 +55,20 @@ final class InfoViewCreator {
         statsVbox.setId("player-stats");
 
         // Set in first order the current player in the Vbox
-        List<PlayerId> sortedEnumList = PlayerId.ALL.stream().collect(Collectors.toList());
+        List<PlayerId> sortedEnumList = new ArrayList<>(PlayerId.ALL);
         sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 0 : 1));
-        for (PlayerId id : sortedEnumList) {
-            statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
-        }
-        statsVbox.getChildren().add(playerStatistics(playerId, playerNames.get(playerId) ,gameState));
-        statsVbox.getChildren().add(playerStatistics(playerId.next(), playerNames.get(playerId.next()) ,gameState));
+        for (PlayerId id : sortedEnumList) statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
 
-        mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
-
-        for(Text t : infos) mainVbox.getChildren().add(t);
+        for(Text t : infos) textFlow.getChildren().add(t);
 
         infos.addListener((ListChangeListener<Text>) c -> {
 
             if(infos.size() > MAX_GAME_INFO_COUNT) mainVbox.getChildren().remove(infos.get(infos.size() - 5));
-            mainVbox.getChildren().add(infos.get(infos.size() - 1));
+            textFlow.getChildren().add(infos.get(infos.size() - 1));
 
         });
+
+        mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
 
         return mainVbox;
 
