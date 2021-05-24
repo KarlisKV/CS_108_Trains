@@ -97,7 +97,6 @@ final class InfoViewCreator {
 
         Text text = new Text();
         text.textProperty().bind(playerInfo);
-        text.getStyleClass().add("filled");
         textFlow.getChildren().add(text);
 
         return textFlow;
