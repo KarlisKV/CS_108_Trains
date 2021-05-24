@@ -10,9 +10,10 @@ import java.util.Map;
 import static ch.epfl.tchu.game.PlayerId.PLAYER_1;
 import static ch.epfl.tchu.game.PlayerId.PLAYER_2;
 
-public final class GraphicalPlayerTest { // extends Application {
+public final class GraphicalPlayerTest extends Application {
 
-    /*
+    public static void main(String[] args) { launch(args); }
+    
     private void setState(GraphicalPlayer player) {
 
         PlayerState p1State =
@@ -53,5 +54,4 @@ public final class GraphicalPlayerTest { // extends Application {
         p.startTurn(drawTicketsH, drawCardH, claimRouteH);
     }
 
-     */
 }

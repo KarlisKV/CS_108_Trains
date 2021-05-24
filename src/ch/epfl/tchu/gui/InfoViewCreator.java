@@ -44,7 +44,8 @@ final class InfoViewCreator {
         TextFlow textFlow = new TextFlow();
         textFlow.setId("game-info");
         // Display max 4 messages
-        for (Text t : infos.subList(infos.size() - 4, infos.size())) {
+        List<Text> trimmedInfos = infos.size() > 4 ? infos.subList(infos.size() - 4, infos.size()) : infos;
+        for (Text t : trimmedInfos) {
             textFlow.getChildren().add(t);
         }
         //Separator (horizontal)
