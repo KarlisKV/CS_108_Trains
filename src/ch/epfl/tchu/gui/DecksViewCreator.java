@@ -19,7 +19,7 @@ import java.util.*;
 
 final class DecksViewCreator{
 
-    private static GameState gameState = GameState.initial(SortedBag.of(ChMap.tickets()), new Random());
+//    private static GameState gameState = GameState.initial(SortedBag.of(ChMap.tickets()), new Random());
 
     private DecksViewCreator() {}
 
@@ -71,15 +71,15 @@ final class DecksViewCreator{
         mainBox.setId("card-pane");
 
         Button ticketsButton = drawButton(state.ticketsGauge(), "Billets");
-        ticketsButton.setOnMouseClicked((e) -> {
+        /* ticketsButton.setOnMouseClicked((e) -> {
             int rand = new Random().nextInt(2);
 
             if(rand == 0) gameState = gameState.withChosenAdditionalTickets(gameState.topTickets(3), gameState.topTickets(1));
             else gameState = gameState.withBlindlyDrawnCard();
 
             state.setState(gameState, gameState.currentPlayerState());
-        });
-    //    ticketsButton.setOnMouseClicked(event -> ticketsHandler.get().onDrawTickets());
+        });  */
+        ticketsButton.setOnMouseClicked(event -> ticketsHandler.get().onDrawTickets());
         mainBox.getChildren().add(ticketsButton);
 
         for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i) {

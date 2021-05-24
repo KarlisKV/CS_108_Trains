@@ -4,6 +4,7 @@ import ch.epfl.tchu.game.PlayerId;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.*;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -21,6 +22,8 @@ import java.util.Map;
  * @author Daniel Polka  (326800)
  */
 final class InfoViewCreator {
+
+    private final static int MAX_GAME_INFO_COUNT = 4;
 
     private InfoViewCreator(){}
 
@@ -47,14 +50,19 @@ final class InfoViewCreator {
         VBox statsVbox = new VBox();
         statsVbox.setId("player-stats");
 
-        // TODO: 5/23/2021 not sure if have to add this using the parameter PlayerId or not like do I add 1 here
-        // or do I add both at the same time.
-        for(int i = 0; i < PlayerId.COUNT; i++) {
-            statsVbox.getChildren().add(playerStatistics(PlayerId.ALL.get(i), playerNames.get(PlayerId.ALL.get(i)) ,gameState));
-        }
+        statsVbox.getChildren().add(playerStatistics(playerId, playerNames.get(playerId) ,gameState));
+        statsVbox.getChildren().add(playerStatistics(playerId.next(), playerNames.get(playerId.next()) ,gameState));
 
         mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
-        //TODO: for(Text t : infos) mainVbox.getChildren().add(t);
+
+        for(Text t : infos) mainVbox.getChildren().add(t);
+
+        infos.addListener((ListChangeListener<Text>) c -> {
+
+            if(infos.size() > MAX_GAME_INFO_COUNT) mainVbox.getChildren().remove(infos.get(infos.size() - 5));
+            mainVbox.getChildren().add(infos.get(infos.size() - 1));
+
+        });
 
         return mainVbox;
 
