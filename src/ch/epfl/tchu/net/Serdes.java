@@ -16,7 +16,7 @@ public class Serdes {
 
     //Integer serde
     public static final Serde<Integer> INTEGER_SERDE = Serde.of((Objects::toString), (Integer::parseInt));
-
+    // TODO: 5/24/2021 kutfd 
     //String serde
     public static final Serde<String> STRING_SERDE = Serde.of((string -> Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.UTF_8))),
                     ((base64 -> new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8))));
