@@ -48,7 +48,7 @@ public final class Stages9and10tests extends Application {
         Map<PlayerId, String> playerNames =
                 Map.of(PLAYER_1, "Ada", PLAYER_2, "Charles");
         Node infoView = InfoViewCreator
-                .createInfoView(PLAYER_1, playerNames, gameState, infos);
+                .createInfoView(PLAYER_2, playerNames, gameState, infos);
 
         BorderPane mainPane =
                 new BorderPane(mapView, null, cardsView, handView, infoView);

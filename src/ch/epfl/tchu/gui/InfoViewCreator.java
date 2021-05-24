@@ -57,15 +57,19 @@ final class InfoViewCreator {
         List<PlayerId> sortedEnumList = new ArrayList<>(PlayerId.ALL);
         sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 0 : 1));
         for (PlayerId id : sortedEnumList) statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
+        List<Text> trimmedInfos = infos.size() > MAX_GAME_INFO_COUNT ? infos.subList(infos.size() - MAX_GAME_INFO_COUNT, infos.size()) : infos;
+        for (Text t : trimmedInfos) {
+            textFlow.getChildren().add(t);
+        }
 
-        for(Text t : infos) textFlow.getChildren().add(t);
+        // for(Text t : infos) textFlow.getChildren().add(t);
 
-        infos.addListener((ListChangeListener<Text>) c -> {
+        // infos.addListener((ListChangeListener<Text>) c -> {
 
-            if(infos.size() > MAX_GAME_INFO_COUNT) mainVbox.getChildren().remove(infos.get(infos.size() - 5));
-            textFlow.getChildren().add(infos.get(infos.size() - 1));
+        //     if(infos.size() > MAX_GAME_INFO_COUNT) mainVbox.getChildren().remove(infos.get(infos.size() - 5));
+        //     textFlow.getChildren().add(infos.get(infos.size() - 1));
 
-        });
+        // });
 
         mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
 
