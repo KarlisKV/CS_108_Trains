@@ -3,7 +3,9 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static ch.epfl.tchu.game.PlayerId.PLAYER_1;
 import static ch.epfl.tchu.game.PlayerId.PLAYER_2;
@@ -35,8 +38,15 @@ public final class Stages9and10tests extends Application {
                 new SimpleObjectProperty<>(Stages9and10tests::claimRoute);
         ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTickets =
                 new SimpleObjectProperty<>(Stages9and10tests::drawTickets);
+
         ObjectProperty<ActionHandlers.DrawCardHandler> drawCard =
-                new SimpleObjectProperty<>(Stages9and10tests::drawCard);
+                new SimpleObjectProperty<>((s) -> {
+                    drawCard(s);
+                    if(infos.size() == 5) infos.remove(0);
+                    List<Text> texts = List.of(new Text(" aaa \n"), new Text(" bbb \n"), new Text(" ccc \n"), new Text(" ddd \n"),
+                            new Text(" eee \n"), new Text(" fff \n"));
+                    infos.add(texts.get(new Random().nextInt(texts.size())));
+                });
 
         Node mapView = MapViewCreator
                 .createMapView(gameState, claimRoute, Stages9and10tests::chooseCards);

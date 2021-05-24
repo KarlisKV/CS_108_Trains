@@ -26,8 +26,6 @@ import java.util.Map;
  */
 final class InfoViewCreator {
 
-    private final static int MAX_GAME_INFO_COUNT = 4;
-
     private InfoViewCreator(){}
 
     /**
@@ -55,21 +53,39 @@ final class InfoViewCreator {
 
         // Set in first order the current player in the Vbox
         List<PlayerId> sortedEnumList = new ArrayList<>(PlayerId.ALL);
-        sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 0 : 1));
+        sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 1 : 0));
         for (PlayerId id : sortedEnumList) statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
+
+
+
+        //This doesn't work bc the infos don't update on screen otherwise (the first infos appear but when the list is updated the new ones don't appear)
+        /*
         List<Text> trimmedInfos = infos.size() > MAX_GAME_INFO_COUNT ? infos.subList(infos.size() - MAX_GAME_INFO_COUNT, infos.size()) : infos;
         for (Text t : trimmedInfos) {
             textFlow.getChildren().add(t);
         }
+         */
 
-        // for(Text t : infos) textFlow.getChildren().add(t);
+        //So first you have to add all "current" infos "manually" to textFlow
 
-        // infos.addListener((ListChangeListener<Text>) c -> {
+        for(Text t : infos) textFlow.getChildren().add(t);
 
-        //     if(infos.size() > MAX_GAME_INFO_COUNT) mainVbox.getChildren().remove(infos.get(infos.size() - 5));
-        //     textFlow.getChildren().add(infos.get(infos.size() - 1));
+        //Then you need a changeListener for next time an info is added
 
-        // });
+        // TODO: 24.05.21 what in the actual fuck is going on with the TextFlow
+
+        infos.addListener((ListChangeListener<Text>) c -> {
+            c.next();
+            if(c.getAddedSize() > 0) {
+                textFlow.getChildren().addAll(c.getAddedSubList());
+
+                System.out.println(textFlow.getChildren());
+                System.out.println();
+                System.out.println();
+
+            }
+            else if(c.getRemovedSize() > 0) textFlow.getChildren().removeAll(c.getRemoved());
+        });
 
         mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
 
