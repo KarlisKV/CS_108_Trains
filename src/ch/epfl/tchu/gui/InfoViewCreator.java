@@ -4,6 +4,7 @@ import ch.epfl.tchu.game.PlayerId;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.*;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -13,10 +14,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * InfoViewCreator represents the GUI Information in the left part of the game
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
  * @author Daniel Polka  (326800)
  */
 final class InfoViewCreator {
+
+    private final static int MAX_GAME_INFO_COUNT = 4;
 
     private InfoViewCreator(){}
 
@@ -43,11 +46,6 @@ final class InfoViewCreator {
         //Messages at start empty
         TextFlow textFlow = new TextFlow();
         textFlow.setId("game-info");
-        // Display max 4 messages
-        List<Text> trimmedInfos = infos.size() > 4 ? infos.subList(infos.size() - 4, infos.size()) : infos;
-        for (Text t : trimmedInfos) {
-            textFlow.getChildren().add(t);
-        }
         //Separator (horizontal)
         Separator separator = new Separator();
         separator.setOrientation(Orientation.HORIZONTAL);
@@ -56,11 +54,18 @@ final class InfoViewCreator {
         statsVbox.setId("player-stats");
 
         // Set in first order the current player in the Vbox
-        List<PlayerId> sortedEnumList = PlayerId.ALL.stream().collect(Collectors.toList());
+        List<PlayerId> sortedEnumList = new ArrayList<>(PlayerId.ALL);
         sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 0 : 1));
-        for (PlayerId id : sortedEnumList) {
-            statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
-        }
+        for (PlayerId id : sortedEnumList) statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
+
+        for(Text t : infos) textFlow.getChildren().add(t);
+
+        infos.addListener((ListChangeListener<Text>) c -> {
+
+            if(infos.size() > MAX_GAME_INFO_COUNT) mainVbox.getChildren().remove(infos.get(infos.size() - 5));
+            textFlow.getChildren().add(infos.get(infos.size() - 1));
+
+        });
 
         mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
 
@@ -92,6 +97,7 @@ final class InfoViewCreator {
 
         Text text = new Text();
         text.textProperty().bind(playerInfo);
+        text.getStyleClass().add("filled");
         textFlow.getChildren().add(text);
 
         return textFlow;

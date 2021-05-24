@@ -27,6 +27,10 @@ public final class Stages9and10tests extends Application {
     public void start(Stage primaryStage) {
         ObservableGameState gameState = new ObservableGameState(PLAYER_1);
 
+        ObservableList<Text> infos = FXCollections.observableArrayList(
+                new Text("Première information.\n"),
+                new Text("\nSeconde information.\n"));
+
         ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
                 new SimpleObjectProperty<>(Stages9and10tests::claimRoute);
         ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTickets =
@@ -43,9 +47,6 @@ public final class Stages9and10tests extends Application {
 
         Map<PlayerId, String> playerNames =
                 Map.of(PLAYER_1, "Ada", PLAYER_2, "Charles");
-        ObservableList<Text> infos = FXCollections.observableArrayList(
-                new Text("Première information.\n"),
-                new Text("\nSeconde information.\n"));
         Node infoView = InfoViewCreator
                 .createInfoView(PLAYER_1, playerNames, gameState, infos);
 
