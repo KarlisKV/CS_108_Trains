@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -141,20 +142,25 @@ public class GraphicalPlayer {
 
         assert Platform.isFxApplicationThread();
 
+        Stage stage = new Stage(StageStyle.UTILITY);
+
         ListView<Ticket> listView = new ListView<>();
         listView.getItems().addAll(options.toList());
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         String instruction = String.format(StringsFr.CHOOSE_TICKETS, options.size() - Constants.DISCARDABLE_TICKETS_COUNT,
                     StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT));
 
-
-
-
         Text text = new Text(instruction);
-
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, listView, StringsFr.TICKETS_CHOICE);
+        Button button = new Button("Choisir");
+
+        button.setOnAction(event -> {
+            stage.hide();
+            chooseTicketHandler.onChooseTickets(SortedBag.of(listView.getSelectionModel().getSelectedItem()));
+        });
+        chooseTicketHandler.onChooseTickets(options);
+        selectionScene(textFlow, listView, StringsFr.TICKETS_CHOICE, stage, button);
 
     }
 
@@ -180,25 +186,33 @@ public class GraphicalPlayer {
 
         assert Platform.isFxApplicationThread();
 
-        // todo how to do the listView? Instructions say I Need to add a 'cellFactory'
-        ListView<SortedBag<Card>> listView = new ListView<>((ObservableList<SortedBag<Card>>) options);
+        ListView<SortedBag<Card>> listView = createListView(options);
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-       Text text = new Text();
+        Text text = new Text();
+        Stage stage = new Stage(StageStyle.UTILITY);
 
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE);
+
+
+        cardsHandler.onChooseCards(options.get(0));
+
+        Button button = new Button("Choisir");
+
+        button.setOnAction(event -> {
+            stage.hide();
+            cardsHandler.onChooseCards(listView.getSelectionModel().getSelectedItem());
+        });
+        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button);
     }
 
     /**
-     * @param options      (List<SortedBag<Card>>)
-     * @param cardsHandler (ChooseCardsHandler)
+     * Private method to reduce code duplication for listView cell factory creation for card choosing.
+     * @param options
+     * @return
      */
-    public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
-
-        assert Platform.isFxApplicationThread();
-
+    private ListView <SortedBag<Card>> createListView(List<SortedBag<Card>> options) {
         ListView<SortedBag<Card>> listView = new ListView<>();
         listView.setCellFactory(v ->
                 new TextFieldListCell<>(new StringConverter<>() {
@@ -213,13 +227,30 @@ public class GraphicalPlayer {
                     }
                 }));
         listView.getItems().addAll(options);
+        return listView;
+    }
+
+    /**
+     * @param options      (List<SortedBag<Card>>)
+     * @param cardsHandler (ChooseCardsHandler)
+     */
+    public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
+
+        assert Platform.isFxApplicationThread();
+        Stage stage = new Stage();
+        ListView<SortedBag<Card>> listView = createListView(options);
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        Button button = new Button("Choisir");
+        button.setOnAction(event -> {
+            stage.hide();
+            cardsHandler.onChooseCards(listView.getSelectionModel().getSelectedItem());
+        });
 
         Text text = new Text(StringsFr.CHOOSE_ADDITIONAL_CARDS);
 
         TextFlow textFlow = new TextFlow(text);
-
-        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE);
+        cardsHandler.onChooseCards(options.get(0));
+        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button);
     }
 
 
@@ -229,17 +260,16 @@ public class GraphicalPlayer {
     /**
      * Scene graph for the ticket and card pop-up window
      */
-    private <E> void selectionScene(TextFlow textFlow, ListView<E> listView, String title) {
+    private <E> void selectionScene(TextFlow textFlow, ListView<E> listView, String title, Stage stage, Button button) {
 
-        Stage stage = new Stage(StageStyle.UTILITY);
+
+
         stage.initOwner(mainStage);
         stage.initModality(Modality.WINDOW_MODAL);
-
+        stage.setOnCloseRequest(Event::consume);
         stage.setTitle(title);
 
-        Button button = new Button("Choisir");
-        //TODO: add proper functionality to button
-        button.setOnMouseClicked((e) -> stage.close());
+
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(textFlow, listView, button);
