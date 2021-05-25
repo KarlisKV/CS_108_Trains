@@ -73,12 +73,4 @@ public class PublicCardState {
         Objects.checkIndex(slot, Constants.FACE_UP_CARDS_COUNT);
         return faceUpCards.get(slot);
     }
-
-    /**
-     * returns the total number of cards that are not in the players' hand
-     * @return the total number of cards that are not in the players' hand
-     */
-    public int totalSize() {
-        return deckSize + discardsSize + faceUpCards.size();
-    }
 }

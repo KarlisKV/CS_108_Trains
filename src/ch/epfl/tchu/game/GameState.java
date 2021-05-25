@@ -199,13 +199,10 @@ public final class GameState extends PublicGameState {
      */
     public GameState withDrawnFaceUpCard(int slot) {
 
-        Preconditions.checkArgument(canDrawCards());
-
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.replace(currentPlayerId(), newPlayerState.get(currentPlayerId()).withAddedCard(cardState.faceUpCard(slot)));
 
         CardState newCardState = cardState.withDrawnFaceUpCard(slot);
-
 
         return new GameState(currentPlayerId(), newPlayerState, lastPlayer(), tickets, newCardState);
     }
@@ -217,8 +214,6 @@ public final class GameState extends PublicGameState {
      * @throws IllegalArgumentException if the player can't draw any cards
      */
     public GameState withBlindlyDrawnCard() {
-
-        Preconditions.checkArgument(canDrawCards());
 
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.replace(currentPlayerId(), newPlayerState.get(currentPlayerId()).withAddedCard(cardState.topDeckCard()));

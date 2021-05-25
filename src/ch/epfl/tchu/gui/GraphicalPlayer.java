@@ -6,6 +6,7 @@ import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.PlayerState;
 import ch.epfl.tchu.game.PublicGameState;
 import ch.epfl.tchu.game.Ticket;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -63,6 +64,9 @@ public class GraphicalPlayer {
      * @param newPlayerState (PlayerState) given playerState
      */
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
+
+        assert Platform.isFxApplicationThread();
+
         gameState.setState(newGameState, newPlayerState);
     }
 
@@ -70,6 +74,9 @@ public class GraphicalPlayer {
      * @param message (String)
      */
     public void receiveInfo(String message) {
+
+        assert Platform.isFxApplicationThread();
+
         infos.add(new Text(message));
         System.out.println("@GraphicalPlayer (receiveInfo) - Info: " + message);
     }
@@ -81,6 +88,8 @@ public class GraphicalPlayer {
      */
     public void startTurn(ActionHandlers.DrawTicketsHandler ticketsHandler, ActionHandlers.DrawCardHandler cardsHandler,
             ActionHandlers.ClaimRouteHandler claimRouteHandler) {
+
+        assert Platform.isFxApplicationThread();
 
         if(gameState.canDrawTickets()) this.drawTicketsHandler.setValue(() -> {
             ticketsHandler.onDrawTickets();
@@ -102,6 +111,9 @@ public class GraphicalPlayer {
      * @param chooseTicketHandler (ChooseTicketsHandler)
      */
     public void chooseTickets(SortedBag<Ticket> options, ActionHandlers.ChooseTicketsHandler chooseTicketHandler) {
+
+        assert Platform.isFxApplicationThread();
+
         // Qui ouvre une fenêtre similaire à celle des figures 3 et 4, permettant au
         // joueur de faire son choix ; une fois celui-ci confirmé, le gestionnaire de
         // choix est appelé avec ce choix en argument
@@ -112,6 +124,9 @@ public class GraphicalPlayer {
      * @param cardHandler (DrawCardHandler)
      */
     public void drawCard(ActionHandlers.DrawCardHandler cardHandler) {
+
+        assert Platform.isFxApplicationThread();
+
         // Qui autorise le joueur a choisir une carte wagon/locomotive, soit l'une des
         // cinq dont la face est visible, soit celle du sommet de la pioche ; une fois
         // que le joueur a cliqué sur l'une de ces cartes, le gestionnaire est appelé
@@ -134,6 +149,9 @@ public class GraphicalPlayer {
      */
     private static void chooseClaimCards(List<SortedBag<Card>> options,
             ActionHandlers.ChooseCardsHandler cardsHandler) {
+
+        assert Platform.isFxApplicationThread();
+
         // qui ouvre une fenêtre similaire à celle de la figure 5 permettant au joueur
         // de faire son choix ; une fois que celui-ci a été fait et confirmé, le
         // gestionnaire de choix est appelé avec le choix du joueur en argument
@@ -145,6 +163,9 @@ public class GraphicalPlayer {
      * @param cardsHandler (ChooseCardsHandler)
      */
     public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
+
+        assert Platform.isFxApplicationThread();
+
         // Qui ouvre une fenêtre similaire à celle de la figure 6 permettant au joueur
         // de faire son choix ; une fois que celui-ci a été fait et confirmé, le
         // gestionnaire de choix est appelé avec le choix du joueur en argument.

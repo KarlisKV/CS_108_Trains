@@ -176,9 +176,9 @@ public final class Game {
                             if(routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards) > 0) {
 
                                 if((game.currentPlayerState().possibleAdditionalCards(routeToClaim.
-                                        additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards, topCards)).size() > 0) {
+                                        additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards)).size() > 0) {
                                     additionalCards = currentPlayer.chooseAdditionalCards(game.currentPlayerState().possibleAdditionalCards(routeToClaim.
-                                            additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards, topCards));
+                                            additionalClaimCardsCount(initialClaimCards, topCards), initialClaimCards));
                                 }
                                 hasToAddMoreCards = true;
                             }

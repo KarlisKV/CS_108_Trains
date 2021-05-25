@@ -72,15 +72,6 @@ public final class PlayerState extends  PublicPlayerState {
     }
 
     /**
-     * returns an identical state to the receiver, except that the player also has the given cards,
-     * @param additionalCards (SortedBag<Card>) additional cards that the player has
-     * @return an identical state to the receiver, except that the player also has the given cards,
-     */
-    public PlayerState withAddedCards(SortedBag<Card> additionalCards) {
-        return new PlayerState(tickets, cards.union(additionalCards), this.routes());
-    }
-
-    /**
      * returns true iff the player can seize the given route
      * @param route (Route) route the player wants to seize
      * @return true iff the player can seize the given route
@@ -118,15 +109,14 @@ public final class PlayerState extends  PublicPlayerState {
      * sorted in ascending order of the number of locomotive cards
      * @param additionalCardsCount (int) number of additional cards
      * @param initialCards (SortedBag<Card>) initially placed cards
-     * @param drawnCards (SortedBag<Card>) 3 drawn cards from the top puke
      * @return the list of all sets of cards that the player could use to seize a tunnel
      * @throws IllegalArgumentException if the number of additional cards is not between 1 and 3 (inclusive), if the set of initial cards is
      * empty or contains more than 2 different types of cards, or if the set of cards drawn does not contain exactly 3 cards
      */
-    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards) {
+    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards) {
 
         Map<Card, Integer> twoTypesMax = initialCards.toMap();
-        Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3 && !initialCards.isEmpty() && twoTypesMax.size() <= 2 && drawnCards.size() == 3);
+        Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3 && !initialCards.isEmpty() && twoTypesMax.size() <= 2);
 
         List<SortedBag<Card>> possibleCards = new ArrayList<>();
         SortedBag<Card> cardsDifference = SortedBag.of(cards).difference(initialCards);
