@@ -1,32 +1,43 @@
 package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.Card;
-import ch.epfl.tchu.game.PlayerId;
-import ch.epfl.tchu.game.PlayerState;
-import ch.epfl.tchu.game.PublicGameState;
-import ch.epfl.tchu.game.Ticket;
+import ch.epfl.tchu.game.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+
+import javax.print.DocFlavor;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * GraphicalPlayer class represents the graphical properties and helps to manage the game
+ * @author Daniel Polka  (326800)
+ * @author Karlis Velins (325180)
+ */
 public class GraphicalPlayer {
 
     private final ObservableGameState gameState;
     private final PlayerId playerId;
     private final Map<PlayerId, String> playerNames;
     private final ObservableList<Text> infos;
-
+    private final Stage mainStage;
     private final ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketsHandler;
     private final ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler;
     private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
@@ -39,7 +50,7 @@ public class GraphicalPlayer {
         this.drawTicketsHandler = new SimpleObjectProperty<>();
         this.drawCardsHandler = new SimpleObjectProperty<>();
         this.claimRouteHandler = new SimpleObjectProperty<>();
-
+        this.mainStage = new Stage();
         /**
          * Here is the scene graph part
          */
@@ -50,16 +61,15 @@ public class GraphicalPlayer {
 
         BorderPane borderPane = new BorderPane(mapView, null, cardsView, handView, infoView);
 
-        Stage stage = new Stage();
-        stage.setTitle("tCHu\u2014" + playerNames.get(playerId));
-        stage.setScene(new Scene(borderPane));
-        stage.show();
+
+        mainStage.setTitle("tCHu\u2014" + playerNames.get(playerId));
+        mainStage.setScene(new Scene(borderPane));
+        mainStage.show();
 
     }
 
     /**
      * doing nothing but calling this method on the observable state of the player
-     * 
      * @param newGameState   (PublicGameState) given public part of the game state
      * @param newPlayerState (PlayerState) given playerState
      */
@@ -107,6 +117,28 @@ public class GraphicalPlayer {
     }
 
     /**
+     * Scene graph for the ticket and card pop-up window
+     * @return
+     */
+    private <E> Stage selectionScene(TextFlow textFlow, Button button, ListView<E> listView, String title) {
+
+        Stage stage = new Stage();
+        stage.initStyle(StageStyle.UTILITY);
+        stage.initOwner(mainStage);
+        stage.initModality(Modality.WINDOW_MODAL);
+
+        stage.setTitle(title);
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(textFlow, listView, button);
+        Scene scene = new Scene(vBox);
+        stage.setScene(scene);
+        scene.getStylesheets().add("chooser.css");
+
+        return stage;
+    }
+    /**
+     * Method for the scene graph when a player needs to choose his tickets
      * @param options             (SortedBag<Ticket>)
      * @param chooseTicketHandler (ChooseTicketsHandler)
      */
@@ -114,10 +146,22 @@ public class GraphicalPlayer {
 
         assert Platform.isFxApplicationThread();
 
-        // Qui ouvre une fenêtre similaire à celle des figures 3 et 4, permettant au
-        // joueur de faire son choix ; une fois celui-ci confirmé, le gestionnaire de
-        // choix est appelé avec ce choix en argument
-        System.out.println("@GraphicalPlayer (chooseTickets) - My options: " + options);
+
+        // todo how to do the listView? Instructions say I Need to add a 'cellFactory' but i dont understand,
+        // todo is it just for the List<SortedBag<Card>> or do I need it here? Or can I just cast the thing?
+        ListView<Ticket> listView = new ListView<>((ObservableList<Ticket>) options.toList());
+        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        Button button = new Button();
+        // TODO: 5/25/2021 button disableProperty no clue need to use actionHnadler
+
+        Text text = new Text(String.format(StringsFr.CHOOSE_TICKETS, options.size() - Constants.DISCARDABLE_TICKETS_COUNT,
+                StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT)));
+
+        TextFlow textFlow = new TextFlow(text);
+
+        selectionScene(textFlow, button, listView, StringsFr.CHOOSE_TICKETS);
+
     }
 
     /**
@@ -147,15 +191,23 @@ public class GraphicalPlayer {
      * @param options      (List<SortedBag<Card>>)
      * @param cardsHandler (ChooseCardsHandler)
      */
-    private static void chooseClaimCards(List<SortedBag<Card>> options,
+    public void chooseClaimCards(List<SortedBag<Card>> options,
             ActionHandlers.ChooseCardsHandler cardsHandler) {
 
         assert Platform.isFxApplicationThread();
 
-        // qui ouvre une fenêtre similaire à celle de la figure 5 permettant au joueur
-        // de faire son choix ; une fois que celui-ci a été fait et confirmé, le
-        // gestionnaire de choix est appelé avec le choix du joueur en argument
-        System.out.println("@GraphicalPlayer (chooseClaimCards) - List of bags of Cards: " + options);
+        // todo how to do the listView? Instructions say I Need to add a 'cellFactory'
+        ListView<SortedBag<Card>> listView = new ListView<>((ObservableList<SortedBag<Card>>) options);
+        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        Button button = new Button();
+        // TODO: 5/25/2021 button disableProperty no clue need to use actionHnadler
+
+       Text text = new Text();
+
+        TextFlow textFlow = new TextFlow(text);
+
+        selectionScene(textFlow, button, listView, StringsFr.CHOOSE_CARDS);
     }
 
     /**
@@ -164,11 +216,19 @@ public class GraphicalPlayer {
      */
     public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
 
-        assert Platform.isFxApplicationThread();
 
-        // Qui ouvre une fenêtre similaire à celle de la figure 6 permettant au joueur
-        // de faire son choix ; une fois que celui-ci a été fait et confirmé, le
-        // gestionnaire de choix est appelé avec le choix du joueur en argument.
+        // todo how to do the listView? Instructions say I Need to add a 'cellFactory'
+        ListView<SortedBag<Card>> listView = new ListView<>((ObservableList<SortedBag<Card>>) options);
+        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        Button button = new Button();
+        // TODO: 5/25/2021 button disableProperty no clue need to use actionHnadler
+
+        Text text = new Text();
+
+        TextFlow textFlow = new TextFlow(text);
+
+        selectionScene(textFlow, button, listView, StringsFr.CHOOSE_ADDITIONAL_CARDS);
     }
 
 }
