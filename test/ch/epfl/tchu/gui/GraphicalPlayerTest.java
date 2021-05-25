@@ -51,7 +51,7 @@ public final class GraphicalPlayerTest extends Application {
                     p.receiveInfo(String.format("Je m'empare de %s avec %s \n", rn, cs));
                 };
         ActionHandlers.ChooseTicketsHandler chooseTicketsH = (t) -> p.receiveInfo(String.format
-                (StringsFr.CHOOSE_TICKETS, t.size() - Constants.DISCARDABLE_TICKETS_COUNT, StringsFr.plural(t.size() - Constants.DISCARDABLE_TICKETS_COUNT)) + "\n");
+                (StringsFr.DREW_TICKETS, playerNames.get(PLAYER_1), t.size(), StringsFr.plural(t.size())) + "\n");
 
         p.chooseTickets(SortedBag.of(ChMap.tickets().subList(0, 5)), chooseTicketsH);
         p.startTurn(drawTicketsH, drawCardH, claimRouteH);

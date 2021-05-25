@@ -156,8 +156,9 @@ public class GraphicalPlayer {
         Button button = new Button("Choisir");
 
         button.setOnAction(event -> {
-            stage.hide();
-            chooseTicketHandler.onChooseTickets(SortedBag.of(listView.getSelectionModel().getSelectedItem()));
+            if(listView.getSelectionModel().getSelectedItems().size() < (options.size() - Constants.DISCARDABLE_TICKETS_COUNT)) return;
+            chooseTicketHandler.onChooseTickets(SortedBag.of(listView.getSelectionModel().getSelectedItems()));
+            stage.close();
         });
         chooseTicketHandler.onChooseTickets(options);
         selectionScene(textFlow, listView, StringsFr.TICKETS_CHOICE, stage, button);
@@ -262,14 +263,10 @@ public class GraphicalPlayer {
      */
     private <E> void selectionScene(TextFlow textFlow, ListView<E> listView, String title, Stage stage, Button button) {
 
-
-
         stage.initOwner(mainStage);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.setOnCloseRequest(Event::consume);
         stage.setTitle(title);
-
-
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(textFlow, listView, button);
