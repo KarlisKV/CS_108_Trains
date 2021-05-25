@@ -3,8 +3,11 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.stage.Stage;
 
+import java.util.List;
 import java.util.Map;
 
 import static ch.epfl.tchu.game.PlayerId.PLAYER_1;
@@ -41,20 +44,25 @@ public final class GraphicalPlayerTest extends Application {
         GraphicalPlayer p = new GraphicalPlayer(PLAYER_1, playerNames);
         setState(p);
 
+        ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
+                new SimpleObjectProperty<>(Stages9and10tests::claimRoute);
+
+        ActionHandlers.ChooseTicketsHandler chooseTicketsH = (t) -> p.receiveInfo(String.format
+                (StringsFr.DREW_TICKETS, playerNames.get(PLAYER_1), t.size(), StringsFr.plural(t.size())) + "\n");
+
         ActionHandlers.DrawTicketsHandler drawTicketsH =
                 () -> p.receiveInfo("Je tire des billets ! \n");
         ActionHandlers.DrawCardHandler drawCardH =
                 s -> p.receiveInfo(String.format("Je tire une carte de %s ! \n", s));
         ActionHandlers.ClaimRouteHandler claimRouteH =
                 (r, cs) -> {
-                    String rn = r.station1() + " - " + r.station2();
+                    String rn = r.toString();
                     p.receiveInfo(String.format("Je m'empare de %s avec %s \n", rn, cs));
                 };
-        ActionHandlers.ChooseTicketsHandler chooseTicketsH = (t) -> p.receiveInfo(String.format
-                (StringsFr.DREW_TICKETS, playerNames.get(PLAYER_1), t.size(), StringsFr.plural(t.size())) + "\n");
 
-        p.chooseTickets(SortedBag.of(ChMap.tickets().subList(0, 5)), chooseTicketsH);
-        p.startTurn(drawTicketsH, drawCardH, claimRouteH);
+        p.startTurn(drawTicketsH, drawCardH, claimRoute.get());
+    //    p.chooseTickets(SortedBag.of(ChMap.tickets().subList(0, 5)), chooseTicketsH);
+    //    p.chooseClaimCards(List.of(SortedBag.of(Card.RED), SortedBag.of(Card.WHITE)), cards -> {});
     }
 
 }

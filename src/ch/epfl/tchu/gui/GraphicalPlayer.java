@@ -37,11 +37,14 @@ import java.util.Map;
  */
 public class GraphicalPlayer {
 
-    private final ObservableGameState gameState;
+
     private final PlayerId playerId;
     private final Map<PlayerId, String> playerNames;
+
+    private final ObservableGameState gameState;
     private final ObservableList<Text> infos;
     private final Stage mainStage;
+
     private final ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketsHandler;
     private final ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler;
     private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
@@ -50,6 +53,7 @@ public class GraphicalPlayer {
 
 
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
+
         this.playerId = playerId;
         this.playerNames = playerNames;
         this.gameState = new ObservableGameState(playerId);
@@ -61,10 +65,10 @@ public class GraphicalPlayer {
         /**
          * Here is the scene graph part
          */
-        Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, infos);
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardsHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
+        Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, infos);
 
         BorderPane borderPane = new BorderPane(mapView, null, cardsView, handView, infoView);
 
@@ -115,16 +119,25 @@ public class GraphicalPlayer {
         assert Platform.isFxApplicationThread();
 
         if(gameState.canDrawTickets()) this.drawTicketsHandler.setValue(() -> {
+            this.claimRouteHandler.setValue(null);
+            this.drawCardsHandler.setValue(null);
+
             ticketsHandler.onDrawTickets();
             this.drawTicketsHandler.setValue(null);
         });
 
         if(gameState.canDrawCards()) this.drawCardsHandler.setValue((s) -> {
+            this.drawTicketsHandler.setValue(null);
+            this.claimRouteHandler.setValue(null);
+
             cardsHandler.onDrawCard(s);
             drawCard(cardsHandler);
         });
 
         this.claimRouteHandler.setValue((r, c) -> {
+            this.drawTicketsHandler.setValue(null);
+            this.drawCardsHandler.setValue(null);
+
             claimRouteHandler.onClaimRoute(r, c);
             this.claimRouteHandler.setValue(null);
         });
@@ -147,21 +160,18 @@ public class GraphicalPlayer {
         ListView<Ticket> listView = new ListView<>();
         listView.getItems().addAll(options.toList());
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        String instruction = String.format(StringsFr.CHOOSE_TICKETS, options.size() - Constants.DISCARDABLE_TICKETS_COUNT,
-                    StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT));
 
-        Text text = new Text(instruction);
+        Text text = new Text(String.format(StringsFr.CHOOSE_TICKETS, options.size() - Constants.DISCARDABLE_TICKETS_COUNT,
+                StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT)));
         TextFlow textFlow = new TextFlow(text);
 
-        Button button = new Button("Choisir");
-
+        Button button = new Button(StringsFr.CHOOSE);
         button.setOnAction(event -> {
             if(listView.getSelectionModel().getSelectedItems().size() < (options.size() - Constants.DISCARDABLE_TICKETS_COUNT)) return;
             chooseTicketHandler.onChooseTickets(SortedBag.of(listView.getSelectionModel().getSelectedItems()));
             stage.close();
         });
-        chooseTicketHandler.onChooseTickets(options);
-        selectionScene(textFlow, listView, StringsFr.TICKETS_CHOICE, stage, button);
+        selectionScene(textFlow, listView, StringsFr.TICKETS_CHOICE, stage, button, false);
 
     }
 
@@ -188,25 +198,48 @@ public class GraphicalPlayer {
         assert Platform.isFxApplicationThread();
 
         ListView<SortedBag<Card>> listView = createListView(options);
-        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        Text text = new Text();
+        Text text = new Text(StringsFr.CARDS_CHOICE);
         Stage stage = new Stage(StageStyle.UTILITY);
-
         TextFlow textFlow = new TextFlow(text);
 
-
-
-        cardsHandler.onChooseCards(options.get(0));
-
-        Button button = new Button("Choisir");
+        Button button = new Button(StringsFr.CHOOSE);
 
         button.setOnAction(event -> {
-            stage.hide();
             cardsHandler.onChooseCards(listView.getSelectionModel().getSelectedItem());
+            stage.close();
         });
-        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button);
+
+        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button, false);
     }
+
+
+    /**
+     * @param options      (List<SortedBag<Card>>)
+     * @param cardsHandler (ChooseCardsHandler)
+     */
+    public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
+
+        assert Platform.isFxApplicationThread();
+        Stage stage = new Stage();
+        stage.setOnCloseRequest((e) -> cardsHandler.onChooseCards(SortedBag.of()));
+        ListView<SortedBag<Card>> listView = createListView(options);
+
+        Button button = new Button(StringsFr.CHOOSE);
+        button.setOnAction(event -> {
+            cardsHandler.onChooseCards(listView.getSelectionModel().getSelectedItem());
+            stage.close();
+        });
+
+        Text text = new Text(StringsFr.CHOOSE_ADDITIONAL_CARDS);
+
+        TextFlow textFlow = new TextFlow(text);
+        cardsHandler.onChooseCards(options.get(0));
+        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button, true);
+    }
+
+
+
 
     /**
      * Private method to reduce code duplication for listView cell factory creation for card choosing.
@@ -218,8 +251,8 @@ public class GraphicalPlayer {
         listView.setCellFactory(v ->
                 new TextFieldListCell<>(new StringConverter<>() {
                     @Override
-                    public String toString(SortedBag<Card> object) {
-                        return Info.cardNames(object);
+                    public String toString(SortedBag<Card> cards) {
+                        return Info.cardNames(cards);
                     }
 
                     @Override
@@ -231,41 +264,16 @@ public class GraphicalPlayer {
         return listView;
     }
 
-    /**
-     * @param options      (List<SortedBag<Card>>)
-     * @param cardsHandler (ChooseCardsHandler)
-     */
-    public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
-
-        assert Platform.isFxApplicationThread();
-        Stage stage = new Stage();
-        ListView<SortedBag<Card>> listView = createListView(options);
-        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        Button button = new Button("Choisir");
-        button.setOnAction(event -> {
-            stage.hide();
-            cardsHandler.onChooseCards(listView.getSelectionModel().getSelectedItem());
-        });
-
-        Text text = new Text(StringsFr.CHOOSE_ADDITIONAL_CARDS);
-
-        TextFlow textFlow = new TextFlow(text);
-        cardsHandler.onChooseCards(options.get(0));
-        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button);
-    }
-
-
-
-
 
     /**
      * Scene graph for the ticket and card pop-up window
      */
-    private <E> void selectionScene(TextFlow textFlow, ListView<E> listView, String title, Stage stage, Button button) {
+    private <E> void selectionScene(TextFlow textFlow, ListView<E> listView, String title, Stage stage, Button button, boolean closeable) {
 
         stage.initOwner(mainStage);
+        stage.initStyle(StageStyle.UTILITY);
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.setOnCloseRequest(Event::consume);
+        if(!closeable) stage.setOnCloseRequest(Event::consume);
         stage.setTitle(title);
 
         VBox vBox = new VBox();

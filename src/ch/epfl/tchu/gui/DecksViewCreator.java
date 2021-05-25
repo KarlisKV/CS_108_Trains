@@ -69,7 +69,7 @@ final class DecksViewCreator{
         mainBox.getStylesheets().add("colors.css");
         mainBox.setId("card-pane");
 
-        Button ticketsButton = drawButton(state.ticketsGauge(), "Billets");
+        Button ticketsButton = drawButton(state.ticketsGauge(), StringsFr.TICKETS);
 
         ticketsButton.setOnMouseClicked(event -> ticketsHandler.get().onDrawTickets());
         mainBox.getChildren().add(ticketsButton);
@@ -94,7 +94,7 @@ final class DecksViewCreator{
             mainBox.getChildren().add(p);
         }
 
-        Button cardsButton = drawButton(state.cardsGauge(), "Cartes");
+        Button cardsButton = drawButton(state.cardsGauge(), StringsFr.CARDS);
         cardsButton.setOnMouseClicked((e -> cardsHandler.get().onDrawCard(Constants.DECK_SLOT)));
 
         mainBox.getChildren().add(cardsButton);
