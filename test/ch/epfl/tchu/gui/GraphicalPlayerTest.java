@@ -42,15 +42,18 @@ public final class GraphicalPlayerTest extends Application {
         setState(p);
 
         ActionHandlers.DrawTicketsHandler drawTicketsH =
-                () -> p.receiveInfo("Je tire des billets !");
+                () -> p.receiveInfo("Je tire des billets ! \n");
         ActionHandlers.DrawCardHandler drawCardH =
-                s -> p.receiveInfo(String.format("Je tire une carte de %s !", s));
+                s -> p.receiveInfo(String.format("Je tire une carte de %s ! \n", s));
         ActionHandlers.ClaimRouteHandler claimRouteH =
                 (r, cs) -> {
                     String rn = r.station1() + " - " + r.station2();
-                    p.receiveInfo(String.format("Je m'empare de %s avec %s", rn, cs));
+                    p.receiveInfo(String.format("Je m'empare de %s avec %s \n", rn, cs));
                 };
+        ActionHandlers.ChooseTicketsHandler chooseTicketsH = (t) -> p.receiveInfo(String.format
+                (StringsFr.CHOOSE_TICKETS, t.size() - Constants.DISCARDABLE_TICKETS_COUNT, StringsFr.plural(t.size() - Constants.DISCARDABLE_TICKETS_COUNT)) + "\n");
 
+        p.chooseTickets(SortedBag.of(ChMap.tickets().subList(0, 5)), chooseTicketsH);
         p.startTurn(drawTicketsH, drawCardH, claimRouteH);
     }
 

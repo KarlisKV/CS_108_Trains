@@ -5,6 +5,7 @@ import ch.epfl.tchu.game.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -20,6 +22,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
 
 
 import javax.print.DocFlavor;
@@ -42,6 +45,9 @@ public class GraphicalPlayer {
     private final ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler;
     private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
 
+
+
+
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
         this.playerId = playerId;
         this.playerNames = playerNames;
@@ -55,7 +61,7 @@ public class GraphicalPlayer {
          * Here is the scene graph part
          */
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, infos);
-        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, GraphicalPlayer::chooseClaimCards);
+        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardsHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
 
@@ -68,6 +74,10 @@ public class GraphicalPlayer {
 
     }
 
+
+
+
+
     /**
      * doing nothing but calling this method on the observable state of the player
      * @param newGameState   (PublicGameState) given public part of the game state
@@ -76,9 +86,10 @@ public class GraphicalPlayer {
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
 
         assert Platform.isFxApplicationThread();
-
         gameState.setState(newGameState, newPlayerState);
     }
+
+
 
     /**
      * @param message (String)
@@ -86,10 +97,11 @@ public class GraphicalPlayer {
     public void receiveInfo(String message) {
 
         assert Platform.isFxApplicationThread();
-
+        if(infos.size() == 5) infos.remove(0);
         infos.add(new Text(message));
-        System.out.println("@GraphicalPlayer (receiveInfo) - Info: " + message);
     }
+
+
 
     /**
      * @param ticketsHandler    (DrawTicketsHandler)
@@ -107,36 +119,19 @@ public class GraphicalPlayer {
         });
 
         if(gameState.canDrawCards()) this.drawCardsHandler.setValue((s) -> {
-            // TODO: 25.05.21
+            cardsHandler.onDrawCard(s);
+            drawCard(cardsHandler);
         });
 
         this.claimRouteHandler.setValue((r, c) -> {
             claimRouteHandler.onClaimRoute(r, c);
             this.claimRouteHandler.setValue(null);
         });
+
     }
 
-    /**
-     * Scene graph for the ticket and card pop-up window
-     * @return
-     */
-    private <E> Stage selectionScene(TextFlow textFlow, Button button, ListView<E> listView, String title) {
 
-        Stage stage = new Stage();
-        stage.initStyle(StageStyle.UTILITY);
-        stage.initOwner(mainStage);
-        stage.initModality(Modality.WINDOW_MODAL);
 
-        stage.setTitle(title);
-
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(textFlow, listView, button);
-        Scene scene = new Scene(vBox);
-        stage.setScene(scene);
-        scene.getStylesheets().add("chooser.css");
-
-        return stage;
-    }
     /**
      * Method for the scene graph when a player needs to choose his tickets
      * @param options             (SortedBag<Ticket>)
@@ -146,21 +141,18 @@ public class GraphicalPlayer {
 
         assert Platform.isFxApplicationThread();
 
-
-        // todo how to do the listView? Instructions say I Need to add a 'cellFactory' but i dont understand,
-        // todo is it just for the List<SortedBag<Card>> or do I need it here? Or can I just cast the thing?
-        ListView<Ticket> listView = new ListView<>((ObservableList<Ticket>) options.toList());
+        ListView<Ticket> listView = new ListView<>();
+        listView.getItems().addAll(options.toList());
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        Button button = new Button();
-        // TODO: 5/25/2021 button disableProperty no clue need to use actionHnadler
+        String instruction = String.format(StringsFr.CHOOSE_TICKETS, options.size() - Constants.DISCARDABLE_TICKETS_COUNT,
+                StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT));
 
-        Text text = new Text(String.format(StringsFr.CHOOSE_TICKETS, options.size() - Constants.DISCARDABLE_TICKETS_COUNT,
-                StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT)));
+        Text text = new Text(instruction);
 
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, button, listView, StringsFr.CHOOSE_TICKETS);
+        selectionScene(textFlow, listView, StringsFr.TICKETS);
 
     }
 
@@ -171,20 +163,10 @@ public class GraphicalPlayer {
 
         assert Platform.isFxApplicationThread();
 
-        // Qui autorise le joueur a choisir une carte wagon/locomotive, soit l'une des
-        // cinq dont la face est visible, soit celle du sommet de la pioche ; une fois
-        // que le joueur a cliqué sur l'une de ces cartes, le gestionnaire est appelé
-        // avec le choix du joueur ; cette méthode est destinée à être appelée lorsque
-        // le joueur a déjà tiré une première carte et doit maintenant tirer la seconde,
-
-        /* TODO: This method should modify the ActionHandler cardHandler it is given as an attribute
-         * in a similar way to startTurn(...): cardHandler has to be not null when drawing cards is possible
-         * and then set itself to null when drawing cards isn't possible anymore
-         * (i.e. cardHandler isn't null if it's your turn and you chose to draw cards and you've drawn either 0 or 1 card for now,
-         * but it's null when it's not your turn or when you've already drawn 2 cards or when you chose a different turn kind than drawing cards)
-         */
-
-        System.out.println("@GraphicalPlayer (drawCard) - Handler: " + cardHandler);
+        if(gameState.canDrawCards()) this.drawCardsHandler.setValue((s) -> {
+            cardHandler.onDrawCard(s);
+            this.drawCardsHandler.setValue(null);
+                });
     }
 
     /**
@@ -200,14 +182,11 @@ public class GraphicalPlayer {
         ListView<SortedBag<Card>> listView = new ListView<>((ObservableList<SortedBag<Card>>) options);
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        Button button = new Button();
-        // TODO: 5/25/2021 button disableProperty no clue need to use actionHnadler
-
        Text text = new Text();
 
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, button, listView, StringsFr.CHOOSE_CARDS);
+        selectionScene(textFlow, listView, StringsFr.CHOOSE_CARDS);
     }
 
     /**
@@ -216,19 +195,56 @@ public class GraphicalPlayer {
      */
     public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
 
+        assert Platform.isFxApplicationThread();
 
-        // todo how to do the listView? Instructions say I Need to add a 'cellFactory'
-        ListView<SortedBag<Card>> listView = new ListView<>((ObservableList<SortedBag<Card>>) options);
+        ListView<SortedBag<Card>> listView = new ListView<>();
+        listView.setCellFactory(v ->
+                new TextFieldListCell<>(new StringConverter<>() {
+                    @Override
+                    public String toString(SortedBag<Card> object) {
+                        return Info.cardNames(object);
+                    }
+
+                    @Override
+                    public SortedBag<Card> fromString(String string) {
+                        throw new UnsupportedOperationException();
+                    }
+                }));
+        listView.getItems().addAll(options);
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        Button button = new Button();
-        // TODO: 5/25/2021 button disableProperty no clue need to use actionHnadler
-
-        Text text = new Text();
+        Text text = new Text(StringsFr.CHOOSE_ADDITIONAL_CARDS);
 
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, button, listView, StringsFr.CHOOSE_ADDITIONAL_CARDS);
+        selectionScene(textFlow, listView, StringsFr.CHOOSE_ADDITIONAL_CARDS);
+    }
+
+
+
+
+
+    /**
+     * Scene graph for the ticket and card pop-up window
+     */
+    private <E> void selectionScene(TextFlow textFlow, ListView<E> listView, String title) {
+
+        Stage stage = new Stage(StageStyle.UTILITY);
+        stage.initOwner(mainStage);
+        stage.initModality(Modality.WINDOW_MODAL);
+
+        stage.setTitle(title);
+
+        Button button = new Button("Choisir");
+        //TODO: add proper functionality to button
+        button.setOnMouseClicked((e) -> stage.close());
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(textFlow, listView, button);
+        Scene scene = new Scene(vBox);
+        scene.getStylesheets().add("chooser.css");
+        stage.setScene(scene);
+        stage.show();
     }
 
 }

@@ -210,13 +210,13 @@ public final class Info {
     }
 
     /**
-     * Private method added to avoid code repetition.
+     * Private method added to avoid code repetition. EDIT: made public to avoid code repetition (used in GraphicalPlayer)
      * It has the same function as cardName except it works with multiple cards
      * @param cards SortedBag<Card> of the cards you want the names of
      * @return A String containing a sentence enumerating the number of colour cards
      * (the colours are specified in the sentence) followed by the number of locomotive cards
      */
-    private String cardNames(SortedBag<Card> cards) {
+    public static String cardNames(SortedBag<Card> cards) {
         Preconditions.checkArgument(cards != null);
 
         if(cards.toMap().size() < 2) {
