@@ -44,9 +44,6 @@ public final class GraphicalPlayerTest extends Application {
         GraphicalPlayer p = new GraphicalPlayer(PLAYER_1, playerNames);
         setState(p);
 
-        ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
-                new SimpleObjectProperty<>(Stages9and10tests::claimRoute);
-
         ActionHandlers.ChooseTicketsHandler chooseTicketsH = (t) -> p.receiveInfo(String.format
                 (StringsFr.DREW_TICKETS, playerNames.get(PLAYER_1), t.size(), StringsFr.plural(t.size())) + "\n");
 
@@ -56,11 +53,11 @@ public final class GraphicalPlayerTest extends Application {
                 s -> p.receiveInfo(String.format("Je tire une carte de %s ! \n", s));
         ActionHandlers.ClaimRouteHandler claimRouteH =
                 (r, cs) -> {
-                    String rn = r.toString();
+                    String rn = r.station1() + " - " + r.station2();
                     p.receiveInfo(String.format("Je m'empare de %s avec %s \n", rn, cs));
                 };
 
-        p.startTurn(drawTicketsH, drawCardH, claimRoute.get());
+        p.startTurn(drawTicketsH, drawCardH, claimRouteH);
     //    p.chooseTickets(SortedBag.of(ChMap.tickets().subList(0, 5)), chooseTicketsH);
     //    p.chooseClaimCards(List.of(SortedBag.of(Card.RED), SortedBag.of(Card.WHITE)), cards -> {});
     }

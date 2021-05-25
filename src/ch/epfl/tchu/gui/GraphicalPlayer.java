@@ -3,9 +3,7 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,8 +23,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
-
-import javax.print.DocFlavor;
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +58,9 @@ public class GraphicalPlayer {
         this.drawCardsHandler = new SimpleObjectProperty<>();
         this.claimRouteHandler = new SimpleObjectProperty<>();
         this.mainStage = new Stage();
-        /**
-         * Here is the scene graph part
-         */
+
+        //Here is the scene graph part
+
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardsHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
@@ -89,7 +85,6 @@ public class GraphicalPlayer {
      * @param newPlayerState (PlayerState) given playerState
      */
     public void setState(PublicGameState newGameState, PlayerState newPlayerState) {
-
         assert Platform.isFxApplicationThread();
         gameState.setState(newGameState, newPlayerState);
     }

@@ -36,6 +36,7 @@ final class MapViewCreator {
 
             BooleanProperty actionnable = new SimpleBooleanProperty(handlerObjectProperty.isNull().get() || (!state.canClaimRoute().get(route)));
             state.canClaimRoute().addListener((o, oV, nV) -> actionnable.setValue(!nV.get(route) || handlerObjectProperty.isNull().get()));
+            handlerObjectProperty.addListener((o, oV, nV) -> actionnable.setValue(!state.canClaimRoute().get(route) || handlerObjectProperty.isNull().get()));
             routeGroup.disableProperty().bind(actionnable);
 
             state.routesMapProperty().addListener((o, oV, nV) -> {

@@ -92,7 +92,7 @@ public final class Stages9and10tests extends Application {
         gameState.setState(publicGameState, p1State);
     }
 
-    public static void claimRoute(Route route, SortedBag<Card> cards) {
+    private static void claimRoute(Route route, SortedBag<Card> cards) {
         System.out.printf("Prise de possession d'une route : %s - %s %s%n",
                 route.station1(), route.station2(), cards);
     }
