@@ -133,7 +133,7 @@ public class GraphicalPlayer {
         // avec le choix du joueur ; cette méthode est destinée à être appelée lorsque
         // le joueur a déjà tiré une première carte et doit maintenant tirer la seconde,
 
-        /* TODO: This method modifies the ActionHandler cardHandler it is given as an attribute
+        /* TODO: This method should modify the ActionHandler cardHandler it is given as an attribute
          * in a similar way to startTurn(...): cardHandler has to be not null when drawing cards is possible
          * and then set itself to null when drawing cards isn't possible anymore
          * (i.e. cardHandler isn't null if it's your turn and you chose to draw cards and you've drawn either 0 or 1 card for now,
