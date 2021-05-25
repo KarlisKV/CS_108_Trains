@@ -144,15 +144,17 @@ public class GraphicalPlayer {
         ListView<Ticket> listView = new ListView<>();
         listView.getItems().addAll(options.toList());
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
         String instruction = String.format(StringsFr.CHOOSE_TICKETS, options.size() - Constants.DISCARDABLE_TICKETS_COUNT,
-                StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT));
+                    StringsFr.plural(options.size() - Constants.DISCARDABLE_TICKETS_COUNT));
+
+
+
 
         Text text = new Text(instruction);
 
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, listView, StringsFr.TICKETS);
+        selectionScene(textFlow, listView, StringsFr.TICKETS_CHOICE);
 
     }
 
@@ -186,7 +188,7 @@ public class GraphicalPlayer {
 
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, listView, StringsFr.CHOOSE_CARDS);
+        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE);
     }
 
     /**
@@ -217,7 +219,7 @@ public class GraphicalPlayer {
 
         TextFlow textFlow = new TextFlow(text);
 
-        selectionScene(textFlow, listView, StringsFr.CHOOSE_ADDITIONAL_CARDS);
+        selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE);
     }
 
 
