@@ -2,21 +2,19 @@ package ch.epfl.tchu.net;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-
-
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Serdes contains all of the serdes for the game
+ * Serdes contains all of the serdes used for the game
  * @author Karlis Velins (325180)
  */
 public class Serdes {
 
     //Integer serde
     public static final Serde<Integer> INTEGER_SERDE = Serde.of((Objects::toString), (Integer::parseInt));
-    // TODO: 5/24/2021 kutfd 
+
     //String serde
     public static final Serde<String> STRING_SERDE = Serde.of((string -> Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.UTF_8))),
                     ((base64 -> new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8))));
@@ -50,10 +48,11 @@ public class Serdes {
 
     //PublicCardState serde
     public static final Serde<PublicCardState> PUBLIC_CARD_STATE_SERDE = Serde.of(cardState -> String.format("%s;%s;%s",
+            //First serialize the specific serdes for the cardState
             CARD_LIST_SERDE.serialize(cardState.faceUpCards()),
             INTEGER_SERDE.serialize(cardState.deckSize()),
             INTEGER_SERDE.serialize(cardState.discardsSize())),
-
+            //Then deserialize the serdes for the CardState and split them using the given separator
             (string -> {
                 String [] tempString = string.split(Pattern.quote(";"), -1);
                 return  new PublicCardState(CARD_LIST_SERDE.deserialize(tempString[0]),
@@ -63,10 +62,12 @@ public class Serdes {
     //PublicPlayerState serde
     public static final Serde<PublicPlayerState> PUBLIC_PLAYER_STATE_SERDE = Serde.of(publicPlayerState ->
                     String.format("%s;%s;%s",
+                        //First serialize the specific serdes for the publicPlayerState
                         INTEGER_SERDE.serialize(publicPlayerState.ticketCount()),
                         INTEGER_SERDE.serialize(publicPlayerState.cardCount()),
                         ROUTE_LIST_SERDE.serialize(publicPlayerState.routes())),
 
+                        //Then deserialize the serdes for the CardState and split them using the given separator
             string -> {
                 String[] tempString = string.split(Pattern.quote(";"), -1);
 
@@ -79,6 +80,7 @@ public class Serdes {
 
     //PlayerState serde
     public static final Serde<PlayerState> PLAYER_STATE_SERDE = Serde.of(playerState -> String.format("%s;%s;%s",
+            //First serialize the specific serdes for the cardState
             TICKET_SORTED_BAG_SERDE.serialize(playerState.tickets()),
             CARD_SORTED_BAG_SERDE.serialize(playerState.cards()),
             ROUTE_LIST_SERDE.serialize(playerState.routes())),
@@ -89,7 +91,7 @@ public class Serdes {
                 SortedBag<Ticket> tickets = SortedBag.of();
                 SortedBag<Card> cards = SortedBag.of();
                 List<Route> routes = new ArrayList<>();
-
+                //Deserialization part
                 if(!tempString[0].isBlank())
                     tickets = TICKET_SORTED_BAG_SERDE.deserialize(tempString[0]);
 
@@ -105,7 +107,7 @@ public class Serdes {
     //PublicGameState serde
     public static final Serde<PublicGameState> PUBLIC_GAME_STATE_SERDE = Serde.of(
             publicGameState -> {
-
+                //Checks whether there was a last player, used in the return on line 123
                 String lastPlayer = publicGameState.lastPlayer() == null ?
                         ""                                                     :
                         PLAYER_ID_SERDE.serialize(publicGameState.lastPlayer());

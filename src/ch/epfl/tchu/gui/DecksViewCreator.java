@@ -22,6 +22,11 @@ final class DecksViewCreator{
 
     private DecksViewCreator() {}
 
+    /**
+     * Main method to create the handView for the player
+     * @param state (ObservableGameState) given state
+     * @return the created HBox (Node)
+     */
     public static Node createHandView(ObservableGameState state){
 
         HBox mainBox = new HBox();
@@ -34,32 +39,39 @@ final class DecksViewCreator{
         mainBox.getChildren().add(tickets);
 
         //Second HBox (bigger group)
-        HBox secBox = new HBox();
-        secBox.setId("hand-pane");
+        HBox secondBox = new HBox();
+        secondBox.setId("hand-pane");
 
         for(Card c : Card.ALL) {
 
-            StackPane p = cardPane(c, - 1);
+            StackPane pane = cardPane(c, Constants.DECK_SLOT);
 
-            IntegerProperty ip = new SimpleIntegerProperty(state.cardAmount().get(Card.ALL.indexOf(c)));
-            state.cardAmount().addListener((o, oV, nV) -> ip.setValue(nV.get(Card.ALL.indexOf(c))));
+            IntegerProperty integerProperty = new SimpleIntegerProperty(state.cardAmount().get(Card.ALL.indexOf(c)));
+            state.cardAmount().addListener((o, oV, nV) -> integerProperty.setValue(nV.get(Card.ALL.indexOf(c))));
 
-            p.visibleProperty().bind(Bindings.greaterThan(ip, 0));
+            pane.visibleProperty().bind(Bindings.greaterThan(integerProperty, 0));
 
-            Text num = new Text(String.valueOf(ip.get()));
-            num.getStyleClass().add("count");
-            num.textProperty().bind(Bindings.convert(ip));
-            num.visibleProperty().bind(Bindings.greaterThan(ip, 0));
-            p.getChildren().add(num);
+            Text text = new Text(String.valueOf(integerProperty.get()));
+            text.getStyleClass().add("count");
+            text.textProperty().bind(Bindings.convert(integerProperty));
+            text.visibleProperty().bind(Bindings.greaterThan(integerProperty, 0));
+            pane.getChildren().add(text);
 
-            secBox.getChildren().add(p);
+            secondBox.getChildren().add(pane);
         }
 
-        mainBox.getChildren().add(secBox);
+        mainBox.getChildren().add(secondBox);
 
         return mainBox;
     }
 
+    /**
+     * Main method to create the cardsView for the deck part
+     * @param state (ObservableGameState) given state
+     * @param ticketsHandler (ObjectProperty<ActionHandlers.DrawTicketsHandler>) given ticketsHandler
+     * @param cardsHandler (ObjectProperty<ActionHandlers.DrawTicketsHandler>) given cardsHandler
+     * @return the created VBox (Node)
+     */
     public static Node createCardsView(ObservableGameState state,
             ObjectProperty<ActionHandlers.DrawTicketsHandler> ticketsHandler,
             ObjectProperty<ActionHandlers.DrawCardHandler> cardsHandler) {
@@ -76,22 +88,22 @@ final class DecksViewCreator{
 
         for (int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i) {
 
-            StackPane p = cardPane(state.faceUpCard(i).get(), i);
+            StackPane pane = cardPane(state.faceUpCard(i).get(), i);
 
             state.faceUpCard(i).addListener((o, oV, nV) -> {
 
                 if(oV != null) {
-                    if(oV.equals(Card.LOCOMOTIVE)) p.getStyleClass().remove("NEUTRAL");
-                    else p.getStyleClass().remove(oV.color().toString());
+                    if(oV.equals(Card.LOCOMOTIVE)) pane.getStyleClass().remove("NEUTRAL");
+                    else pane.getStyleClass().remove(oV.color().toString());
                 }
 
-                if(nV.equals(Card.LOCOMOTIVE)) p.getStyleClass().add("NEUTRAL");
-                else p.getStyleClass().add(nV.color().toString());
+                if(nV.equals(Card.LOCOMOTIVE)) pane.getStyleClass().add("NEUTRAL");
+                else pane.getStyleClass().add(nV.color().toString());
 
             });
 
-            p.setOnMouseClicked(event -> handleCardPaneClick(event, cardsHandler));
-            mainBox.getChildren().add(p);
+            pane.setOnMouseClicked(event -> handleCardPaneClick(event, cardsHandler));
+            mainBox.getChildren().add(pane);
         }
 
         Button cardsButton = drawButton(state.cardsGauge(), StringsFr.CARDS);
@@ -104,22 +116,21 @@ final class DecksViewCreator{
 
 
     /**
-     * Returns javafx Button object
-     *
-     * @param gaugeSize (ReadOnlyDoubleProperty)
-     * @param label     (String)
-     * @return Button
+     * Private method that returns the Button part of the scene graph
+     * @param gaugeSize (ReadOnlyDoubleProperty) size of the gauge
+     * @param label (String) name on the button
+     * @return the Button
      */
     private static Button drawButton(ReadOnlyDoubleProperty gaugeSize, String label) {
 
-        Button b = new Button(label);
-        b.getStyleClass().add("gauged");
+        Button button = new Button(label);
+        button.getStyleClass().add("gauged");
 
         Group bGroup = new Group();
-        int h = 5;
-        Rectangle br = new Rectangle(50, h);
+        int height = 5;
+        Rectangle br = new Rectangle(50, height);
         br.getStyleClass().add("background");
-        Rectangle fr = new Rectangle(gaugeSize.get(), h);
+        Rectangle fr = new Rectangle(gaugeSize.get(), height);
         gaugeSize.addListener((o, oV, nV) -> fr.setWidth(nV.doubleValue()));
 
         fr.getStyleClass().add("foreground");
@@ -127,16 +138,23 @@ final class DecksViewCreator{
         bGroup.getChildren().add(br);
         bGroup.getChildren().add(fr);
 
-        b.setGraphic(bGroup);
-        b.getStyleClass().add("gauged");
+        button.setGraphic(bGroup);
+        button.getStyleClass().add("gauged");
 
-        return b;
+        return button;
     }
 
+    /**
+     * Private method for the cardPane part of the scene graph
+     * @param card (Card) given card
+     * @param slot (int) given slot number
+     * @return the created StackPane
+     */
     private static StackPane cardPane(Card card, int slot) {
 
         StackPane pane = new StackPane();
-        if(slot != -1) pane.setId(String.valueOf(slot));
+        if(slot != Constants.DECK_SLOT) pane.setId(String.valueOf(slot));
+            // TODO: 5/26/2021   please verify where does handcard_ come from? Can't find it in the instructions
         else pane.setId("handcard_" + card);
 
         pane.getStyleClass().add("card");
@@ -161,11 +179,6 @@ final class DecksViewCreator{
 
         return pane;
     }
-
-
-    // ================================================================================
-    // Handlers
-    // ================================================================================
 
     /**
      * Handler for javafx CardPane onMouseClick event

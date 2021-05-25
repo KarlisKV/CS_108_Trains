@@ -19,11 +19,22 @@ import javafx.scene.image.ImageView ;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MapViewCreator class representing the middle part of the map
+ * @author Karlis Velins (325180)
+ * @author Daniel Polka  (326800)
+ */
 final class MapViewCreator {
 
     private MapViewCreator(){}
 
-
+    /**
+     * MapView creation method
+     * @param state (ObervableGameState) given ObservableGameState
+     * @param handlerObjectProperty (ObjectProperty<ClaimRouteHandler>) given handlerObjectProperty
+     * @param cardChooser (CardChooser) functional interface argument
+     * @return the created MapView
+     */
     public static Node createMapView(ObservableGameState state, ObjectProperty<ClaimRouteHandler> handlerObjectProperty, CardChooser cardChooser) {
 
         Pane pane = new Pane();
@@ -31,13 +42,15 @@ final class MapViewCreator {
         pane.getStylesheets().add("colors.css");
         ImageView imageView = new ImageView("map.png");
         pane.getChildren().add(imageView);
+
+        //For each of the routes in the network
         for (Route route : ChMap.routes()) {
             Group routeGroup = getRouteGroup(route);
 
-            BooleanProperty actionnable = new SimpleBooleanProperty(handlerObjectProperty.isNull().get() || (!state.canClaimRoute().get(route)));
-            state.canClaimRoute().addListener((o, oV, nV) -> actionnable.setValue(!nV.get(route) || handlerObjectProperty.isNull().get()));
-            handlerObjectProperty.addListener((o, oV, nV) -> actionnable.setValue(!state.canClaimRoute().get(route) || handlerObjectProperty.isNull().get()));
-            routeGroup.disableProperty().bind(actionnable);
+            BooleanProperty actionable = new SimpleBooleanProperty(handlerObjectProperty.isNull().get() || (!state.canClaimRoute().get(route)));
+            state.canClaimRoute().addListener((o, oV, nV) -> actionable.setValue(!nV.get(route) || handlerObjectProperty.isNull().get()));
+            handlerObjectProperty.addListener((o, oV, nV) -> actionable.setValue(!state.canClaimRoute().get(route) || handlerObjectProperty.isNull().get()));
+            routeGroup.disableProperty().bind(actionable);
 
             state.routesMapProperty().addListener((o, oV, nV) -> {
                 if(oV.get(route) == null && nV.get(route) != null) routeGroup.getStyleClass().add(nV.get(route).toString());
@@ -52,11 +65,11 @@ final class MapViewCreator {
     }
 
     /** 
-     * Route onClick handler (3.4.3 Event handler)
-     * @param route (Route)
-     * @param state (ObservableGameState)
-     * @param claimRouteH (ObjectProperty<ClaimRouteHandler>)
-     * @param cardChooser (CardChooser)
+     * Route onClick handler
+     * @param route (Route) given Route
+     * @param state (ObservableGameState) given ObservableGameState
+     * @param claimRouteH (ObjectProperty<ClaimRouteHandler>) claimRouteHandler
+     * @param cardChooser (CardChooser) functional interface parameter
      */
     private static void handleRouteClick(Route route, ObservableGameState state,
                                          ObjectProperty<ClaimRouteHandler> claimRouteH, CardChooser cardChooser) {
@@ -72,6 +85,10 @@ final class MapViewCreator {
         }
     }
 
+    /**
+     * Private method to remove code duplication representing the WagonRectangle
+     * @return the created rectangle
+     */
     private static Rectangle createWagonRectangle() {
         Rectangle r = new Rectangle();
         r.setWidth(36);
@@ -79,8 +96,11 @@ final class MapViewCreator {
         r.getStyleClass().add("filled");
         return r;
     }
-
-    private static Rectangle createVoieRectangle() {
+    /**
+     * Private method to remove code duplication representing the RouteRectangle
+     * @return the created rectangle
+     */
+    private static Rectangle createRouteRectangle() {
         Rectangle r = new Rectangle();
         r.setWidth(36);
         r.setHeight(12);
@@ -89,6 +109,11 @@ final class MapViewCreator {
         return r;
     }
 
+    /**
+     * Private class to create a Circle
+     * @param setCenterX (int) x position of the circle
+     * @return the created circle
+     */
     private static Circle createCircle(int setCenterX) {
         Circle c =  new Circle();
         c.setCenterX(setCenterX);
@@ -98,6 +123,10 @@ final class MapViewCreator {
         return c;
     }
 
+    /**
+     * Private method to create the WagonGroup part
+     * @return WagonGroup
+     */
     private static Group getWagonGroup() {
         Group group = new Group();
         group.getStyleClass().add("car");
@@ -107,6 +136,11 @@ final class MapViewCreator {
         return group;
     }
 
+    /**
+     * Private method to get the list of groups
+     * @param route (Route) given route
+     * @return the List of Groups
+     */
     private static List<Group> getCaseGroups(Route route) {
 
         List<Group> groups = new ArrayList<>();
@@ -114,7 +148,7 @@ final class MapViewCreator {
         for (int i = 1; i <= route.length(); i++) {
             Group group = new Group();
             group.setId(route.id() + "_" + i);
-            group.getChildren().add(createVoieRectangle());
+            group.getChildren().add(createRouteRectangle());
             group.getChildren().add(getWagonGroup());
             groups.add(group);
         }
@@ -122,6 +156,11 @@ final class MapViewCreator {
         return groups;
     }
 
+    /**
+     * Private method to create the route group
+     * @param route (Route) given Route
+     * @return the Route Group
+     */
     private static Group getRouteGroup(Route route) {
 
         Group group = new Group();
@@ -138,6 +177,10 @@ final class MapViewCreator {
         return group;
     }
 
+    /**
+     * The method chooseCards of this interface is intended
+     * to be called when the player must choose the cards he wishes to use to seize a route.
+     */
     @FunctionalInterface
     public
     interface CardChooser   {

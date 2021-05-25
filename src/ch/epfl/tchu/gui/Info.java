@@ -275,7 +275,6 @@ public final class Info {
 
                 }
 
-
             return cardNames.toString();
         }
 

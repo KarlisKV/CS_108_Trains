@@ -18,9 +18,12 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 public class RemotePlayerClient {
 
     private final Player player;
+    // TODO: 5/25/2021 do we need the socket as an attribute of the class?
+    //  and also plz add the javadoc cuz i dont know too much about this class
     private final Socket socket;
     private final BufferedWriter writer;
     private final BufferedReader reader;
+
 
     public RemotePlayerClient(Player player, String hostName, int port) {
 
@@ -140,19 +143,17 @@ public class RemotePlayerClient {
 
                             case "CHOOSE_ADDITIONAL_CARDS":
 
-                                List<SortedBag<Card>> possibleAdditCards = Serdes.LIST_SORTED_BAG_CARD_SERDE.deserialize(typeAndArgs[1]);
-                                SortedBag<Card> additCards = player.chooseAdditionalCards(possibleAdditCards);
-                                send(Serdes.CARD_SORTED_BAG_SERDE.serialize(additCards));
+                                List<SortedBag<Card>> possibleAdditionalCards = Serdes.LIST_SORTED_BAG_CARD_SERDE.deserialize(typeAndArgs[1]);
+                                SortedBag<Card> additionalCards = player.chooseAdditionalCards(possibleAdditionalCards);
+                                send(Serdes.CARD_SORTED_BAG_SERDE.serialize(additionalCards));
 
                                 break;
 
                             default:
                                 throw new IOException("Communication error");
-
                         }
                     }
                 }
-
 
             } while (reader.readLine() != null);
 

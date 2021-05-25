@@ -17,6 +17,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 public class RemotePlayerProxy implements Player {
 
     private static final String sep = " ";
+    // TODO: 5/25/2021 can we remove the attribute and have it only inside the constructor?
     private final Socket socket;
     private final BufferedWriter writer;
     private final BufferedReader reader;
@@ -44,7 +45,7 @@ public class RemotePlayerProxy implements Player {
 
 
     }
-// TODO: 5/22/2021 add javaDoc for initPlayers 
+// TODO: 5/22/2021 add javaDoc for everything
     /**
      * 
      * @param ownId (PlayerId) id of the player
@@ -152,9 +153,9 @@ public class RemotePlayerProxy implements Player {
         String iWantMore = MessageId.CHOOSE_ADDITIONAL_CARDS.toString() + sep + Serdes.LIST_SORTED_BAG_CARD_SERDE.serialize(options);
         send(iWantMore);
 
-        String additCards = receive();
+        String additionalCards = receive();
 
-        return Serdes.CARD_SORTED_BAG_SERDE.deserialize(additCards);
+        return Serdes.CARD_SORTED_BAG_SERDE.deserialize(additionalCards);
     }
 
 
@@ -178,14 +179,14 @@ public class RemotePlayerProxy implements Player {
 
         try{
 
-             String serialised = reader.readLine();
-             return serialised;
+             return reader.readLine();
 
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
+    // TODO: 5/25/2021 do we need this method? not used anywhere
     public void closeAll() throws IOException {
         reader.close();
         writer.close();

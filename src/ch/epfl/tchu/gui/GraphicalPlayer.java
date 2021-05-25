@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class GraphicalPlayer {
 
-
+    // TODO: 5/26/2021 can we remove these?
     private final PlayerId playerId;
     private final Map<PlayerId, String> playerNames;
 
@@ -46,8 +46,11 @@ public class GraphicalPlayer {
     private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
 
 
-
-
+    /**
+     * Constructor of the GraphicalPlayer creates the main GUI window of tCHu
+     * @param playerId (PlayerId) given player's Id
+     * @param playerNames (Map<PlayerId, String>) map of player names
+     */
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
 
         this.playerId = playerId;
@@ -59,8 +62,7 @@ public class GraphicalPlayer {
         this.claimRouteHandler = new SimpleObjectProperty<>();
         this.mainStage = new Stage();
 
-        //Here is the scene graph part
-
+        //Here the scene graph is created
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardsHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
@@ -68,19 +70,14 @@ public class GraphicalPlayer {
 
         BorderPane borderPane = new BorderPane(mapView, null, cardsView, handView, infoView);
 
-
         mainStage.setTitle("tCHu\u2014" + playerNames.get(playerId));
         mainStage.setScene(new Scene(borderPane));
         mainStage.show();
 
     }
 
-
-
-
-
     /**
-     * doing nothing but calling this method on the observable state of the player
+     * Calling this method on the observable state of the player
      * @param newGameState   (PublicGameState) given public part of the game state
      * @param newPlayerState (PlayerState) given playerState
      */
@@ -89,10 +86,10 @@ public class GraphicalPlayer {
         gameState.setState(newGameState, newPlayerState);
     }
 
-
-
     /**
-     * @param message (String)
+     * taking a message - of type String and adding it to the bottom of
+     * the game progress information, which is presented in the lower part of the information view
+     * @param message (String) given message
      */
     public void receiveInfo(String message) {
 
@@ -101,12 +98,12 @@ public class GraphicalPlayer {
         infos.add(new Text(message));
     }
 
-
-
     /**
-     * @param ticketsHandler    (DrawTicketsHandler)
-     * @param cardsHandler      (DrawCardHandler)
-     * @param claimRouteHandler (ClaimRouteHandler)
+     * takes as arguments three action handlers, one for each type of action the player can perform during a turn,
+     * and which allows the player to perform one
+     * @param ticketsHandler    (DrawTicketsHandler) ticketsHandler
+     * @param cardsHandler      (DrawCardHandler) cardsHandler
+     * @param claimRouteHandler (ClaimRouteHandler) routeHandler
      */
     public void startTurn(ActionHandlers.DrawTicketsHandler ticketsHandler, ActionHandlers.DrawCardHandler cardsHandler,
             ActionHandlers.ClaimRouteHandler claimRouteHandler) {
@@ -139,12 +136,10 @@ public class GraphicalPlayer {
 
     }
 
-
-
     /**
      * Method for the scene graph when a player needs to choose his tickets
-     * @param options             (SortedBag<Ticket>)
-     * @param chooseTicketHandler (ChooseTicketsHandler)
+     * @param options             (SortedBag<Ticket>) a multiset containing five or three banknotes that the player can choose
+     * @param chooseTicketHandler (ChooseTicketsHandler) ticketsHandler
      */
     public void chooseTickets(SortedBag<Ticket> options, ActionHandlers.ChooseTicketsHandler chooseTicketHandler) {
 
@@ -171,7 +166,9 @@ public class GraphicalPlayer {
     }
 
     /**
-     * @param cardHandler (DrawCardHandler)
+     * Method allowing the player to select the cards either from the deck or from the 5 faceUpCards and
+     * then calling the manager when the first card is chosen
+     * @param cardHandler (DrawCardHandler) cardHandler
      */
     public void drawCard(ActionHandlers.DrawCardHandler cardHandler) {
 
@@ -184,8 +181,9 @@ public class GraphicalPlayer {
     }
 
     /**
-     * @param options      (List<SortedBag<Card>>)
-     * @param cardsHandler (ChooseCardsHandler)
+     * Allows the player to choose the cards to claim the route
+     * @param options (List<SortedBag<Card>>) a list of multi sets of maps, which are the initial maps it can use to grab a route,
+     * @param cardsHandler (ChooseCardsHandler) map selection manager
      */
     public void chooseClaimCards(List<SortedBag<Card>> options,
             ActionHandlers.ChooseCardsHandler cardsHandler) {
@@ -194,7 +192,7 @@ public class GraphicalPlayer {
 
         ListView<SortedBag<Card>> listView = createListView(options);
 
-        Text text = new Text(StringsFr.CARDS_CHOICE);
+        Text text = new Text(StringsFr.CHOOSE_CARDS);
         Stage stage = new Stage(StageStyle.UTILITY);
         TextFlow textFlow = new TextFlow(text);
 
@@ -210,8 +208,9 @@ public class GraphicalPlayer {
 
 
     /**
-     * @param options      (List<SortedBag<Card>>)
-     * @param cardsHandler (ChooseCardsHandler)
+     * Used to choose the additional cards that need to be used to seize the tunnel
+     * @param options (List<SortedBag<Card>>) a list of multisets of cards, which are the additional cards that it can use to seize a tunnel
+     * @param cardsHandler (ChooseCardsHandler) manager of choice of cards
      */
     public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
 
@@ -238,8 +237,8 @@ public class GraphicalPlayer {
 
     /**
      * Private method to reduce code duplication for listView cell factory creation for card choosing.
-     * @param options
-     * @return
+     * @param options (List<SortedBag<Card>>) given list of a SortedBag of cards
+     * @return the created ListView used for the scene graph
      */
     private ListView <SortedBag<Card>> createListView(List<SortedBag<Card>> options) {
         ListView<SortedBag<Card>> listView = new ListView<>();
@@ -259,15 +258,21 @@ public class GraphicalPlayer {
         return listView;
     }
 
-
     /**
-     * Scene graph for the ticket and card pop-up window
+     * Private generic method that creates the small pop-up window for ticket or card selection
+     * @param textFlow (TextFlow) textFlow of the scene graph
+     * @param listView (ListView) listView of the scene graph
+     * @param title (String) name of the window
+     * @param stage (Stage) given stage of the scene graph
+     * @param button (Button) button to confirm selection
+     * @param closeable (boolean) dictates that the red cross can't be used to close the pop-up window
      */
     private <E> void selectionScene(TextFlow textFlow, ListView<E> listView, String title, Stage stage, Button button, boolean closeable) {
 
         stage.initOwner(mainStage);
         stage.initStyle(StageStyle.UTILITY);
         stage.initModality(Modality.WINDOW_MODAL);
+        // TODO: 5/26/2021  why do we need to have the closable condition? it worked before without the boolean
         if(!closeable) stage.setOnCloseRequest(Event::consume);
         stage.setTitle(title);
 

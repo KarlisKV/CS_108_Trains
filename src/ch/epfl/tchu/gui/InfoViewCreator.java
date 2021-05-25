@@ -56,13 +56,7 @@ final class InfoViewCreator {
         sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 1 : 0));
         for (PlayerId id : sortedEnumList) statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
 
-        //This doesn't work bc the infos don't update on screen otherwise (the first infos appear but when the list is updated the new ones don't appear)
-        /*
-        List<Text> trimmedInfos = infos.size() > MAX_GAME_INFO_COUNT ? infos.subList(infos.size() - MAX_GAME_INFO_COUNT, infos.size()) : infos;
-        for (Text t : trimmedInfos) {
-            textFlow.getChildren().add(t);
-        }
-         */
+
 
         //So first you have to add all "current" infos "manually" to textFlow
 
@@ -84,7 +78,7 @@ final class InfoViewCreator {
     }
 
     /**
-     * Private method for the statistics part of the scene graph
+     * Private method for the statistics part of the scene graph to better structure the class
      * @param playerId (PlayerId) of the given player
      * @return TextFlow for playerStatistics
      */
