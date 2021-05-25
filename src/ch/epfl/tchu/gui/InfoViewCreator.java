@@ -56,8 +56,6 @@ final class InfoViewCreator {
         sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 1 : 0));
         for (PlayerId id : sortedEnumList) statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
 
-
-
         //This doesn't work bc the infos don't update on screen otherwise (the first infos appear but when the list is updated the new ones don't appear)
         /*
         List<Text> trimmedInfos = infos.size() > MAX_GAME_INFO_COUNT ? infos.subList(infos.size() - MAX_GAME_INFO_COUNT, infos.size()) : infos;
@@ -71,7 +69,6 @@ final class InfoViewCreator {
         for(Text t : infos) textFlow.getChildren().add(t);
 
         //Then you need a changeListener for next time an info is added
-
 
         infos.addListener((ListChangeListener<Text>) c -> {
 

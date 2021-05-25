@@ -21,23 +21,23 @@ import java.util.Map;
 
 public class GraphicalPlayer {
 
-    ObservableGameState gameState;
-    PlayerId playerId;
-    Map<PlayerId, String> playerNames;
-    ObservableList<Text> infos;
+    private final ObservableGameState gameState;
+    private final PlayerId playerId;
+    private final Map<PlayerId, String> playerNames;
+    private final ObservableList<Text> infos;
 
-    ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketsHandler;
-    ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler;
-    ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
+    private final ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketsHandler;
+    private final ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler;
+    private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
 
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
         this.playerId = playerId;
         this.playerNames = playerNames;
         this.gameState = new ObservableGameState(playerId);
         this.infos = FXCollections.observableArrayList();
-        this.drawTicketsHandler = new SimpleObjectProperty<>(() -> {});
-        this.drawCardsHandler = new SimpleObjectProperty<>(s -> {});
-        this.claimRouteHandler = new SimpleObjectProperty<>((r, cs) -> {});
+        this.drawTicketsHandler = new SimpleObjectProperty<>();
+        this.drawCardsHandler = new SimpleObjectProperty<>();
+        this.claimRouteHandler = new SimpleObjectProperty<>();
 
         /**
          * Here is the scene graph part
@@ -81,9 +81,20 @@ public class GraphicalPlayer {
      */
     public void startTurn(ActionHandlers.DrawTicketsHandler ticketsHandler, ActionHandlers.DrawCardHandler cardsHandler,
             ActionHandlers.ClaimRouteHandler claimRouteHandler) {
-        this.drawTicketsHandler = new SimpleObjectProperty<>(ticketsHandler);
-        this.drawCardsHandler = new SimpleObjectProperty<>(cardsHandler);
-        this.claimRouteHandler = new SimpleObjectProperty<>(claimRouteHandler);
+
+        if(gameState.canDrawTickets()) this.drawTicketsHandler.setValue(() -> {
+            ticketsHandler.onDrawTickets();
+            this.drawTicketsHandler.setValue(null);
+        });
+
+        if(gameState.canDrawCards()) this.drawCardsHandler.setValue((s) -> {
+            // TODO: 25.05.21
+        });
+
+        this.claimRouteHandler.setValue((r, c) -> {
+            claimRouteHandler.onClaimRoute(r, c);
+            this.claimRouteHandler.setValue(null);
+        });
     }
 
     /**
@@ -106,6 +117,14 @@ public class GraphicalPlayer {
         // que le joueur a cliqué sur l'une de ces cartes, le gestionnaire est appelé
         // avec le choix du joueur ; cette méthode est destinée à être appelée lorsque
         // le joueur a déjà tiré une première carte et doit maintenant tirer la seconde,
+
+        /* TODO: This method modifies the ActionHandler cardHandler it is given as an attribute
+         * in a similar way to startTurn(...): cardHandler has to be not null when drawing cards is possible
+         * and then set itself to null when drawing cards isn't possible anymore
+         * (i.e. cardHandler isn't null if it's your turn and you chose to draw cards and you've drawn either 0 or 1 card for now,
+         * but it's null when it's not your turn or when you've already drawn 2 cards or when you chose a different turn kind than drawing cards)
+         */
+
         System.out.println("@GraphicalPlayer (drawCard) - Handler: " + cardHandler);
     }
 
