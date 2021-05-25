@@ -72,19 +72,12 @@ final class InfoViewCreator {
 
         //Then you need a changeListener for next time an info is added
 
-        // TODO: 24.05.21 what in the actual fuck is going on with the TextFlow
 
         infos.addListener((ListChangeListener<Text>) c -> {
-            c.next();
-            if(c.getAddedSize() > 0) {
-                textFlow.getChildren().addAll(c.getAddedSubList());
 
-                System.out.println(textFlow.getChildren());
-                System.out.println();
-                System.out.println();
+            textFlow.getChildren().clear();
+            textFlow.getChildren().addAll(infos);
 
-            }
-            else if(c.getRemovedSize() > 0) textFlow.getChildren().removeAll(c.getRemoved());
         });
 
         mainVbox.getChildren().addAll(statsVbox, separator, textFlow);
