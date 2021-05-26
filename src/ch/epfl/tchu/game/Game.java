@@ -44,17 +44,19 @@ public final class Game {
         allPlayersReceiveInfo(players, info.get(game.currentPlayerId()).willPlayFirst());
 
 
+        allPlayersUpdateState(players, game);
+
         for(PlayerId p : PlayerId.ALL) {
 
-            allPlayersUpdateState(players, game);
 
             players.get(p).setInitialTicketChoice(game.topTickets(Constants.INITIAL_TICKETS_COUNT));
             game = game.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
         }
 
+        allPlayersUpdateState(players, game);
+
         for(PlayerId p : PlayerId.ALL) {
 
-            allPlayersUpdateState(players, game);
 
             SortedBag<Ticket> keptTickets = players.get(p).chooseInitialTickets();
             game = game.withInitiallyChosenTickets(p, keptTickets);

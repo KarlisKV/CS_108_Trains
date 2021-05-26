@@ -33,7 +33,11 @@ public final class FakeServer {
                     w.flush();
                 }
                 // Attente et impression de la réponse
-                System.out.println(r.readLine());
+
+
+                String response = r.readLine();
+                System.out.println(response);
+                System.out.println("finished");
             }
         }
 }

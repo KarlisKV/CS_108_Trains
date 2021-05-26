@@ -3,14 +3,20 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import static javafx.application.Platform.runLater;
 
 public class GraphicalPlayerAdapter implements Player {
 
     private GraphicalPlayer graphicalPlayer;
+
+    private final BlockingQueue<SortedBag<Ticket>> initialTickets = new ArrayBlockingQueue<>(5);
 
     /**
      * Constructor takes no arguments
@@ -60,7 +66,17 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-        runLater (() -> graphicalPlayer.chooseTickets (tickets, null));
+
+        // TODO: 26.05.21
+        ActionHandlers.ChooseTicketsHandler handler = ((tl) -> {
+            try{
+                initialTickets.put(tl);
+            } catch(InterruptedException ignored) {}
+        });
+
+        System.out.println("did something but didn't set initial tickets choice");
+
+        runLater (() -> graphicalPlayer.chooseTickets(tickets, handler));
     }
 
     /**
@@ -69,7 +85,19 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
-        return null;
+
+        SortedBag<Ticket> tickets = SortedBag.of();
+
+        try {
+
+            tickets = initialTickets.take();
+
+            System.out.println("chose: " + tickets);
+
+        } catch (InterruptedException ignored) {}
+
+
+        return tickets;
     }
 
     /**
@@ -92,8 +120,20 @@ public class GraphicalPlayerAdapter implements Player {
     // TODO: 5/26/2021 how to add an action handler? and then what is the blocking part? And how to return the SortedBag?
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-        runLater(() -> graphicalPlayer.chooseTickets(options, null));
-        return null;
+
+        BlockingQueue<Ticket> q = new ArrayBlockingQueue<>(3);
+        ActionHandlers.ChooseTicketsHandler handler = ((tickets) -> {
+            try{
+                for(Ticket t : tickets) q.put(t);
+            } catch(InterruptedException e) {} });
+
+        runLater(() -> graphicalPlayer.chooseTickets(options, handler));
+
+        SortedBag.Builder<Ticket> rt = new SortedBag.Builder<>();
+
+        for(Ticket t : q) rt.add(t);
+
+        return rt.build();
     }
 
     /**
