@@ -50,7 +50,7 @@ public class ServerMain extends Application {
         Player mario = new GraphicalPlayerAdapter();
         players.put(PlayerId.PLAYER_1, mario);
 
-        Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), new Random());
+        new Thread(() -> Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), new Random())).start();
 
     }
 }

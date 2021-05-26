@@ -16,7 +16,7 @@ public class GraphicalPlayerAdapter implements Player {
 
     private GraphicalPlayer graphicalPlayer;
 
-    private final BlockingQueue<SortedBag<Ticket>> initialTickets = new ArrayBlockingQueue<>(5);
+    private final BlockingQueue<SortedBag<Ticket>> initialTickets = new ArrayBlockingQueue<>(Constants.INITIAL_TICKETS_COUNT);
 
     /**
      * Constructor takes no arguments
@@ -67,14 +67,11 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
 
-        // TODO: 26.05.21
         ActionHandlers.ChooseTicketsHandler handler = ((tl) -> {
             try{
                 initialTickets.put(tl);
             } catch(InterruptedException ignored) {}
         });
-
-        System.out.println("did something but didn't set initial tickets choice");
 
         runLater (() -> graphicalPlayer.chooseTickets(tickets, handler));
     }
@@ -96,7 +93,6 @@ public class GraphicalPlayerAdapter implements Player {
 
         } catch (InterruptedException ignored) {}
 
-
         return tickets;
     }
 
@@ -117,23 +113,24 @@ public class GraphicalPlayerAdapter implements Player {
      * @return the tickets the player picks
      */
 
-    // TODO: 5/26/2021 how to add an action handler? and then what is the blocking part? And how to return the SortedBag?
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
 
-        BlockingQueue<Ticket> q = new ArrayBlockingQueue<>(3);
+        BlockingQueue<SortedBag<Ticket>> q = new ArrayBlockingQueue<>(Constants.IN_GAME_TICKETS_COUNT);
         ActionHandlers.ChooseTicketsHandler handler = ((tickets) -> {
-            try{
-                for(Ticket t : tickets) q.put(t);
-            } catch(InterruptedException e) {} });
+            try {
+                q.put(tickets);
+            } catch (InterruptedException ignored) {} });
 
         runLater(() -> graphicalPlayer.chooseTickets(options, handler));
 
-        SortedBag.Builder<Ticket> rt = new SortedBag.Builder<>();
+        SortedBag<Ticket> tickets = SortedBag.of();
 
-        for(Ticket t : q) rt.add(t);
+        try{
+            tickets = q.take();
+        } catch(InterruptedException ignored) {}
 
-        return rt.build();
+        return tickets;
     }
 
     /**
