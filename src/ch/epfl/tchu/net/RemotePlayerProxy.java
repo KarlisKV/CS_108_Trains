@@ -19,6 +19,7 @@ public class RemotePlayerProxy implements Player {
     private static final String sep = " ";
     private final BufferedWriter writer;
     private final BufferedReader reader;
+    private final Socket socket;
 
     /**
      * Constructor of the RemotePlayerProxy class
@@ -27,14 +28,16 @@ public class RemotePlayerProxy implements Player {
     public RemotePlayerProxy(Socket socket) {
         // TODO: 5/25/2021 can we remove the attribute and have it only inside the constructor?
 
+        this.socket = socket;
+
         try {
 
             reader = new BufferedReader(
-                            new InputStreamReader(socket.getInputStream(),
+                            new InputStreamReader(this.socket.getInputStream(),
                                     US_ASCII));
 
             writer = new BufferedWriter(
-                            new OutputStreamWriter(socket.getOutputStream(),
+                            new OutputStreamWriter(this.socket.getOutputStream(),
                                     US_ASCII));
 
         } catch (IOException e) {

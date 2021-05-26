@@ -17,9 +17,14 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  */
 public class RemotePlayerClient {
 
+    //TODO: add the javadoc
+
+
+    private final BufferedReader reader;
     private final Player player;
     private final BufferedWriter writer;
-    private final BufferedReader reader;
+    private final Socket socket;
+
 
 
     public RemotePlayerClient(Player player, String hostName, int port) {
@@ -28,7 +33,7 @@ public class RemotePlayerClient {
 
         try {
 
-            Socket socket = new Socket(hostName, port);
+            socket = new Socket(hostName, port);
 
             writer = new BufferedWriter(
                     new OutputStreamWriter(socket.getOutputStream(),

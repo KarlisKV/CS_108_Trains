@@ -10,12 +10,12 @@ import static javafx.application.Platform.runLater;
 
 public class GraphicalPlayerAdapter implements Player {
 
-    GraphicalPlayer graphicalPlayer;
+    private GraphicalPlayer graphicalPlayer;
 
     /**
      * Constructor takes no arguments
      */
-    public void GraphicalPlayer() {
+    public GraphicalPlayerAdapter() {
 
     }
 
