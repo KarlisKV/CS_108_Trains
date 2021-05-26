@@ -13,6 +13,13 @@ public class GraphicalPlayerAdapter implements Player {
     GraphicalPlayer graphicalPlayer;
 
     /**
+     * Constructor takes no arguments
+     */
+    public void GraphicalPlayer() {
+
+    }
+
+    /**
      * is called at the start of the game to communicate to the player his own identity ownId,
      * as well as the names of the different players, his own included, which can be found in playerNames
      * @param ownId       (PlayerId) id of the player
@@ -53,13 +60,12 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-        runLater (() -> graphicalPlayer.chooseTickets (tickets));
+        runLater (() -> graphicalPlayer.chooseTickets (tickets, null));
     }
 
     /**
      * is called at the start of the game to ask the player which of the tickets he was initially given out (via the previous method) he is keeping
-     *
-     * @return (SortedBag < Ticket >) tickets which the player is keeping
+     * @return (SortedBag <Ticket>) tickets which the player is keeping
      */
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
@@ -68,7 +74,6 @@ public class GraphicalPlayerAdapter implements Player {
 
     /**
      * is called at the start of a player's turn, to find out what type of action he wishes to perform during that turn
-     *
      * @return (TurnKind) the action the player wants to do in his turn (draw cards, draw tickets, claim routes)
      */
     @Override
@@ -83,8 +88,11 @@ public class GraphicalPlayerAdapter implements Player {
      * @param options (SortedBag<Ticket>) tickets that the player can choose
      * @return the tickets the player picks
      */
+
+    // TODO: 5/26/2021 how to add an action handler? and then what is the blocking part? And how to return the SortedBag?
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
+        runLater(() -> graphicalPlayer.chooseTickets(options, null));
         return null;
     }
 
@@ -93,6 +101,7 @@ public class GraphicalPlayerAdapter implements Player {
      * in which case the value returned is between 0 and 4 included -, or from the deck - in which case the returned value is Constants.DECK_SLOT(i.e. -1)
      * @return an int depending on from where the locomotive card is picked
      */
+    // TODO: 5/26/2021
     @Override
     public int drawSlot() {
         return 0;
