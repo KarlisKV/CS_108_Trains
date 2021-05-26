@@ -17,8 +17,6 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 public class RemotePlayerProxy implements Player {
 
     private static final String sep = " ";
-    // TODO: 5/25/2021 can we remove the attribute and have it only inside the constructor?
-    private final Socket socket;
     private final BufferedWriter writer;
     private final BufferedReader reader;
 
@@ -27,7 +25,7 @@ public class RemotePlayerProxy implements Player {
      * @param socket (Socket) used to communicate messages through the network with the client
      */
     public RemotePlayerProxy(Socket socket) {
-        this.socket = socket;
+        // TODO: 5/25/2021 can we remove the attribute and have it only inside the constructor?
 
         try {
 

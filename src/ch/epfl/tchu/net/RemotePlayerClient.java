@@ -18,9 +18,6 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 public class RemotePlayerClient {
 
     private final Player player;
-    // TODO: 5/25/2021 do we need the socket as an attribute of the class?
-    //  and also plz add the javadoc cuz i dont know too much about this class
-    private final Socket socket;
     private final BufferedWriter writer;
     private final BufferedReader reader;
 
@@ -31,7 +28,7 @@ public class RemotePlayerClient {
 
         try {
 
-            socket = new Socket(hostName, port);
+            Socket socket = new Socket(hostName, port);
 
             writer = new BufferedWriter(
                     new OutputStreamWriter(socket.getOutputStream(),

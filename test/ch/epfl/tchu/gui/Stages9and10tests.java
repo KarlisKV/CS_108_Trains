@@ -64,6 +64,7 @@ public final class Stages9and10tests extends Application {
                 new BorderPane(mapView, null, cardsView, handView, infoView);
 
         primaryStage.setScene(new Scene(mainPane));
+
         primaryStage.show();
 
         setState(gameState);

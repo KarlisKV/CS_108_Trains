@@ -154,8 +154,6 @@ final class DecksViewCreator{
 
         StackPane pane = new StackPane();
         if(slot != Constants.DECK_SLOT) pane.setId(String.valueOf(slot));
-            // TODO: 5/26/2021   please verify where does handcard_ come from? Can't find it in the instructions
-        else pane.setId("handcard_" + card);
 
         pane.getStyleClass().add("card");
 
