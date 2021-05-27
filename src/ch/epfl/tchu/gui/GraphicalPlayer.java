@@ -63,7 +63,7 @@ public class GraphicalPlayer {
         this.mainStage = new Stage();
 
         //Here the scene graph is created
-        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
+        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (this::chooseClaimCards));
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardsHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, infos);
