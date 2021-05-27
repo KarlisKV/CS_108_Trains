@@ -40,13 +40,7 @@ public final class Stages9and10tests extends Application {
                 new SimpleObjectProperty<>(Stages9and10tests::drawTickets);
 
         ObjectProperty<ActionHandlers.DrawCardHandler> drawCard =
-                new SimpleObjectProperty<>((s) -> {
-                    drawCard(s);
-                    if(infos.size() == 5) infos.remove(0);
-                    List<Text> texts = List.of(new Text(" aaa \n"), new Text(" bbb \n"), new Text(" ccc \n"), new Text(" ddd \n"),
-                            new Text(" eee \n"), new Text(" fff \n"));
-                    infos.add(texts.get(new Random().nextInt(texts.size())));
-                });
+                new SimpleObjectProperty<>(Stages9and10tests::drawCard);
 
         Node mapView = MapViewCreator
                 .createMapView(gameState, claimRoute, Stages9and10tests::chooseCards);

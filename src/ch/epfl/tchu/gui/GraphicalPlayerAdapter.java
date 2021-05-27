@@ -2,11 +2,11 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -16,12 +16,48 @@ public class GraphicalPlayerAdapter implements Player {
 
     private GraphicalPlayer graphicalPlayer;
 
-    private final BlockingQueue<SortedBag<Ticket>> initialTickets = new ArrayBlockingQueue<>(Constants.INITIAL_TICKETS_COUNT);
+    private final ObjectProperty<PublicGameState> pgs;
+    private final ObjectProperty<PlayerState> ps;
+
+    private final BlockingQueue<SortedBag<Ticket>> ticketsQueue;
+    private final BlockingQueue<SortedBag<Card>> cardsQueue;
+    private final BlockingQueue<Route> routesQueue;
+    private final BlockingQueue<Integer> drawSlotQueue;
+    private final BlockingQueue<List<SortedBag<Card>>> possibleCardsQueue;
+
+    //Handlers which need to be defined at all times
+    private final ActionHandlers.ChooseCardsHandler cch;
+    private final ActionHandlers.ChooseTicketsHandler cth;
 
     /**
      * Constructor takes no arguments
      */
     public GraphicalPlayerAdapter() {
+
+        pgs = new SimpleObjectProperty<>();
+        ps = new SimpleObjectProperty<>();
+
+        ticketsQueue = new ArrayBlockingQueue<>(1);
+        cardsQueue = new ArrayBlockingQueue<>(1);
+        routesQueue = new ArrayBlockingQueue<>(1);
+        drawSlotQueue = new ArrayBlockingQueue<>(1);
+        possibleCardsQueue = new ArrayBlockingQueue<>(1);
+
+        cch = (c) -> {
+            try{
+
+                cardsQueue.put(c);
+
+            } catch (InterruptedException ignored) {}
+        };
+
+        cth = (t) -> {
+            try{
+
+                ticketsQueue.put(t);
+
+            } catch (InterruptedException ignored) {}
+        };
 
     }
 
@@ -56,7 +92,10 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
+        pgs.setValue(newState);
+        ps.setValue(ownState);
         runLater (() -> graphicalPlayer.setState (newState, ownState));
+
     }
 
     /**
@@ -66,14 +105,7 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-
-        ActionHandlers.ChooseTicketsHandler handler = ((tl) -> {
-            try{
-                initialTickets.put(tl);
-            } catch(InterruptedException ignored) {}
-        });
-
-        runLater (() -> graphicalPlayer.chooseTickets(tickets, handler));
+        runLater (() -> graphicalPlayer.chooseTickets(tickets, cth));
     }
 
     /**
@@ -83,17 +115,13 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
 
-        SortedBag<Ticket> tickets = SortedBag.of();
-
         try {
 
-            tickets = initialTickets.take();
-
-            System.out.println("chose: " + tickets);
+            return ticketsQueue.take();
 
         } catch (InterruptedException ignored) {}
 
-        return tickets;
+        return null;
     }
 
     /**
@@ -102,6 +130,60 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public TurnKind nextTurn() {
+
+        //Shouldn't be necessary, but clearing every BlockingQueue at the start of each turn just in case is a good idea
+        ticketsQueue.clear();
+        cardsQueue.clear();
+        routesQueue.clear();
+        drawSlotQueue.clear();
+        possibleCardsQueue.clear();
+
+        BlockingQueue<TurnKind> q = new ArrayBlockingQueue<>(1);
+
+        ActionHandlers.DrawTicketsHandler dth = () -> {
+
+            try{
+
+                q.put(TurnKind.DRAW_TICKETS);
+
+            } catch (InterruptedException ignored) {}
+        };
+
+        ActionHandlers.DrawCardHandler dch = (s) -> {
+
+            try{
+
+                drawSlotQueue.put(s);
+                q.put(TurnKind.DRAW_CARDS);
+
+            } catch (InterruptedException ignored) {}
+
+        };
+
+        ActionHandlers.ClaimRouteHandler crh = (r, c) -> {
+
+            runLater(() -> graphicalPlayer.chooseClaimCards(r.possibleClaimCards(), cch));
+
+            try{
+
+                routesQueue.put(r);
+                possibleCardsQueue.put(ps.get().possibleClaimCards(r));
+                q.put(TurnKind.CLAIM_ROUTE);
+
+            } catch (InterruptedException ignored) {}
+
+        };
+
+        runLater(() -> graphicalPlayer.startTurn(dth, dch, crh));
+
+        try{
+
+            return q.take();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -116,21 +198,17 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
 
-        BlockingQueue<SortedBag<Ticket>> q = new ArrayBlockingQueue<>(Constants.IN_GAME_TICKETS_COUNT);
-        ActionHandlers.ChooseTicketsHandler handler = ((tickets) -> {
-            try {
-                q.put(tickets);
-            } catch (InterruptedException ignored) {} });
-
-        runLater(() -> graphicalPlayer.chooseTickets(options, handler));
-
-        SortedBag<Ticket> tickets = SortedBag.of();
+        runLater(() -> graphicalPlayer.chooseTickets(options, cth));
 
         try{
-            tickets = q.take();
-        } catch(InterruptedException ignored) {}
 
-        return tickets;
+            return ticketsQueue.take();
+
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /**
@@ -138,10 +216,18 @@ public class GraphicalPlayerAdapter implements Player {
      * in which case the value returned is between 0 and 4 included -, or from the deck - in which case the returned value is Constants.DECK_SLOT(i.e. -1)
      * @return an int depending on from where the locomotive card is picked
      */
-    // TODO: 5/26/2021
     @Override
     public int drawSlot() {
-        return 0;
+
+        try{
+
+            return drawSlotQueue.take();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return 5;
     }
 
     /**
@@ -151,6 +237,14 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public Route claimedRoute() {
+        try{
+
+            return routesQueue.take();
+
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -161,6 +255,23 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public SortedBag<Card> initialClaimCards() {
+
+        runLater(() -> {
+            try{
+
+                graphicalPlayer.chooseClaimCards(possibleCardsQueue.take(), cch);
+
+            } catch (InterruptedException ignored) {}
+        });
+        
+        try{
+
+             return cardsQueue.take();
+            
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -174,6 +285,17 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
+
+        runLater(() -> graphicalPlayer.chooseAdditionalCards(options, cch));
+
+        try{
+
+            return cardsQueue.take();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 }

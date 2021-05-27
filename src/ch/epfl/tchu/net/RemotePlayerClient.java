@@ -57,6 +57,8 @@ public class RemotePlayerClient {
 
                 String received = reader.readLine();
 
+                System.out.println("received: " + received);
+
                 if(received != null) {
 
                     if(received.length() > 0) {
@@ -169,6 +171,8 @@ public class RemotePlayerClient {
 
     private void send(String serialised) {
         try {
+
+            System.out.println("sent: " + serialised);
 
             writer.write(serialised);
             writer.write('\n');
