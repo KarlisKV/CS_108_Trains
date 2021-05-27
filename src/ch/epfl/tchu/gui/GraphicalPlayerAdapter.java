@@ -162,8 +162,6 @@ public class GraphicalPlayerAdapter implements Player {
 
         ActionHandlers.ClaimRouteHandler crh = (r, c) -> {
 
-            runLater(() -> graphicalPlayer.chooseClaimCards(r.possibleClaimCards(), cch));
-
             try{
 
                 routesQueue.put(r);
@@ -257,6 +255,7 @@ public class GraphicalPlayerAdapter implements Player {
     public SortedBag<Card> initialClaimCards() {
 
         runLater(() -> {
+
             try{
 
                 graphicalPlayer.chooseClaimCards(possibleCardsQueue.take(), cch);

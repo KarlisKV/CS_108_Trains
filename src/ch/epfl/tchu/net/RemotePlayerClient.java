@@ -57,8 +57,6 @@ public class RemotePlayerClient {
 
                 String received = reader.readLine();
 
-                System.out.println("received: " + received);
-
                 if(received != null) {
 
                     if(received.length() > 0) {

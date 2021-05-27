@@ -29,6 +29,7 @@ public final class FakeServer {
                                  US_ASCII))) {
                 // Envoi des messages
                 for (String m : MESSAGES) {
+                    System.out.println(m);
                     w.write(m + '\n');
                     w.flush();
                 }

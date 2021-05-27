@@ -53,7 +53,7 @@ final class InfoViewCreator {
 
         // Set in first order the current player in the Vbox
         List<PlayerId> sortedEnumList = new ArrayList<>(PlayerId.ALL);
-        sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 1 : 0));
+        sortedEnumList.sort(Comparator.comparingInt(i -> i == playerId ? 0 : 1));
         for (PlayerId id : sortedEnumList) statsVbox.getChildren().add(playerStatistics(id, playerNames.get(id) ,gameState));
 
 

@@ -169,7 +169,7 @@ public final class GameState extends PublicGameState {
         Map<PlayerId, PlayerState> newPlayerState = new HashMap<>(playerState);
         newPlayerState.replace(playerId, newPlayerState.get(playerId).withAddedTickets(chosenTickets));
 
-        return new GameState(playerId, newPlayerState, null, tickets, cardState);
+        return new GameState(currentPlayerId(), newPlayerState, null, tickets, cardState);
     }
 
 

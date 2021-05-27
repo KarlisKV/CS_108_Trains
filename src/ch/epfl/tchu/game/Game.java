@@ -41,22 +41,17 @@ public final class Game {
 
         GameState game = GameState.initial(tickets, rng);
 
-        allPlayersReceiveInfo(players, info.get(game.currentPlayerId()).willPlayFirst());
-
-
-        allPlayersUpdateState(players, game);
-
         for(PlayerId p : PlayerId.ALL) {
-
 
             players.get(p).setInitialTicketChoice(game.topTickets(Constants.INITIAL_TICKETS_COUNT));
             game = game.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
         }
 
+        allPlayersReceiveInfo(players, info.get(game.currentPlayerId()).willPlayFirst());
+
         allPlayersUpdateState(players, game);
 
         for(PlayerId p : PlayerId.ALL) {
-
 
             SortedBag<Ticket> keptTickets = players.get(p).chooseInitialTickets();
             game = game.withInitiallyChosenTickets(p, keptTickets);
@@ -72,7 +67,6 @@ public final class Game {
         int lastTurns = 0;
 
         do{
-
 
             PlayerId currentPlayerId = game.currentPlayerId();
             Player currentPlayer = players.get(currentPlayerId);
@@ -90,13 +84,13 @@ public final class Game {
 
             Player.TurnKind action = currentPlayer.nextTurn();
 
-            allPlayersUpdateState(players, game);
-
             switch(action) {
 
                 case DRAW_CARDS:
 
                     for(int i = 0; i < 2; ++i) {
+
+                        if(i == 1) allPlayersUpdateState(players, game);
 
                         int drawSlot = currentPlayer.drawSlot();
 
@@ -109,12 +103,11 @@ public final class Game {
                          } else {
 
                              game = game.withCardsDeckRecreatedIfNeeded(rng);
+                             Card drawnCard = game.cardState().faceUpCard(drawSlot);
                              game = game.withDrawnFaceUpCard(drawSlot);
-                             allPlayersReceiveInfo(players, info.get(currentPlayerId).drewVisibleCard(game.cardState().faceUpCards().get(drawSlot)));
+                             allPlayersReceiveInfo(players, info.get(currentPlayerId).drewVisibleCard(drawnCard));
 
                          }
-
-                        allPlayersUpdateState(players, game);
 
                     }
 
@@ -125,18 +118,7 @@ public final class Game {
 
                     Route routeToClaim = currentPlayer.claimedRoute();
 
-                    boolean routeIsClaimable = true;
-
-                    for(Route r : game.claimedRoutes()){
-                        if(r.stations().equals(routeToClaim.stations())) {
-                            routeIsClaimable = false;
-                            break;
-                        }
-                    }
-
-                    if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim) && routeIsClaimable) {
-
-                        allPlayersUpdateState(players, game);
+                    if(game.playerState(currentPlayerId).canClaimRoute(routeToClaim)) {
 
                         SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
                         game = game.withCardsDeckRecreatedIfNeeded(rng);
@@ -148,18 +130,14 @@ public final class Game {
 
                             allPlayersReceiveInfo(players, info.get(currentPlayerId).attemptsTunnelClaim(routeToClaim, initialClaimCards));
 
-                            SortedBag<Card> topCards = SortedBag.of();
+                            SortedBag.Builder<Card> topCardsB = new SortedBag.Builder<>();
 
                             if(game.cardState().deckSize() < Constants.ADDITIONAL_TUNNEL_CARDS) {
                                 while(!game.cardState().isDeckEmpty()){
-                                    //Just in case to avoid bugs, but shouldn't happen
-                                    game = game.withCardsDeckRecreatedIfNeeded(rng);
                                     game = game.withMoreDiscardedCards(SortedBag.of(game.topCard()));
                                     game = game.withoutTopCard();
                                 }
                                 game = game.withCardsDeckRecreatedIfNeeded(rng);
-
-                                allPlayersUpdateState(players, game);
 
                             }
 
@@ -169,11 +147,11 @@ public final class Game {
                                 //Just in case to avoid bugs, but shouldn't happen
                                 game = game.withCardsDeckRecreatedIfNeeded(rng);
 
-                                topCards = topCards.union(SortedBag.of(game.topCard()));
+                                topCardsB.add(SortedBag.of(game.topCard()));
                                 game = game.withoutTopCard();
                             }
 
-                            allPlayersUpdateState(players, game);
+                            SortedBag<Card> topCards = topCardsB.build();
 
                             if(routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards) > 0) {
 
@@ -190,15 +168,11 @@ public final class Game {
 
                         }
 
-                        allPlayersUpdateState(players, game);
-
                         if(hasToAddMoreCards && additionalCards.isEmpty()) {
                             allPlayersReceiveInfo(players, info.get(currentPlayerId).didNotClaimRoute(routeToClaim));
                         } else {
                             game = game.withClaimedRoute(routeToClaim, initialClaimCards.union(additionalCards));
                             allPlayersReceiveInfo(players, info.get(currentPlayerId).claimedRoute(routeToClaim, initialClaimCards.union(additionalCards)));
-                            allPlayersUpdateState(players, game);
-
 
                         }
 
@@ -231,8 +205,6 @@ public final class Game {
                     throw new IllegalArgumentException();
             }
 
-            allPlayersUpdateState(players, game);
-
             if(game.lastTurnBegins() && !lastTurnsBegin) {
                 allPlayersReceiveInfo(players, info.get(currentPlayerId).lastTurnBegins(game.currentPlayerState().carCount()));
                 lastTurnsBegin = true;
@@ -243,6 +215,8 @@ public final class Game {
             }
 
         } while(!end);
+
+        allPlayersUpdateState(players, game);
 
         //End of game points and announcements
 
