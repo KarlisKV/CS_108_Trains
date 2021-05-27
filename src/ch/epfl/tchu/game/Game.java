@@ -251,7 +251,7 @@ public final class Game {
                 int pointsAfterLongestTrailBonus = finalPoints.get(p) + Constants.LONGEST_TRAIL_BONUS_POINTS;
                 finalPoints.replace(p, pointsAfterLongestTrailBonus);
 
-                allPlayersReceiveInfo(players, info.get(p).getsLongestTrailBonus(longest));
+                allPlayersReceiveInfo(players, info.get(p).getsLongestTrailBonus(longestTrail.get(p)));
             }
 
         }
