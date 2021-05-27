@@ -23,7 +23,6 @@ public class GraphicalPlayerAdapter implements Player {
     private final BlockingQueue<SortedBag<Card>> cardsQueue;
     private final BlockingQueue<Route> routesQueue;
     private final BlockingQueue<Integer> drawSlotQueue;
-    private final BlockingQueue<List<SortedBag<Card>>> possibleCardsQueue;
 
     //Handlers which need to be defined at all times
     private final ActionHandlers.ChooseCardsHandler cch;
@@ -43,7 +42,6 @@ public class GraphicalPlayerAdapter implements Player {
         cardsQueue = new ArrayBlockingQueue<>(1);
         routesQueue = new ArrayBlockingQueue<>(1);
         drawSlotQueue = new ArrayBlockingQueue<>(1);
-        possibleCardsQueue = new ArrayBlockingQueue<>(1);
 
         cch = (c) -> {
             try{
@@ -142,7 +140,6 @@ public class GraphicalPlayerAdapter implements Player {
         cardsQueue.clear();
         routesQueue.clear();
         drawSlotQueue.clear();
-        possibleCardsQueue.clear();
 
         BlockingQueue<TurnKind> q = new ArrayBlockingQueue<>(1);
 
@@ -175,7 +172,8 @@ public class GraphicalPlayerAdapter implements Player {
             try{
 
                 routesQueue.put(r);
-                possibleCardsQueue.put(ps.get().possibleClaimCards(r));
+                cardsQueue.put(c);
+
                 q.put(TurnKind.CLAIM_ROUTE);
 
             } catch (InterruptedException ignored) {
@@ -226,6 +224,7 @@ public class GraphicalPlayerAdapter implements Player {
     public int drawSlot() {
 
         try{
+
             return drawSlotQueue.take();
 
         } catch (InterruptedException e) {
@@ -257,19 +256,9 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public SortedBag<Card> initialClaimCards() {
-
-        runLater(() -> {
-
-            try{
-
-                graphicalPlayer.chooseClaimCards(possibleCardsQueue.take(), cch);
-
-            } catch (InterruptedException ignored) {
-                throw new Error();
-            }
-        });
         
         try{
+
              return cardsQueue.take();
 
         } catch (InterruptedException e) {

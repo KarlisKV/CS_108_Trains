@@ -21,7 +21,7 @@ public class ClientMain extends Application {
         List<String> params = getParameters().getRaw();
 
         String hostName = "localhost";
-        int port = 42069;
+        int port = 5108;
 
         if(params != null) {
             if(params.size() > 0) hostName = params.get(0);

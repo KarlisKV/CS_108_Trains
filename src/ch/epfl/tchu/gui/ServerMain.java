@@ -34,7 +34,7 @@ public class ServerMain extends Application {
 
         Player luigi;
 
-        try (ServerSocket serverSocket = new ServerSocket(42069)) {
+        try (ServerSocket serverSocket = new ServerSocket(5108)) {
             Socket socket = serverSocket.accept();
             luigi = new RemotePlayerProxy(socket);
         }

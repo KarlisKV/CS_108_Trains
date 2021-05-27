@@ -57,33 +57,23 @@ final class MapViewCreator {
             });
 
             // Add action handler to route group before adding it to the pane
-            routeGroup.setOnMouseClicked(event -> handleRouteClick(route, state, handlerObjectProperty, cardChooser));
+            routeGroup.setOnMouseClicked(event -> {
+
+                List<SortedBag<Card>> possibleClaimCards = state.possibleClaimCards(route);
+
+                if (possibleClaimCards.size() == 1)
+                    handlerObjectProperty.get().onClaimRoute(route, possibleClaimCards.get(0));
+                else if (!possibleClaimCards.isEmpty())
+                    cardChooser.chooseCards(possibleClaimCards, ((chosenCards) -> handlerObjectProperty.get().onClaimRoute(route, chosenCards)));
+
+            });
             pane.getChildren().add(routeGroup);
         }
 
         return pane;
     }
 
-    /** 
-     * Route onClick handler
-     * @param route (Route) given Route
-     * @param state (ObservableGameState) given ObservableGameState
-     * @param claimRouteH (ObjectProperty<ClaimRouteHandler>) claimRouteHandler
-     * @param cardChooser (CardChooser) functional interface parameter
-     */
-    private static void handleRouteClick(Route route, ObservableGameState state,
-                                         ObjectProperty<ClaimRouteHandler> claimRouteH, CardChooser cardChooser) {
 
-        List<SortedBag<Card>> possibleClaimCards = state.possibleClaimCards(route);
-
-        if (possibleClaimCards.size() == 1) {
-            claimRouteH.get().onClaimRoute(route, possibleClaimCards.get(0));
-
-        } else if (!possibleClaimCards.isEmpty()) {
-            ChooseCardsHandler chooseCardsH = chosenCards -> claimRouteH.get().onClaimRoute(route, chosenCards);
-            cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
-        }
-    }
 
     /**
      * Private method to remove code duplication representing the WagonRectangle
