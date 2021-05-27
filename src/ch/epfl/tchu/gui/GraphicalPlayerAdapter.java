@@ -28,6 +28,7 @@ public class GraphicalPlayerAdapter implements Player {
     //Handlers which need to be defined at all times
     private final ActionHandlers.ChooseCardsHandler cch;
     private final ActionHandlers.ChooseTicketsHandler cth;
+    
 
     /**
      * Constructor takes no arguments
@@ -36,6 +37,7 @@ public class GraphicalPlayerAdapter implements Player {
 
         pgs = new SimpleObjectProperty<>();
         ps = new SimpleObjectProperty<>();
+
 
         ticketsQueue = new ArrayBlockingQueue<>(1);
         cardsQueue = new ArrayBlockingQueue<>(1);
@@ -81,6 +83,8 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public void receiveInfo (String info)    {
         runLater (() -> graphicalPlayer.receiveInfo (info));
+
+
     }
 
     /**
@@ -115,13 +119,17 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
 
+        runLater (() -> graphicalPlayer.startTurn (null, null, null));
+
         try {
 
             return ticketsQueue.take();
 
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+            throw new Error();
+        }
 
-        return null;
+
     }
 
     /**
@@ -146,7 +154,9 @@ public class GraphicalPlayerAdapter implements Player {
 
                 q.put(TurnKind.DRAW_TICKETS);
 
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+                throw new Error();
+            }
         };
 
         ActionHandlers.DrawCardHandler dch = (s) -> {
@@ -156,7 +166,9 @@ public class GraphicalPlayerAdapter implements Player {
                 drawSlotQueue.put(s);
                 q.put(TurnKind.DRAW_CARDS);
 
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+                throw new Error();
+            }
 
         };
 
@@ -168,7 +180,9 @@ public class GraphicalPlayerAdapter implements Player {
                 possibleCardsQueue.put(ps.get().possibleClaimCards(r));
                 q.put(TurnKind.CLAIM_ROUTE);
 
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+                throw new Error();
+            }
 
         };
 
@@ -179,10 +193,8 @@ public class GraphicalPlayerAdapter implements Player {
             return q.take();
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new Error();
         }
-
-        return null;
     }
 
     /**
@@ -203,10 +215,8 @@ public class GraphicalPlayerAdapter implements Player {
             return ticketsQueue.take();
 
         } catch(InterruptedException e) {
-            e.printStackTrace();
+            throw new Error();
         }
-
-        return null;
     }
 
     /**
@@ -218,14 +228,11 @@ public class GraphicalPlayerAdapter implements Player {
     public int drawSlot() {
 
         try{
-
             return drawSlotQueue.take();
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new Error();
         }
-
-        return 5;
     }
 
     /**
@@ -240,10 +247,9 @@ public class GraphicalPlayerAdapter implements Player {
             return routesQueue.take();
 
         } catch (InterruptedException e){
-            e.printStackTrace();
-        }
+            throw new Error();
 
-        return null;
+        }
     }
 
     /**
@@ -260,18 +266,17 @@ public class GraphicalPlayerAdapter implements Player {
 
                 graphicalPlayer.chooseClaimCards(possibleCardsQueue.take(), cch);
 
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+                throw new Error();
+            }
         });
         
         try{
-
              return cardsQueue.take();
-            
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        return null;
+        } catch (InterruptedException e) {
+            throw new Error();
+        }
     }
 
     /**
@@ -288,13 +293,10 @@ public class GraphicalPlayerAdapter implements Player {
         runLater(() -> graphicalPlayer.chooseAdditionalCards(options, cch));
 
         try{
-
             return cardsQueue.take();
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new Error();
         }
-
-        return null;
     }
 }
