@@ -29,7 +29,7 @@ public class PublicPlayerState {
 
         Preconditions.checkArgument(ticketCount >= 0 && cardCount >= 0);
         this.ticketCount = ticketCount;
-        this.routes = new ArrayList<>(routes);
+        this.routes = List.copyOf(routes);
         this.cardCount = cardCount;
         int tempPoints = 0;
         int tempLength = 0;

@@ -228,7 +228,6 @@ public class GraphicalPlayer {
         Text text = new Text(StringsFr.CHOOSE_ADDITIONAL_CARDS);
 
         TextFlow textFlow = new TextFlow(text);
-        cardsHandler.onChooseCards(options.get(0));
         selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button, true);
     }
 

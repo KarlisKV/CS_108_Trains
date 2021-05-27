@@ -20,7 +20,7 @@ public  final  class Stage11Test extends Application {
     public void start (Stage primaryStage)    {
         SortedBag <Ticket> tickets = SortedBag.of (ChMap.tickets ());
         Map <PlayerId, String> names =
-                Map.of (PLAYER_1, "Ada" , PLAYER_2, "Charles" );
+                Map.of (PLAYER_1, "Alix" , PLAYER_2, "Daniel" );
         Map <PlayerId, Player> players =
                 Map.of (PLAYER_1, new GraphicalPlayerAdapter(),
                         PLAYER_2, new GraphicalPlayerAdapter ());

@@ -119,8 +119,6 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
 
-        runLater (() -> graphicalPlayer.startTurn (null, null, null));
-
         try {
 
             return ticketsQueue.take();

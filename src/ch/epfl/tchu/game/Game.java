@@ -312,11 +312,6 @@ public final class Game {
      * @param newState the new public GameState
      */
     private static void allPlayersUpdateState(Map<PlayerId, Player> players, GameState newState) {
-
-        for(Route r : newState.playerState(newState.currentPlayerId().next()).routes()) {
-            newState.playerState(newState.currentPlayerId()).routes().remove(r);
-        }
-
         for (PlayerId playerId : PlayerId.ALL) {
             players.get(playerId).updateState(newState, newState.playerState(playerId));
         }
