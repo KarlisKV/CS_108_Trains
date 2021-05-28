@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class ObservableGameState {
 
-    //Public stats of the game:
+    //Public stats of the game
     private final DoubleProperty ticketsGauge = new SimpleDoubleProperty(0);
     private final DoubleProperty cardsGauge = new SimpleDoubleProperty(0);
     private final List<ObjectProperty<Card>> faceUpCards = new ArrayList<>();
@@ -31,20 +31,20 @@ public final class ObservableGameState {
     private final List<IntegerProperty> playersPointsCount = new ArrayList<>();
 
 
-    //Private stats of player PlayerId:
+    //Private stats of player PlayerId
     private final ListProperty<Ticket> tickets = new SimpleListProperty<>(FXCollections.observableArrayList());
     //Quantity of each type of card the player PlayerId has (in the order of the Card Enum)
     private final ListProperty<Integer> cardAmount = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final MapProperty<Route, Boolean> canClaimRoute = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
-    //Properties
+    //Other attributes
     private final PlayerId playerId;
     private final ObjectProperty<PlayerState> playerStateProperty;
     private final ObjectProperty<PublicGameState> gameStateProperty;
 
     /**
      * Default constructor of ObservableGameState
-     * @param playerId the Id of the given player
+     * @param playerId the ID of the given player
      */
     public ObservableGameState(PlayerId playerId) {
 
@@ -79,7 +79,7 @@ public final class ObservableGameState {
     }
 
     /**
-     * Method to update the state
+     * Method to update the state of the different properties controlling the GUI
      * @param newGameState (PublicGameState) given gameState to update
      * @param newPlayerState (PlayerState) given playerState to update
      */
@@ -170,16 +170,16 @@ public final class ObservableGameState {
     }
 
     /**
-     * property containing the % of tickets remaining in the draw pile
-     * @return the property containing the % of tickets remaining in the draw pile
+     * a property that contains the size of the gauge for the tickets remaining in the draw pile
+     * @return the property containing the size of the gauge for the tickets remaining in the draw pile
      */
     public ReadOnlyDoubleProperty ticketsGauge() {
         return ticketsGauge;
     }
 
     /**
-     * a property containing the percentage of cards remaining in the draw pile
-     * @return the property containing the percentage of cards remaining in the draw pile
+     * a property that contains the size of the gauge for the cards remaining in the draw pile
+     * @return the property containing the size of the gauge for the cards remaining in the draw pile
      */
     public ReadOnlyDoubleProperty cardsGauge() {
         return cardsGauge;
@@ -261,6 +261,7 @@ public final class ObservableGameState {
     public boolean canDrawTickets() {
         return gameStateProperty.get().canDrawTickets();
     }
+
     /**
      * Returns true if it's possible to draw Cards
      * @return true if it's possible to draw Cards
@@ -268,6 +269,7 @@ public final class ObservableGameState {
     public boolean canDrawCards() {
         return gameStateProperty.get().canDrawCards();
     }
+
     /**
      * Returns the list of the sortedBag of the possible claimCards for the given route
      * @return the list of the sortedBag of the possible claimCards for the given route

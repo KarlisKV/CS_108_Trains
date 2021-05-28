@@ -184,5 +184,6 @@ public class RemotePlayerClient {
     private void closeAll() throws IOException {
         reader.close();
         writer.close();
+        socket.close();
     }
 }

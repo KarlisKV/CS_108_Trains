@@ -28,9 +28,20 @@ public class ClientMain extends Application {
             if(params.size() > 1) port = Integer.parseInt(params.get(1));
         }
 
+
+
         Player luigi = new GraphicalPlayerAdapter();
+
+        System.out.printf("Connecting to host %s on port %s...", hostName, port);
+        System.out.println();
+
         RemotePlayerClient client = new RemotePlayerClient(luigi, hostName, port);
 
-        new Thread(client::run).start();
+        System.out.println("Connected, starting game!");
+
+        new Thread(() -> {
+            client.run();
+            System.out.println("Game finished, disconnected");
+        }).start();
     }
 }

@@ -33,10 +33,6 @@ import java.util.Map;
  */
 public class GraphicalPlayer {
 
-    // TODO: 5/26/2021 can we remove these?
-    private final PlayerId playerId;
-    private final Map<PlayerId, String> playerNames;
-
     private final ObservableGameState gameState;
     private final ObservableList<Text> infos;
     private final Stage mainStage;
@@ -53,8 +49,6 @@ public class GraphicalPlayer {
      */
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
 
-        this.playerId = playerId;
-        this.playerNames = playerNames;
         this.gameState = new ObservableGameState(playerId);
         this.infos = FXCollections.observableArrayList();
         this.drawTicketsHandler = new SimpleObjectProperty<>();

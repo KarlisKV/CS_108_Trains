@@ -9,6 +9,7 @@ import ch.epfl.tchu.net.RemotePlayerProxy;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -16,6 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+
+/**
+ * ServerMain
+ * @author Daniel Polka  (326800)
+ */
 public class ServerMain extends Application {
 
     public static void main(String[] args) {
@@ -32,11 +38,18 @@ public class ServerMain extends Application {
         Map<PlayerId, String> playerNames = new HashMap<>();
         Map<PlayerId, Player> players = new HashMap<>();
 
+        int port = 5108;
+
         Player luigi;
 
-        try (ServerSocket serverSocket = new ServerSocket(5108)) {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+
+            System.out.println("Waiting for client to connect...");
+
             Socket socket = serverSocket.accept();
             luigi = new RemotePlayerProxy(socket);
+
+            System.out.println("Client connected!");
         }
 
         for(PlayerId p : PlayerId.ALL) {
@@ -50,7 +63,21 @@ public class ServerMain extends Application {
         Player mario = new GraphicalPlayerAdapter();
         players.put(PlayerId.PLAYER_1, mario);
 
-        new Thread(() -> Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), new Random())).start();
+        System.out.println("Starting game!");
 
+        new Thread(() -> {
+            Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), new Random());
+
+            System.out.println("Game finished, disconnecting...");
+
+            try{
+                ((RemotePlayerProxy) luigi).closeAll();
+                System.out.println("Disconnected");
+
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+
+        }).start();
     }
 }

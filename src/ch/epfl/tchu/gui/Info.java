@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * CardState class
+ * Info class
  * @author Daniel Polka  (326800)
  * @author Karlis Velins (325180)
  */

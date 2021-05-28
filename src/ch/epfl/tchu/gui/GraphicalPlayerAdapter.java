@@ -2,8 +2,6 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.List;
 import java.util.Map;
@@ -12,13 +10,17 @@ import java.util.concurrent.BlockingQueue;
 
 import static javafx.application.Platform.runLater;
 
+/**
+ * GraphicalPlayerAdapter class represents a player. Creates a GUI for that player on instantiation
+ * @author Daniel Polka  (326800)
+ * @author Karlis Velins (325180)
+ */
 public class GraphicalPlayerAdapter implements Player {
 
+    //GUI
     private GraphicalPlayer graphicalPlayer;
 
-    private final ObjectProperty<PublicGameState> pgs;
-    private final ObjectProperty<PlayerState> ps;
-
+    //All BlockingQueue instances used for the handlers (which can't be local variables)
     private final BlockingQueue<SortedBag<Ticket>> ticketsQueue;
     private final BlockingQueue<SortedBag<Card>> cardsQueue;
     private final BlockingQueue<Route> routesQueue;
@@ -33,10 +35,6 @@ public class GraphicalPlayerAdapter implements Player {
      * Constructor takes no arguments
      */
     public GraphicalPlayerAdapter() {
-
-        pgs = new SimpleObjectProperty<>();
-        ps = new SimpleObjectProperty<>();
-
 
         ticketsQueue = new ArrayBlockingQueue<>(1);
         cardsQueue = new ArrayBlockingQueue<>(1);
@@ -94,8 +92,6 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
-        pgs.setValue(newState);
-        ps.setValue(ownState);
         runLater (() -> graphicalPlayer.setState (newState, ownState));
 
     }

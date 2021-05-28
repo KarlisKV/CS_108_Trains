@@ -17,9 +17,17 @@ import javafx.scene.text.Text;
 
 import java.util.*;
 
+/**
+ * DecksViewCreator creates ticket button, card button and face up cards
+ * @author Daniel Polka  (326800)
+ * @author Karlis Velins (325180)
+ */
 final class DecksViewCreator{
 
 
+    /**
+     * DecksViewCreator not to be instantiated
+     */
     private DecksViewCreator() {}
 
     /**
@@ -180,7 +188,7 @@ final class DecksViewCreator{
 
     /**
      * Handler for javafx CardPane onMouseClick event
-     * Picks 1 card from the face-up cards
+     * Picks 1 card from the face-up cards or from the deck
      *
      * @param event        (EventObject)
      * @param cardsHandler (ObjectProperty<ActionHandlers.DrawCardHandler>)

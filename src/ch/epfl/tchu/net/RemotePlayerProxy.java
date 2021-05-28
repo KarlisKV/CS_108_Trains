@@ -26,7 +26,6 @@ public class RemotePlayerProxy implements Player {
      * @param socket (Socket) used to communicate messages through the network with the client
      */
     public RemotePlayerProxy(Socket socket) {
-        // TODO: 5/25/2021 can we remove the attribute and have it only inside the constructor?
 
         this.socket = socket;
 
@@ -191,6 +190,7 @@ public class RemotePlayerProxy implements Player {
     public void closeAll() throws IOException {
         reader.close();
         writer.close();
+        socket.close();
     }
 
 }

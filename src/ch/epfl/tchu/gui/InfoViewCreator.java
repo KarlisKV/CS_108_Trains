@@ -26,6 +26,9 @@ import java.util.Map;
  */
 final class InfoViewCreator {
 
+    /**
+     * InfoViewCreator not to be instantiated
+     */
     private InfoViewCreator(){}
 
     /**

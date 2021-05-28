@@ -26,6 +26,10 @@ import java.util.List;
  */
 final class MapViewCreator {
 
+
+    /**
+     * MapViewCreator not to be instantiated
+     */
     private MapViewCreator(){}
 
     /**
