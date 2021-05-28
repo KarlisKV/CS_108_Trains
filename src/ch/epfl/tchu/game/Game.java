@@ -144,7 +144,6 @@ public final class Game {
 
                             for(int i = 0; i < Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
 
-                                //Just in case to avoid bugs, but shouldn't happen
                                 game = game.withCardsDeckRecreatedIfNeeded(rng);
 
                                 topCardsB.add(SortedBag.of(game.topCard()));
@@ -287,11 +286,6 @@ public final class Game {
 
 
     }
-
-
-
-
-
 
     /**
      * Method which is called whenever there is information to announce, and announces it to
