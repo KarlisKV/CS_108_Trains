@@ -10,7 +10,12 @@ import java.util.regex.Pattern;
  * Serdes contains all of the serdes used for the game
  * @author Karlis Velins (325180)
  */
-public class Serdes {
+public final class Serdes {
+
+    /**
+     * Serdes class not to be instantiated
+     */
+    private Serdes() {}
 
     //Integer serde
     public static final Serde<Integer> INTEGER_SERDE = Serde.of((Objects::toString), (Integer::parseInt));

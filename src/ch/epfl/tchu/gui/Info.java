@@ -38,13 +38,36 @@ public final class Info {
      */
     public static String cardName(Card card, int count) {
 
-        List<String> allCardNames = new ArrayList<>(List.of(StringsFr.BLACK_CARD, StringsFr.VIOLET_CARD, StringsFr.BLUE_CARD,
-                StringsFr.GREEN_CARD, StringsFr.YELLOW_CARD, StringsFr.ORANGE_CARD, StringsFr.RED_CARD, StringsFr.WHITE_CARD, StringsFr.LOCOMOTIVE_CARD));
+        switch(card) {
 
-        if(!Card.ALL.contains(card)) {
-            return "ERROR: Card doesn't exist";
-        } else {
-            return allCardNames.get(Card.ALL.indexOf(card)) + StringsFr.plural(count);
+            case BLACK:
+                return StringsFr.BLACK_CARD + StringsFr.plural(count);
+
+            case VIOLET:
+                return StringsFr.VIOLET_CARD + StringsFr.plural(count);
+
+            case BLUE:
+                return StringsFr.BLUE_CARD + StringsFr.plural(count);
+
+            case GREEN:
+                return StringsFr.GREEN_CARD + StringsFr.plural(count);
+
+            case YELLOW:
+                return StringsFr.YELLOW_CARD + StringsFr.plural(count);
+
+            case ORANGE:
+                return StringsFr.ORANGE_CARD + StringsFr.plural(count);
+
+            case RED:
+                return StringsFr.RED_CARD + StringsFr.plural(count);
+
+            case WHITE:
+                return StringsFr.WHITE_CARD + StringsFr.plural(count);
+
+            case LOCOMOTIVE:
+                return StringsFr.LOCOMOTIVE_CARD + StringsFr.plural(count);
+
+            default: return null;
         }
     }
 

@@ -19,18 +19,31 @@ import java.util.Random;
 
 
 /**
- * ServerMain
+ * Main class used to launch the server. Make sure the client chose the correct hostname and port,
+ * or else you'll suffer a great deal of pain from it (actually mostly the person using the client will).
+ *
+ * ServerMain class shouldn't be instantiated, however it is impossible to add a private constructor or else
+ * the program crashes on launch, thus subjecting the user to the aforementioned pain.
  * @author Daniel Polka  (326800)
  */
-public class ServerMain extends Application {
+public final class ServerMain extends Application {
 
+    /**
+     * Method to start the server
+     * @param args program arguments, set in Run -> Edit Configurations... -> this class
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
-
-    //PlayerId.PLAYER_1 is always this player
-
+    /**
+     * "The main entry point for all JavaFX applications. The start method is called after the init method has returned,
+     * and after the system is ready for the application to begin running.
+     * NOTE: This method is called on the JavaFX Application Thread."
+     * @param primaryStage "the primary stage for this application, onto which the application scene can be set.
+     *                     Applications may create other stages, if needed, but they will not be primary stages."
+     * @throws Exception "if something goes wrong" - So beautifully said by the JavaFX creators
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -40,7 +53,7 @@ public class ServerMain extends Application {
 
         int port = 5108;
 
-        Player luigi;
+        RemotePlayerProxy luigi;
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
 
@@ -51,6 +64,8 @@ public class ServerMain extends Application {
 
             System.out.println("Client connected!");
         }
+
+        //NOTE: PlayerId.PLAYER_1 is always this player
 
         for(PlayerId p : PlayerId.ALL) {
             int pIndex = PlayerId.ALL.indexOf(p);
@@ -71,7 +86,7 @@ public class ServerMain extends Application {
             System.out.println("Game finished, disconnecting...");
 
             try{
-                ((RemotePlayerProxy) luigi).closeAll();
+                luigi.closeAll();
                 System.out.println("Disconnected");
 
             } catch(IOException e) {

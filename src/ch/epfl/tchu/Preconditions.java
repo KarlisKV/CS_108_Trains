@@ -1,9 +1,14 @@
 package ch.epfl.tchu;
 
+/**
+ * Preconditions class, is only used to check certain arguments passed to certain methods
+ * and throw an IllegalArgumentException if that method shouldn't be called with that/those argument(s)
+ * @author Karlis Velins (325180)
+ */
 public final class Preconditions {
 
     /**
-     * Private constructor for Preconditions
+     * Preconditions class not to be instantiated
      */
     private Preconditions() {}
 

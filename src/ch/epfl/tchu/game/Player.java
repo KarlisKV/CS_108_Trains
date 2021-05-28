@@ -65,7 +65,7 @@ public interface Player {
     /**
      * is called when the player has decided to draw railcar / locomotive cards, in order to know from where he wishes to draw them: from one of the slots containing a face-up card -
      * in which case the value returned is between 0 and 4 included -, or from the deck - in which case the returned value is Constants.DECK_SLOT(i.e. -1)
-     * @return an int depending on from where the locomotive card is picked
+     * @return the slot number of the card the player chose to draw
      */
     int drawSlot();
 
@@ -77,7 +77,7 @@ public interface Player {
 
     /**
      * is called when the player has decided to (attempt to) seize a road, in order to know which card (s) he initially wishes to use for it
-     * @return the cards he uses to claim the route
+     * @return the cards the player uses to claim a route
      */
     SortedBag<Card> initialClaimCards();
 

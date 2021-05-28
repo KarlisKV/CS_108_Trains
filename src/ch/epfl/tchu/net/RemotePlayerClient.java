@@ -7,17 +7,15 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * RemotePlayerClient represent the remote player client
+ * RemotePlayerClient is used for the non-host player (client) to connect
+ * and communicate with the host (server), instantiated in ClientMain
  * @author Daniel Polka (326800)
  */
-public class RemotePlayerClient {
-
-    //TODO: add the javadoc
+public final class RemotePlayerClient {
 
 
     private final BufferedReader reader;
@@ -27,6 +25,12 @@ public class RemotePlayerClient {
 
 
 
+    /**
+     * Constructor of RemotePlayerClient
+     * @param player the instance of Player to represent
+     * @param hostName name of the host (server) that the client should connect to
+     * @param port port number that the host (server) has hosted the game on
+     */
     public RemotePlayerClient(Player player, String hostName, int port) {
 
         this.player = player;
@@ -49,6 +53,11 @@ public class RemotePlayerClient {
 
     }
 
+
+    /**
+     * This method is used to communicate with the host (server) and should be called
+     * in ClientMain by a new Thread
+     */
     public void run() {
 
         try {
@@ -63,7 +72,7 @@ public class RemotePlayerClient {
 
                     if(received.length() > 0) {
 
-                        String[] typeAndArgs = received.split(" ");
+                        String[] typeAndArgs = received.split(RemotePlayerProxy.sep);
                         String type = typeAndArgs[0];
 
                         switch (type) {
@@ -161,7 +170,9 @@ public class RemotePlayerClient {
 
             } while(received != null);
 
-            closeAll();
+            reader.close();
+            writer.close();
+            socket.close();
 
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -169,6 +180,12 @@ public class RemotePlayerClient {
 
     }
 
+
+    /**
+     * Private method added to avoid code repetition.
+     * Sends the message received as an argument to the host (server)
+     * @param serialised message to be sent
+     */
     private void send(String serialised) {
         try {
 
@@ -179,11 +196,5 @@ public class RemotePlayerClient {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    private void closeAll() throws IOException {
-        reader.close();
-        writer.close();
-        socket.close();
     }
 }

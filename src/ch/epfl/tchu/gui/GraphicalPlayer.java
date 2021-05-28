@@ -31,7 +31,7 @@ import java.util.Map;
  * @author Daniel Polka  (326800)
  * @author Karlis Velins (325180)
  */
-public class GraphicalPlayer {
+public final class GraphicalPlayer {
 
     private final ObservableGameState gameState;
     private final ObservableList<Text> infos;

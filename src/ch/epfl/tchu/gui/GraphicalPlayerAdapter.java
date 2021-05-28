@@ -14,7 +14,7 @@ import static javafx.application.Platform.runLater;
  * @author Daniel Polka  (326800)
  * @author Karlis Velins (325180)
  */
-public class GraphicalPlayerAdapter implements Player {
+public final class GraphicalPlayerAdapter implements Player {
 
     //GUI
     private GraphicalPlayer graphicalPlayer;

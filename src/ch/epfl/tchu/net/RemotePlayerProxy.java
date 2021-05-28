@@ -11,18 +11,20 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * RemotePlayerProxy represents the remote player proxy. It implements the interface Player
+ * RemotePlayerProxy represents a non-host player who is connected to the host.
+ * Used by the server to communicate between said player (client) and host (server).
+ * Instantiated in ServerMain
  * @author Daniel Polka (326800)
  */
-public class RemotePlayerProxy implements Player {
+public final class RemotePlayerProxy implements Player {
 
-    private static final String sep = " ";
+    public static final String sep = " ";
     private final BufferedWriter writer;
     private final BufferedReader reader;
     private final Socket socket;
 
     /**
-     * Constructor of the RemotePlayerProxy class
+     * Constructor of RemotePlayerProxy
      * @param socket (Socket) used to communicate messages through the network with the client
      */
     public RemotePlayerProxy(Socket socket) {
@@ -45,9 +47,10 @@ public class RemotePlayerProxy implements Player {
 
 
     }
-// TODO: 5/22/2021 add javaDoc for everything
+
+
     /**
-     * 
+     * Sends a message indicating to the client that it should call initPlayers with specified parameters to update the GUI
      * @param ownId (PlayerId) id of the player
      * @param playerNames (Map<PlayerId, String> playerNames) names of the players
      */
@@ -58,6 +61,10 @@ public class RemotePlayerProxy implements Player {
         send(init);
     }
 
+    /**
+     * Sends a message indicating to the client that the player it's representing should receive the information "info"
+     * @param info (String) information for the player
+     */
     @Override
     public void receiveInfo(String info) {
 
@@ -66,6 +73,11 @@ public class RemotePlayerProxy implements Player {
 
     }
 
+    /**
+     * Sends a message indicating to the client that it should call updateState with specified tickets to update the GUI
+     * @param newState (PublicGameState) new public game state
+     * @param ownState (PlayerState) player state
+     */
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
 
@@ -73,6 +85,10 @@ public class RemotePlayerProxy implements Player {
         send(state);
     }
 
+    /**
+     * Sends a message indicating to the client that it should call setInitialTicketChoice with specified tickets to update the GUI
+     * @param tickets (SortedBag<Ticket>) Sorted bag of tickets
+     */
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
 
@@ -81,6 +97,10 @@ public class RemotePlayerProxy implements Player {
 
     }
 
+    /**
+     * Sends a message indicating to the client that it should call chooseInitialTickets and send the chosen tickets back to the proxy (this)
+     * @return (SortedBag<Ticket>) tickets which the player is keeping
+     */
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
 
@@ -92,6 +112,10 @@ public class RemotePlayerProxy implements Player {
         return Serdes.TICKET_SORTED_BAG_SERDE.deserialize(initialTicketsChoice);
     }
 
+    /**
+     * Sends a message indicating to the client that it should call nextTurn and then send the chosen TurnKind back
+     * @return (TurnKind) the action the player wants to do in his turn (draw cards, draw tickets, claim routes)
+     */
     @Override
     public TurnKind nextTurn() {
 
@@ -103,6 +127,12 @@ public class RemotePlayerProxy implements Player {
         return Serdes.TURN_KIND_SERDE.deserialize(turnKind);
     }
 
+    /**
+     * Sends a message indicating to the client that it should call chooseTickets with specified tickets to update the GUI,
+     * and then send back the tickets which the player chose to keep
+     * @param options (SortedBag<Ticket>) tickets that the player can choose
+     * @return the tickets the player picks
+     */
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
 
@@ -114,6 +144,11 @@ public class RemotePlayerProxy implements Player {
         return Serdes.TICKET_SORTED_BAG_SERDE.deserialize(chosenTickets);
     }
 
+    /**
+     * Sends a message indicating to the client that it should call drawSlot and send back the slot number
+     * of the card the player chose to draw
+     * @return the slot number of the card the player chose to draw
+     */
     @Override
     public int drawSlot() {
 
@@ -125,6 +160,11 @@ public class RemotePlayerProxy implements Player {
         return Integer.parseInt(slot);
     }
 
+    /**
+     * Sends a message indicating to the client that it should call claimedRoute and send back the route
+     * that the player chose to claim
+     * @return the claimed route
+     */
     @Override
     public Route claimedRoute() {
 
@@ -136,6 +176,11 @@ public class RemotePlayerProxy implements Player {
         return Serdes.ROUTE_SERDE.deserialize(chosenRoute);
     }
 
+    /**
+     * Sends a message indicating to the client that it should call initialClaimCards and send back the claim cards
+     * that the player wants to claim a route with
+     * @return the cards the player uses to claim a route
+     */
     @Override
     public SortedBag<Card> initialClaimCards() {
 
@@ -147,10 +192,17 @@ public class RemotePlayerProxy implements Player {
         return Serdes.CARD_SORTED_BAG_SERDE.deserialize(initCC);
     }
 
+    /**
+     * Sends a message indicating to the client that it should call chooseAdditionalCards with
+     * the possibilities the player has and then send back the additional claim cards/an empty
+     * SortedBag of cards if the player wants to give up the route claim
+     * @param options (List<SortedBag<Card>>) possible cards to be used
+     * @return additional cards needed to seize a tunnel
+     */
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
 
-        String iWantMore = MessageId.CHOOSE_ADDITIONAL_CARDS.toString() + sep + Serdes.LIST_SORTED_BAG_CARD_SERDE.serialize(options);
+        String iWantMore = MessageId.CHOOSE_ADDITIONAL_CARDS + sep + Serdes.LIST_SORTED_BAG_CARD_SERDE.serialize(options);
         send(iWantMore);
 
         String additionalCards = receive();
@@ -159,10 +211,11 @@ public class RemotePlayerProxy implements Player {
     }
 
 
-
-
-
-
+    /**
+     * Private method added to avoid code repetition.
+     * Sends the message received as an argument to the client
+     * @param serialised message to be sent
+     */
     private void send(String serialised) {
         try  {
 
@@ -175,6 +228,11 @@ public class RemotePlayerProxy implements Player {
         }
     }
 
+
+    /**
+     * Private method added to avoid code repetition.
+     * Receives messages
+     */
     private String receive() {
 
         try{
@@ -186,10 +244,15 @@ public class RemotePlayerProxy implements Player {
         }
     }
 
-    // TODO: 5/25/2021 do we need this method? not used anywhere
+
+    /**
+     * I don't know if we're allowed to add public methods just like that yet,
+     * but I added this to close the reader, writer and the socket once the game has ended
+     * @throws IOException shouldn't happen, but even if it does it doesn't matter because it was the end of the game anyway :)
+     */
     public void closeAll() throws IOException {
-        reader.close();
         writer.close();
+        reader.close();
         socket.close();
     }
 

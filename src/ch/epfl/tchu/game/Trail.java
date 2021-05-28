@@ -17,7 +17,7 @@ public final class Trail {
     private final int length;
 
     /**
-     * Private constructor for Trail class
+     * Private constructor for Trail class (shouldn't be instantiated outside of Trail)
      * @param Routes (List<Route>) List of Routes
      * @param station1 (Station) First station
      * @param station2 (Station) Second station
