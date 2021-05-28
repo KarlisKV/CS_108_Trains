@@ -156,6 +156,8 @@ public final class Game {
 
                             SortedBag<Card> topCards = topCardsB.build();
 
+                            allPlayersReceiveInfo(players, info.get(currentPlayerId).drewAdditionalCards(topCards, routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards)));
+
                             if(routeToClaim.additionalClaimCardsCount(initialClaimCards, topCards) > 0) {
 
                                 if((game.currentPlayerState().possibleAdditionalCards(routeToClaim.
