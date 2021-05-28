@@ -7,12 +7,15 @@ import java.util.*;
 
 
 /**
- * Game class summarizes all of the classes and combines them into one method 'play'
+ * Game class is the brains of the machine. Makes the game run using all methods in classes from game package
  * @author Daniel Polka (326800)
  * @author Karlis Velins (325180)
  */
 public final class Game {
 
+    /**
+     * Game class not to be instantiated
+     */
     private Game(){}
 
     /**
@@ -94,20 +97,20 @@ public final class Game {
 
                         int drawSlot = currentPlayer.drawSlot();
 
-                         if(drawSlot == Constants.DECK_SLOT) {
+                        if(drawSlot == Constants.DECK_SLOT) {
 
-                             game = game.withCardsDeckRecreatedIfNeeded(rng);
-                             game = game.withBlindlyDrawnCard();
-                             allPlayersReceiveInfo(players, info.get(currentPlayerId).drewBlindCard());
+                            game = game.withCardsDeckRecreatedIfNeeded(rng);
+                            game = game.withBlindlyDrawnCard();
+                            allPlayersReceiveInfo(players, info.get(currentPlayerId).drewBlindCard());
 
-                         } else {
+                        } else {
 
-                             game = game.withCardsDeckRecreatedIfNeeded(rng);
-                             Card drawnCard = game.cardState().faceUpCard(drawSlot);
-                             game = game.withDrawnFaceUpCard(drawSlot);
-                             allPlayersReceiveInfo(players, info.get(currentPlayerId).drewVisibleCard(drawnCard));
+                            game = game.withCardsDeckRecreatedIfNeeded(rng);
+                            Card drawnCard = game.cardState().faceUpCard(drawSlot);
+                            game = game.withDrawnFaceUpCard(drawSlot);
+                            allPlayersReceiveInfo(players, info.get(currentPlayerId).drewVisibleCard(drawnCard));
 
-                         }
+                        }
 
                     }
 
@@ -144,6 +147,7 @@ public final class Game {
 
                             for(int i = 0; i < Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
 
+                                //Just in case to avoid bugs, but shouldn't happen
                                 game = game.withCardsDeckRecreatedIfNeeded(rng);
 
                                 topCardsB.add(SortedBag.of(game.topCard()));
@@ -286,6 +290,11 @@ public final class Game {
 
 
     }
+
+
+
+
+
 
     /**
      * Method which is called whenever there is information to announce, and announces it to
