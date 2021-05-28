@@ -193,6 +193,7 @@ public class GraphicalPlayer {
         Button button = new Button(StringsFr.CHOOSE);
 
         button.setOnAction(event -> {
+
             cardsHandler.onChooseCards(listView.getSelectionModel().getSelectedItem());
             stage.close();
         });
@@ -265,7 +266,6 @@ public class GraphicalPlayer {
         stage.initOwner(mainStage);
         stage.initStyle(StageStyle.UTILITY);
         stage.initModality(Modality.WINDOW_MODAL);
-        // TODO: 5/26/2021  why do we need to have the closable condition? it worked before without the boolean
         if(!closeable) stage.setOnCloseRequest(Event::consume);
         stage.setTitle(title);
 

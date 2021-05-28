@@ -38,10 +38,8 @@ public class PublicPlayerState {
             tempPoints += route.claimPoints();
             tempLength += route.length();
         }
-
-        this.claimPoints = tempPoints;
-
         this.carCount = Constants.INITIAL_CAR_COUNT - tempLength;
+        this.claimPoints = tempPoints;
     }
 
     /**

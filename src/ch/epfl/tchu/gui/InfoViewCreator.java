@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * InfoViewCreator represents the GUI Information in the left part of the game
+ * InfoViewCreator represents the GUI Information of player actions during the game
  * @author Karlis Velins (325180)
  * @author Daniel Polka  (326800)
  */

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
 import static javafx.application.Platform.runLater;
 
 /**
@@ -20,19 +19,19 @@ public class GraphicalPlayerAdapter implements Player {
     //GUI
     private GraphicalPlayer graphicalPlayer;
 
-    //All BlockingQueue instances used for the handlers (which can't be local variables)
+    //All BlockingQueue instances used for the handlers
     private final BlockingQueue<SortedBag<Ticket>> ticketsQueue;
     private final BlockingQueue<SortedBag<Card>> cardsQueue;
     private final BlockingQueue<Route> routesQueue;
     private final BlockingQueue<Integer> drawSlotQueue;
 
     //Handlers which need to be defined at all times
-    private final ActionHandlers.ChooseCardsHandler cch;
-    private final ActionHandlers.ChooseTicketsHandler cth;
+    private final ActionHandlers.ChooseCardsHandler chooseCardsHandler;
+    private final ActionHandlers.ChooseTicketsHandler chooseTicketsHandler;
     
 
     /**
-     * Constructor takes no arguments
+     * Default constructor of GraphicalPlayerAdapter class which takes no arguments
      */
     public GraphicalPlayerAdapter() {
 
@@ -41,7 +40,7 @@ public class GraphicalPlayerAdapter implements Player {
         routesQueue = new ArrayBlockingQueue<>(1);
         drawSlotQueue = new ArrayBlockingQueue<>(1);
 
-        cch = (c) -> {
+        chooseCardsHandler = (c) -> {
             try{
 
                 cardsQueue.put(c);
@@ -49,7 +48,7 @@ public class GraphicalPlayerAdapter implements Player {
             } catch (InterruptedException ignored) {}
         };
 
-        cth = (t) -> {
+        chooseTicketsHandler = (t) -> {
             try{
 
                 ticketsQueue.put(t);
@@ -79,8 +78,6 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public void receiveInfo (String info)    {
         runLater (() -> graphicalPlayer.receiveInfo (info));
-
-
     }
 
     /**
@@ -98,12 +95,11 @@ public class GraphicalPlayerAdapter implements Player {
 
     /**
      * is called at the start of the game to communicate to the player the five tickets that have been distributed to him
-     *
      * @param tickets (SortedBag<Ticket>) Sorted bag of tickets
      */
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-        runLater (() -> graphicalPlayer.chooseTickets(tickets, cth));
+        runLater (() -> graphicalPlayer.chooseTickets(tickets, chooseTicketsHandler));
     }
 
     /**
@@ -114,14 +110,11 @@ public class GraphicalPlayerAdapter implements Player {
     public SortedBag<Ticket> chooseInitialTickets() {
 
         try {
-
             return ticketsQueue.take();
 
         } catch (InterruptedException ignored) {
             throw new Error();
         }
-
-
     }
 
     /**
@@ -137,25 +130,23 @@ public class GraphicalPlayerAdapter implements Player {
         routesQueue.clear();
         drawSlotQueue.clear();
 
-        BlockingQueue<TurnKind> q = new ArrayBlockingQueue<>(1);
+        BlockingQueue<TurnKind> turnKindQueue = new ArrayBlockingQueue<>(1);
 
-        ActionHandlers.DrawTicketsHandler dth = () -> {
+        ActionHandlers.DrawTicketsHandler drawTicketsHandler = () -> {
 
             try{
-
-                q.put(TurnKind.DRAW_TICKETS);
+                turnKindQueue.put(TurnKind.DRAW_TICKETS);
 
             } catch (InterruptedException ignored) {
                 throw new Error();
             }
         };
 
-        ActionHandlers.DrawCardHandler dch = (s) -> {
+        ActionHandlers.DrawCardHandler drawCardHandler = (s) -> {
 
             try{
-
                 drawSlotQueue.put(s);
-                q.put(TurnKind.DRAW_CARDS);
+                turnKindQueue.put(TurnKind.DRAW_CARDS);
 
             } catch (InterruptedException ignored) {
                 throw new Error();
@@ -163,14 +154,14 @@ public class GraphicalPlayerAdapter implements Player {
 
         };
 
-        ActionHandlers.ClaimRouteHandler crh = (r, c) -> {
+        ActionHandlers.ClaimRouteHandler claimRouteHandler = (r, c) -> {
 
             try{
 
                 routesQueue.put(r);
                 cardsQueue.put(c);
 
-                q.put(TurnKind.CLAIM_ROUTE);
+                turnKindQueue.put(TurnKind.CLAIM_ROUTE);
 
             } catch (InterruptedException ignored) {
                 throw new Error();
@@ -178,11 +169,11 @@ public class GraphicalPlayerAdapter implements Player {
 
         };
 
-        runLater(() -> graphicalPlayer.startTurn(dth, dch, crh));
+        runLater(() -> graphicalPlayer.startTurn(drawTicketsHandler, drawCardHandler, claimRouteHandler));
 
         try{
 
-            return q.take();
+            return turnKindQueue.take();
 
         } catch (InterruptedException e) {
             throw new Error();
@@ -200,10 +191,9 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
 
-        runLater(() -> graphicalPlayer.chooseTickets(options, cth));
+        runLater(() -> graphicalPlayer.chooseTickets(options, chooseTicketsHandler));
 
         try{
-
             return ticketsQueue.take();
 
         } catch(InterruptedException e) {
@@ -220,7 +210,6 @@ public class GraphicalPlayerAdapter implements Player {
     public int drawSlot() {
 
         try{
-
             return drawSlotQueue.take();
 
         } catch (InterruptedException e) {
@@ -235,8 +224,8 @@ public class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public Route claimedRoute() {
-        try{
 
+        try{
             return routesQueue.take();
 
         } catch (InterruptedException e){
@@ -254,7 +243,6 @@ public class GraphicalPlayerAdapter implements Player {
     public SortedBag<Card> initialClaimCards() {
         
         try{
-
              return cardsQueue.take();
 
         } catch (InterruptedException e) {
@@ -273,7 +261,7 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
 
-        runLater(() -> graphicalPlayer.chooseAdditionalCards(options, cch));
+        runLater(() -> graphicalPlayer.chooseAdditionalCards(options, chooseCardsHandler));
 
         try{
             return cardsQueue.take();

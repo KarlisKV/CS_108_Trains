@@ -10,7 +10,10 @@ public enum PlayerId {
     PLAYER_1,
     PLAYER_2;
 
+    //List of all players
     public static final List<PlayerId> ALL = List.of(PLAYER_1, PLAYER_2);
+
+    //Number of players
     public static final int COUNT = ALL.size();
 
     /**
