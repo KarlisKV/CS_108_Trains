@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Serdes contains all of the serdes used for the game
+ * Serdes class contains all of the serdes used for the game
  * @author Karlis Velins (325180)
  */
 public final class Serdes {
@@ -40,8 +40,6 @@ public final class Serdes {
     public static final Serde<List<String>> STRING_LIST_SERDE = Serde.listOf(STRING_SERDE,',');
     // Card List serde
     public static final Serde<List<Card>> CARD_LIST_SERDE = Serde.listOf(CARD_SERDE, ',');
-    //Ticket List serde
-    public static final Serde<List<Ticket>> TICKET_LIST_SERDE = Serde.listOf(TICKET_SERDE, ',');
     //Route List serde
     public static final Serde<List<Route>> ROUTE_LIST_SERDE = Serde.listOf(ROUTE_SERDE, ',');
     //SortedBag of Cards serde

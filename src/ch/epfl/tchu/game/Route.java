@@ -166,7 +166,6 @@ public final class Route {
         return Constants.ROUTE_CLAIM_POINTS.get(length);
 
     }
-
     /**
      * Returns id of route
      * @return id of route
@@ -212,10 +211,4 @@ public final class Route {
     public Color color() {
         return color;
     }
-
-    @Override
-    public String toString() {
-        return "[R] " + station1 + " - " + station2 + " (" + length + ", " +  color + ", " + level + ")";
-    }
-
 }

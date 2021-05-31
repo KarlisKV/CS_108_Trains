@@ -7,6 +7,10 @@
     -fx-stroke: dimgrey;
 }
 
+.card:hover  {
+    -fx-translate-x: 90;
+}
+
 .card .inside {
     -fx-stroke: hsba(0, 0%, 0%, 0.3);
     -fx-stroke-type: inside;
@@ -42,13 +46,33 @@
 }
 
 Button.gauged {
+    -fx-background-color:
+            #c3c4c4,
+            linear-gradient(#d6d6d6 50%, white 100%),
+            radial-gradient(center 50% -40%, radius 200%, #e6e6e6 45%, rgba(230,230,230,0) 50%);
+    -fx-background-radius: 30;
+    -fx-background-insets: 0,1,1;
+    -fx-text-fill: red;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
     -fx-content-display: bottom;
 }
+
+Button.gauged:hover {
+    -fx-rotate: 360;
+
+    -fx-text-fill: white;
+    -fx-background-color:
+            linear-gradient(from 0% 93% to 0% 100%, black 10%, gold 100%),
+            #000000,
+            #ffffff,
+            radial-gradient(center 50% 50%, radius 100%, darkred, darkred);
+}
+
 Button.gauged .background {
     -fx-fill: white;
 }
 Button.gauged .foreground {
-    -fx-fill: darkgray;
+    -fx-fill: red;
 }
 
 /* Hand pane (tickets and cards held) */
