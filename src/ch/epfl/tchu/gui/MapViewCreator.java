@@ -77,8 +77,11 @@ final class MapViewCreator {
 
             highlightedRoutes.addListener((o, oV, nV) -> {
 
-                if(nV.contains(route))
+                if(nV.contains(route) && !oV.contains(route))
                     routeGroup.setEffect(new Glow(0.5));
+
+                if(!nV.contains(route) && oV.contains(route))
+                    routeGroup.setEffect(null);
 
             });
 

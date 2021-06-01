@@ -64,7 +64,22 @@ public final class GraphicalPlayer {
         //Here the scene graph is created
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (this::chooseClaimCards), highlightedRoutes);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardsHandler);
-        Node handView = DecksViewCreator.createHandView(gameState);
+        Node handView = DecksViewCreator.createHandView(gameState, new DecksViewCreator.HighlightHandler() {
+            @Override
+            public void addHighlight(Route route) {
+                highlightedRoutes.add(route);
+            }
+
+            @Override
+            public void removeHighlight(Route route) {
+                highlightedRoutes.remove(route);
+            }
+
+            @Override
+            public void removeAllHighlights() {
+                highlightedRoutes.clear();
+            }
+        });
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, infos);
 
         BorderPane borderPane = new BorderPane(mapView, null, cardsView, handView, infoView);

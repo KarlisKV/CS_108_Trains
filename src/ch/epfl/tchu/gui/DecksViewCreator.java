@@ -37,7 +37,7 @@ final class DecksViewCreator{
      * @param state (ObservableGameState) given state
      * @return the created HBox (Node)
      */
-    public static Node createHandView(ObservableGameState state){
+    public static Node createHandView(ObservableGameState state, HighlightHandler handler){
 
         HBox mainBox = new HBox();
         mainBox.getStylesheets().add("decks.css");
@@ -49,7 +49,21 @@ final class DecksViewCreator{
 
         tickets.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Ticket>) (c) -> {
 
-            c.next(); //todo
+            List<Ticket> ticket = List.copyOf(tickets.getSelectionModel().getSelectedItems());
+
+            if(ticket.size() > 1) {
+                handler.removeAllHighlights();
+                return;
+            }
+            else if(ticket.size() == 1) {
+
+            //    Trail selectedTicketTrail = Trail.shortestPossible();
+
+            //    for(Route r : selectedTicketTrail.routes()) {
+
+
+            }
+
 
         });
 
@@ -208,6 +222,13 @@ final class DecksViewCreator{
         final Node source = (Node) event.getSource();
         String id = source.getId();
         cardsHandler.get().onDrawCard(Integer.parseInt(id));
+    }
+
+    //todo
+    public interface HighlightHandler{
+        void addHighlight(Route route);
+        void removeHighlight(Route route);
+        void removeAllHighlights();
     }
 
 }

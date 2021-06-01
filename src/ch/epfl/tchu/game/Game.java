@@ -61,15 +61,6 @@ public final class Game {
             allPlayersReceiveInfo(players, info.get(p).keptTickets(keptTickets.size()));
         }
 
-
-
-        for(Route r : ChMap.routes().subList(0, 26)) {
-            game = game.withClaimedRoute(r, SortedBag.of(r.length(), Card.of(r.color())));
-            players.get(game.currentPlayerId()).highlightRoute(r);
-        }
-
-
-
         //Mid-game and 2 last turns
 
         boolean end = false;
