@@ -23,6 +23,8 @@ ImageView {
 .route:hover .track {
     -fx-scale-x: 1.1;
     -fx-scale-y: 1.1;
+    -fx-effect: dropshadow(gaussian, white, 10, 0.5, 0.0, 0.0);
+
 }
 
 .car {
@@ -32,21 +34,27 @@ ImageView {
 .car Rectangle {
     -fx-stroke-type: centered;
     -fx-stroke: dimgrey;
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
+    -fx-effect: dropshadow(gaussian, ghostwhite, 10, 0.5, 0.0, 0.0);
 }
 
 .car Circle {
     -fx-stroke-width: 1;
     -fx-stroke: dimgrey;
     -fx-fill: white;
+    -fx-effect: dropshadow(gaussian, white, 10, 0.5, 0.0, 0.0);
+
 }
 
 .PLAYER_1 .car {
     visibility: visible;
+    -fx-effect: dropshadow(gaussian, darkgoldenrod, 5, 0.5, 0, 0);
+    
 }
 
 .PLAYER_2 .car {
     visibility: visible;
+    -fx-effect: dropshadow(gaussian, darkgray, 5, 0.5, 0, 0);
 }
 
 /* Position of individual track segments */

@@ -6,9 +6,11 @@
     -fx-fill: white;
     -fx-stroke: dimgrey;
 }
-
+/* Added effect when cards are hovered */
 .card:hover  {
-    -fx-translate-x: 90;
+    -fx-rotate: 10;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 
 .card .inside {
@@ -45,7 +47,10 @@
     -fx-padding: 5;
 }
 
+/*Modified the button so its not static */
 Button.gauged {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
     -fx-background-color:
             #c3c4c4,
             linear-gradient(#d6d6d6 50%, white 100%),
@@ -56,9 +61,9 @@ Button.gauged {
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
     -fx-content-display: bottom;
 }
-
+/*Modified the button so its not static */
 Button.gauged:hover {
-    -fx-rotate: 360;
+
 
     -fx-text-fill: white;
     -fx-background-color:
