@@ -210,6 +210,11 @@ public final class RemotePlayerProxy implements Player {
         return Serdes.CARD_SORTED_BAG_SERDE.deserialize(additionalCards);
     }
 
+    @Override
+    public void highlightRoute(Route route) {
+        send(MessageId.HIGHLIGHT_TRAIL + sep + Serdes.ROUTE_SERDE.serialize(route));
+    }
+
 
     /**
      * Private method added to avoid code repetition.

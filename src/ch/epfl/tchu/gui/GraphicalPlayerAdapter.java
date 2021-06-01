@@ -270,4 +270,9 @@ public final class GraphicalPlayerAdapter implements Player {
             throw new Error();
         }
     }
+
+    @Override
+    public void highlightRoute(Route route) {
+        runLater(() -> graphicalPlayer.highlightTrail(route));
+    }
 }

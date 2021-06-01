@@ -441,6 +441,11 @@ class GameTest {
                     ? SortedBag.of()
                     : options.get(rng.nextInt(options.size()));
         }
+
+        @Override
+        public void highlightRoute(Route route) {
+
+        }
     }
 
     // Simplified Swiss map (only single routes)
@@ -651,5 +656,6 @@ class GameTest {
             if (fr != 0) trips.addAll(Trip.all(from, FR, fr));
             return new Ticket(trips);
         }
+
     }
 }

@@ -22,7 +22,8 @@ public enum MessageId {
     DRAW_SLOT,
     ROUTE,
     CARDS,
-    CHOOSE_ADDITIONAL_CARDS;
+    CHOOSE_ADDITIONAL_CARDS,
+    HIGHLIGHT_TRAIL;
 
     //List of all message options
     public static final List<MessageId> ALL = List.of(INIT_PLAYERS, RECEIVE_INFO, UPDATE_STATE, SET_INITIAL_TICKETS, CHOOSE_INITIAL_TICKETS,

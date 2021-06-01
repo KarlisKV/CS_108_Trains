@@ -90,6 +90,13 @@ public interface Player {
      */
     SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options);
 
+
+    /**
+     * Highlights this player's trail
+     * @param route route to be highlighted
+     */
+    void highlightRoute(Route route);
+
     /**
      * enum for the decisions the player could make
      */

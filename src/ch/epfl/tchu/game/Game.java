@@ -63,6 +63,13 @@ public final class Game {
 
 
 
+        for(Route r : ChMap.routes().subList(0, 26)) {
+            game = game.withClaimedRoute(r, SortedBag.of(r.length(), Card.of(r.color())));
+            players.get(game.currentPlayerId()).highlightRoute(r);
+        }
+
+
+
         //Mid-game and 2 last turns
 
         boolean end = false;
@@ -250,6 +257,10 @@ public final class Game {
 
             allPlayersReceiveInfo(players, info.get(longestTrailPlayerId).getsLongestTrailBonus(longest));
 
+            for(Route r : longestTrail.get(longestTrailPlayerId).routes())
+                for(PlayerId id : PlayerId.ALL)
+                    players.get(id).highlightRoute(r);
+
         } else {
 
             for(PlayerId p : PlayerId.ALL) {
@@ -257,8 +268,12 @@ public final class Game {
                 finalPoints.replace(p, pointsAfterLongestTrailBonus);
 
                 allPlayersReceiveInfo(players, info.get(p).getsLongestTrailBonus(longestTrail.get(p)));
-            }
 
+                for(Route r : longestTrail.get(p).routes())
+                    for(PlayerId id : PlayerId.ALL)
+                        players.get(id).highlightRoute(r);
+
+            }
         }
 
         int maxPoints = 0;

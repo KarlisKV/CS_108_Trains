@@ -5,10 +5,12 @@ import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
 import ch.epfl.tchu.game.Route;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.effect.*;
 import javafx.scene.layout.Pane;
 import ch.epfl.tchu.gui.ActionHandlers.*;
 import javafx.scene.shape.Circle;
@@ -34,12 +36,13 @@ final class MapViewCreator {
 
     /**
      * MapView creation method
-     * @param state (ObervableGameState) given ObservableGameState
+     * @param state (ObservableGameState) given ObservableGameState
      * @param handlerObjectProperty (ObjectProperty<ClaimRouteHandler>) given handlerObjectProperty
      * @param cardChooser (CardChooser) functional interface argument
      * @return the created MapView
      */
-    public static Node createMapView(ObservableGameState state, ObjectProperty<ClaimRouteHandler> handlerObjectProperty, CardChooser cardChooser) {
+    public static Node createMapView(ObservableGameState state, ObjectProperty<ClaimRouteHandler> handlerObjectProperty,
+                                     CardChooser cardChooser, ListProperty<Route> highlightedRoutes) {
 
         Pane pane = new Pane();
         pane.getStylesheets().add("map.css");
@@ -71,13 +74,19 @@ final class MapViewCreator {
                     cardChooser.chooseCards(possibleClaimCards, ((chosenCards) -> handlerObjectProperty.get().onClaimRoute(route, chosenCards)));
 
             });
+
+            highlightedRoutes.addListener((o, oV, nV) -> {
+
+                if(nV.contains(route))
+                    routeGroup.setEffect(new Glow(0.5));
+
+            });
+
             pane.getChildren().add(routeGroup);
         }
 
         return pane;
     }
-
-
 
     /**
      * Private method to remove code duplication representing the WagonRectangle

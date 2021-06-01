@@ -5,6 +5,8 @@ import ch.epfl.tchu.game.*;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -44,6 +46,14 @@ final class DecksViewCreator{
         ListView<Ticket> tickets = new ListView<>();
         tickets.setId("tickets");
         state.tickets().addListener((o, oV, nV) -> tickets.getItems().addAll(SortedBag.of(nV).difference(SortedBag.of(tickets.getItems())).toList()));
+
+        tickets.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Ticket>) (c) -> {
+
+            c.next(); //todo
+
+        });
+
+
         mainBox.getChildren().add(tickets);
 
         //Second HBox (bigger group)

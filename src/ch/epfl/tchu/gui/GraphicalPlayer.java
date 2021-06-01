@@ -3,7 +3,9 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +43,8 @@ public final class GraphicalPlayer {
     private final ObjectProperty<ActionHandlers.DrawCardHandler> drawCardsHandler;
     private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
 
+    private final ListProperty<Route> highlightedRoutes;
+
 
     /**
      * Constructor of the GraphicalPlayer creates the main GUI window of tCHu
@@ -55,9 +59,10 @@ public final class GraphicalPlayer {
         this.drawCardsHandler = new SimpleObjectProperty<>();
         this.claimRouteHandler = new SimpleObjectProperty<>();
         this.mainStage = new Stage();
+        this.highlightedRoutes = new SimpleListProperty<>(FXCollections.observableArrayList());
 
         //Here the scene graph is created
-        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (this::chooseClaimCards));
+        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (this::chooseClaimCards), highlightedRoutes);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardsHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, infos);
@@ -69,6 +74,7 @@ public final class GraphicalPlayer {
         mainStage.show();
 
     }
+
 
     /**
      * Calling this method on the observable state of the player
@@ -191,9 +197,7 @@ public final class GraphicalPlayer {
         TextFlow textFlow = new TextFlow(text);
 
         Button button = new Button(StringsFr.CHOOSE);
-
         button.setOnAction(event -> {
-
             cardsHandler.onChooseCards(listView.getSelectionModel().getSelectedItem());
             stage.close();
         });
@@ -204,13 +208,14 @@ public final class GraphicalPlayer {
 
     /**
      * Used to choose the additional cards that need to be used to seize the tunnel
-     * @param options (List<SortedBag<Card>>) a list of multisets of cards, which are the additional cards that it can use to seize a tunnel
+     * @param options (List<SortedBag<Card>>) a list of SortedBag of cards, which are the additional cards that it can use to seize a tunnel
      * @param cardsHandler (ChooseCardsHandler) manager of choice of cards
      */
     public void chooseAdditionalCards(List<SortedBag<Card>> options, ActionHandlers.ChooseCardsHandler cardsHandler) {
 
         assert Platform.isFxApplicationThread();
         Stage stage = new Stage();
+
         stage.setOnCloseRequest((e) -> cardsHandler.onChooseCards(SortedBag.of()));
         ListView<SortedBag<Card>> listView = createListView(options);
 
@@ -226,6 +231,17 @@ public final class GraphicalPlayer {
         selectionScene(textFlow, listView, StringsFr.CARDS_CHOICE, stage, button, true);
     }
 
+
+    /**
+     *
+     * @param route
+     */
+    public void highlightTrail(Route route) {
+
+        assert  Platform.isFxApplicationThread();
+
+        highlightedRoutes.add(route);
+    }
 
 
 
@@ -252,6 +268,7 @@ public final class GraphicalPlayer {
         return listView;
     }
 
+
     /**
      * Private generic method that creates the small pop-up window for ticket or card selection
      * @param textFlow (TextFlow) textFlow of the scene graph
@@ -276,5 +293,4 @@ public final class GraphicalPlayer {
         stage.setScene(scene);
         stage.show();
     }
-
 }

@@ -162,6 +162,13 @@ public final class RemotePlayerClient {
 
                                 break;
 
+                            case "HIGHLIGHT_TRAIL":
+
+                                List<Route> routes = Serdes.ROUTE_LIST_SERDE.deserialize(typeAndArgs[1]);
+                                for(Route r : routes) player.highlightRoute(r);
+
+                                break;
+
                             default:
                                 throw new IOException("Communication error");
                         }

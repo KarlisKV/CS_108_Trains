@@ -11,7 +11,7 @@ import java.util.List;
 
 public final class Trail {
 
-    private final List<Route> Routes;
+    private final List<Route> routes;
     private final Station station1;
     private final Station station2;
     private final int length;
@@ -26,7 +26,7 @@ public final class Trail {
 
         this.station2 = station2;
         this.station1 = station1;
-        this.Routes = Routes;
+        this.routes = Routes;
 
         int tempLength = 0;
         if(Routes != null && station1 != null && station2 != null){
@@ -70,7 +70,7 @@ public final class Trail {
 
                 for(Route r : routes) {
                     boolean canBeAdded = c.station2.equals(r.station1()) || c.station2.equals(r.station2());
-                    boolean doesntContain = !(c.Routes.contains(r));
+                    boolean doesntContain = !(c.routes.contains(r));
 
                     if(canBeAdded && doesntContain) {
                         rs.add(r);
@@ -80,7 +80,7 @@ public final class Trail {
                 for(Route r : rs) {
 
                     //Can't add r directly to c because otherwise it would potentially mess up the other trails (see algorithm)
-                    List<Route> prolongedRoutes = new ArrayList<>(c.Routes);
+                    List<Route> prolongedRoutes = new ArrayList<>(c.routes);
                     prolongedRoutes.add(r);
 
                     //station2 of new trail = the station that wasn't already c.station2
@@ -156,30 +156,39 @@ public final class Trail {
 
         Station station;
         StringBuilder complete = new StringBuilder();
-        if (Routes != null)
-            if (!Routes.isEmpty()) {
+        if (routes != null)
+            if (!routes.isEmpty()) {
                 station = station1;
                 complete.append(station1.toString());
                 complete.append(" - ");
 
 
-            for (Route r : Routes) {
+            for (Route r : routes) {
                 complete.append(r.stationOpposite(station).toString());
                 station = r.stationOpposite(station);
 
 
-                if (!(Routes.indexOf(r) == (Routes.size() - 1))) {
+                if (!(routes.indexOf(r) == (routes.size() - 1))) {
                     complete.append(" - ");
                 }
             }
         }
 
-        if(Routes != null) {
-            if(!Routes.isEmpty()) complete.append(" (").append(length).append(")");
+        if(routes != null) {
+            if(!routes.isEmpty()) complete.append(" (").append(length).append(")");
             else complete.append("Empty trail");
         } else complete.append("Empty trail");
 
         return complete.toString();
+    }
+
+
+    /**
+     * Returns immutable list of routes in this trail. Useful for highlighting trails
+     * @return immutable list of routes in this trail
+     */
+    public List<Route> routes() {
+        return List.copyOf(routes);
     }
 
 

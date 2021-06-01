@@ -277,4 +277,13 @@ public final class ObservableGameState {
     public List<SortedBag<Card>> possibleClaimCards(Route r) {
         return playerStateProperty.get().possibleClaimCards(r);
     }
+
+    /**
+     * @return the PlayerId of this player
+     */
+    public PlayerId playerId(){
+        return this.playerId;
+    }
+
+
 }
