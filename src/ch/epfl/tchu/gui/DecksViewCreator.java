@@ -6,6 +6,7 @@ import ch.epfl.tchu.game.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -47,25 +48,63 @@ final class DecksViewCreator{
         tickets.setId("tickets");
         state.tickets().addListener((o, oV, nV) -> tickets.getItems().addAll(SortedBag.of(nV).difference(SortedBag.of(tickets.getItems())).toList()));
 
+
+
+
+        final ObjectProperty<Trail> selectedTicketTrail = new SimpleObjectProperty<>(null);
+        final ObjectProperty<Ticket> selectedTicket = new SimpleObjectProperty<>(null);
+
         tickets.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Ticket>) (c) -> {
 
             List<Ticket> ticket = List.copyOf(tickets.getSelectionModel().getSelectedItems());
 
-            if(ticket.size() > 1) {
-                handler.removeAllHighlights();
-                return;
+            if(ticket.size() == 1) {
+
+                selectedTicket.setValue(ticket.get(0));
+                selectedTicketTrail.setValue(Trail.shortest(selectedTicket.get(), List.of()));
+
+            } else {
+
+                selectedTicket.setValue(null);
+                selectedTicketTrail.setValue(null);
+
             }
-            else if(ticket.size() == 1) {
+        });
 
-            //    Trail selectedTicketTrail = Trail.shortestPossible();
+        state.routesMapProperty().addListener((o, oV, nV) -> {
 
-            //    for(Route r : selectedTicketTrail.routes()) {
+            if(selectedTicket.get() == null) return;
 
+            List<Route> routesToAvoid = new ArrayList<>();
 
+            for(Route r : ChMap.routes()) {
+                if(nV.get(r) != null)
+                    if(nV.get(r).equals(state.playerId().next()) &&
+                    selectedTicketTrail.get().routes().contains(r)) {
+                        routesToAvoid.add(r);
+                    }
             }
 
+            selectedTicketTrail.setValue(Trail.shortest(selectedTicket.get(), routesToAvoid));
 
         });
+
+        selectedTicketTrail.addListener((o, oV, nV) -> {
+
+            if(nV == null)
+                handler.removeAllHighlights();
+
+            else if(!nV.equals(oV)) {
+                handler.removeAllHighlights();
+                for(Route r : nV.routes())
+                    handler.addHighlight(r);
+            }
+
+            System.out.println(nV);
+
+        });
+
+
 
 
         mainBox.getChildren().add(tickets);
@@ -227,7 +266,7 @@ final class DecksViewCreator{
     //todo
     public interface HighlightHandler{
         void addHighlight(Route route);
-        void removeHighlight(Route route);
+
         void removeAllHighlights();
     }
 

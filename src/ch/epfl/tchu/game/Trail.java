@@ -1,7 +1,8 @@
 package ch.epfl.tchu.game;
 
-import java.util.ArrayList;
-import java.util.List;
+import ch.epfl.tchu.SortedBag;
+
+import java.util.*;
 
 /**
  * Trail class represents a path in a player's network
@@ -36,6 +37,118 @@ public final class Trail {
         }
         length = tempLength;
     }
+
+
+    /**
+     *
+     * @param ticket ticket for which you want the path to be shown
+     * @param avoid list of routes to be avoided, can be empty (but not null)
+     * @return the shortest possible trail connecting the stations of the ticket,
+     * avoiding list of routes avoid, or returns null if no path is possible
+     * @throws NullPointerException if ticket is null or if avoid is null
+     */
+    public static Trail shortest(Ticket ticket, List<Route> avoid) {
+
+        Objects.requireNonNull(ticket);
+        Objects.requireNonNull(avoid);
+
+        List<Station> from = ticket.from();
+        List<Station> to = ticket.to();
+
+        List<Route> firstRoutes = new ArrayList<>();
+        List<Route> lastRoutes = new ArrayList<>();
+
+        Station firstStation = null;
+        Station lastStation = null;
+
+        for(Route r : ChMap.routes()) {
+            for(Station s1 : from) {
+                if(r.stations().contains(s1))
+                    firstRoutes.add(r);
+            }
+
+            for(Station s2 : to) {
+                if(r.stations().contains(s2))
+                    lastRoutes.add(r);
+            }
+        }
+
+        Route firstRoute = firstRoutes.get(0);
+        Route lastRoute = lastRoutes.get(0);
+        double minDistance = firstRoute.distance(lastRoute);
+
+        for(Route fr : firstRoutes)
+            for(Route lr : lastRoutes) {
+                double d = fr.distance(lr);
+                if(d < minDistance) {
+                    minDistance = d;
+                    firstRoute = fr;
+                    lastRoute = lr;
+                }
+            }
+
+        for(Station s1 : from) if(firstRoute.stations().contains(s1)) firstStation = s1;
+        for(Station s2 : to) if(lastRoute.stations().contains(s2)) lastStation = s2;
+
+
+
+        boolean end = false;
+        List<Route> connectingRoutes = new ArrayList<>(List.of(firstRoute));
+
+        do{
+
+            Route next = null;
+
+            for(Route r : ChMap.routes()) {
+
+                if(connectingRoutes.contains(r)) continue;
+
+
+
+                double checkDistance = r.distance(lastRoute);
+
+                boolean connected = ( r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station1())
+                || r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station2()) );
+
+                if((checkDistance <= minDistance) && connected) {
+                    minDistance = checkDistance;
+                    next = r;
+                }
+            }
+
+
+            if(next != null) {
+                if(avoid.contains(next)) {
+
+                    Station s1 = next.station1();
+                    Station s2 = next.station2();
+                    boolean connected = false;
+
+                    /*
+                    do{
+
+                        // TODO: 02.06.21
+                        
+                        
+                    } while(!connected);
+
+                     */
+
+                } else
+                    connectingRoutes.add(next);
+            }
+
+            if(connectingRoutes.get(connectingRoutes.size() - 1).stations().contains(lastStation)) end = true;
+
+        } while(!end);
+
+        return new Trail(connectingRoutes, firstStation, lastStation);
+    }
+
+
+
+
+
 
     /**
      * longest method

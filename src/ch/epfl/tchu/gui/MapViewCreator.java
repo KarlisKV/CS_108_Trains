@@ -8,6 +8,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.effect.*;
@@ -75,13 +76,18 @@ final class MapViewCreator {
 
             });
 
-            highlightedRoutes.addListener((o, oV, nV) -> {
+            highlightedRoutes.addListener((ListChangeListener<? super Route>) (c) -> {
 
-                if(nV.contains(route) && !oV.contains(route))
-                    routeGroup.setEffect(new Glow(0.5));
+                c.next();
 
-                if(!nV.contains(route) && oV.contains(route))
+                if(c.getAddedSubList().contains(route)){
+                    routeGroup.setEffect(new ColorAdjust(1, 1, 1, 1));
+                }
+
+                if(c.getRemoved().contains(route)) {
                     routeGroup.setEffect(null);
+                    System.out.println("removed route: " + route);
+                }
 
             });
 

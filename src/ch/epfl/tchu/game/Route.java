@@ -2,6 +2,8 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
+import com.sun.prism.image.Coords;
+import javafx.geometry.Pos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,8 @@ public final class Route {
     private final int length;
     private final Level level;
     private final Color color;
+    private final int posX;
+    private final int posY;
 
     /**
      * Default constructor for route class
@@ -41,7 +45,7 @@ public final class Route {
      * or if the length is not within the acceptable limits (provided by the interface Constants),
      * @throws NullPointerException if the identity, one of the two stations or the level are zero.
      */
-    public Route(String id, Station station1, Station station2, int length, Level level, Color color) {
+    public Route(String id, Station station1, Station station2, int length, Level level, Color color, int posX, int posY) {
         Preconditions.checkArgument(!station1.equals(station2) &&
                 (length >= Constants.MIN_ROUTE_LENGTH && length <= Constants.MAX_ROUTE_LENGTH));
         Objects.requireNonNull(level);
@@ -55,6 +59,8 @@ public final class Route {
         this.length = length;
         this.level = level;
         this.color = color;
+        this.posX = posX;
+        this.posY = posY;
     }
 
     /**
@@ -210,5 +216,27 @@ public final class Route {
      */
     public Color color() {
         return color;
+    }
+
+
+    /**
+     * @param that route from which you want to know the distance
+     * @return the distance between this route and that route
+     * @throws NullPointerException if that is null
+     */
+    public double distance(Route that) {
+
+        Objects.requireNonNull(that);
+
+        int distX = this.posX - that.posX;
+        int distY= this.posY - that.posY;
+
+        return Math.sqrt(distX*distX + distY*distY);
+    }
+
+
+    @Override
+    public String toString() {
+        return station1.toString() + " - " + station2.toString() + " (" + length + ", " + color + ", " + level.toString() + ")";
     }
 }

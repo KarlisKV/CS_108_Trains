@@ -23,13 +23,10 @@ public final class Ticket implements Comparable<Ticket> {
      */
     public Ticket(List<Trip> trips) {
 
-
         Preconditions.checkArgument(!trips.isEmpty());
 
+        for (Trip t : trips) Preconditions.checkArgument(trips.get(0).from().name().equals(t.from().name()));
 
-        for (Trip t : trips) {
-            Preconditions.checkArgument(trips.get(0).from().name().equals(t.from().name()));
-        }
 
         this.text = computeText(trips);
         this.trips = List.copyOf(trips);
@@ -118,6 +115,46 @@ public final class Ticket implements Comparable<Ticket> {
     public String toString() {
         return text;
     }
+
+
+    /**
+     * @return all the stations from which the ticket "can begin"
+     */
+    public List<Station> from() {
+
+        Set<Station> fromStations = new TreeSet<>((s1, s2) -> {
+
+            if(s1.id() == s2.id())
+                return 0;
+
+            return s1.id() > s2.id() ?
+                    1 : -1;
+        });
+
+        for(Trip t : trips) fromStations.add(t.from());
+
+        return new ArrayList<>(fromStations);
+    }
+
+    /**
+     * @return all the stations at which the ticket "can end"
+     */
+    public List<Station> to() {
+
+        Set<Station> toStations = new TreeSet<>((s1, s2) -> {
+
+            if(s1.id() == s2.id())
+                return 0;
+
+            return s1.id() > s2.id() ?
+                    1 : -1;
+        });
+        for(Trip t : trips) toStations.add(t.to());
+
+        return new ArrayList<>(toStations);
+    }
+
+
 }
 
 

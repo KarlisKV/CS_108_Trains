@@ -71,11 +71,6 @@ public final class GraphicalPlayer {
             }
 
             @Override
-            public void removeHighlight(Route route) {
-                highlightedRoutes.remove(route);
-            }
-
-            @Override
             public void removeAllHighlights() {
                 highlightedRoutes.clear();
             }
