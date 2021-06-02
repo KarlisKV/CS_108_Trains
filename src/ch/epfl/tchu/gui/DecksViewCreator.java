@@ -78,8 +78,6 @@ final class DecksViewCreator{
                 if(!nV.get(r) && !routesToAvoid.contains(r))
                     routesToAvoid.add(r);
 
-            System.out.println(routesToAvoid);
-
             if(selectedTicket.get() == null)
                 selectedTicketTrail.setValue(null);
             else {

@@ -46,7 +46,7 @@ public final class Trail {
      * @return the shortest possible trail connecting the stations of the ticket,
      * avoiding list of routes avoid, or returns null if no path is possible.
      * In the case of a ticket with multiple possible destinations, automatically
-     * chooses shortest possible trip. Doesn't always work :)
+     * chooses shortest possible trip. Works most of the time :)
      * @throws NullPointerException if ticket is null or if avoid is null
      */
     public static Trail shortest(Ticket ticket, List<Route> avoid) {
@@ -78,9 +78,7 @@ public final class Trail {
             }
         }
 
-
         if(!firstRoutes.isEmpty() && !lastRoutes.isEmpty()) {
-
 
             Route firstRoute = firstRoutes.get(0);
             Route lastRoute = lastRoutes.get(0);
@@ -89,7 +87,7 @@ public final class Trail {
             for (Route fr : firstRoutes)
                 for (Route lr : lastRoutes) {
                     double d = fr.distance(lr);
-                    if (d < minDistance) {
+                    if (d <= minDistance) {
                         minDistance = d;
                         firstRoute = fr;
                         lastRoute = lr;
@@ -98,7 +96,6 @@ public final class Trail {
 
             for (Station s1 : from) if (firstRoute.stations().contains(s1)) firstStation = s1;
             for (Station s2 : to) if (lastRoute.stations().contains(s2)) lastStation = s2;
-
 
             boolean end = false;
             List<Route> connectingRoutes = new ArrayList<>(List.of(firstRoute));
@@ -111,23 +108,26 @@ public final class Trail {
 
                     if (connectingRoutes.contains(r)) continue;
 
-
-                    double checkDistance = r.distance(lastRoute);
-
                     boolean connected = (r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station1())
                             || r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station2()));
 
-                    if ((checkDistance <= minDistance) && connected) {
-                        minDistance = checkDistance;
-                        next = r;
+                    double checkDistance = r.distance(lastRoute);
+
+                    if (connected) {
+                        if(checkDistance <= minDistance || next == null) {
+                            minDistance = checkDistance;
+                            next = r;
+                        }
                     }
                 }
 
 
                 if (next != null)
                     connectingRoutes.add(next);
-                 else
-                     end = true;
+                 else {
+
+                    end = true;
+                }
 
                 if (connectingRoutes.get(connectingRoutes.size() - 1).stations().contains(lastStation)) end = true;
 

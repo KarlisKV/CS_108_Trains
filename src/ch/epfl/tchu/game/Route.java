@@ -234,9 +234,4 @@ public final class Route {
         return Math.sqrt(distX*distX + distY*distY);
     }
 
-
-    @Override
-    public String toString() {
-        return station1.toString() + " - " + station2.toString() + " (" + length + ", " + color + ", " + level.toString() + ")";
-    }
 }
