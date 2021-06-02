@@ -44,7 +44,9 @@ public final class Trail {
      * @param ticket ticket for which you want the path to be shown
      * @param avoid list of routes to be avoided, can be empty (but not null)
      * @return the shortest possible trail connecting the stations of the ticket,
-     * avoiding list of routes avoid, or returns null if no path is possible
+     * avoiding list of routes avoid, or returns null if no path is possible.
+     * In the case of a ticket with multiple possible destinations, automatically
+     * chooses shortest possible trip. Doesn't always work :)
      * @throws NullPointerException if ticket is null or if avoid is null
      */
     public static Trail shortest(Ticket ticket, List<Route> avoid) {
@@ -61,7 +63,10 @@ public final class Trail {
         Station firstStation = null;
         Station lastStation = null;
 
-        for(Route r : ChMap.routes()) {
+        List<Route> possibleRoutes = new ArrayList<>(ChMap.routes());
+        possibleRoutes.removeAll(avoid);
+
+        for(Route r : possibleRoutes) {
             for(Station s1 : from) {
                 if(r.stations().contains(s1))
                     firstRoutes.add(r);
@@ -73,85 +78,73 @@ public final class Trail {
             }
         }
 
-        Route firstRoute = firstRoutes.get(0);
-        Route lastRoute = lastRoutes.get(0);
-        double minDistance = firstRoute.distance(lastRoute);
 
-        for(Route fr : firstRoutes)
-            for(Route lr : lastRoutes) {
-                double d = fr.distance(lr);
-                if(d < minDistance) {
-                    minDistance = d;
-                    firstRoute = fr;
-                    lastRoute = lr;
+        if(!firstRoutes.isEmpty() && !lastRoutes.isEmpty()) {
+
+
+            Route firstRoute = firstRoutes.get(0);
+            Route lastRoute = lastRoutes.get(0);
+            double minDistance = firstRoute.distance(lastRoute);
+
+            for (Route fr : firstRoutes)
+                for (Route lr : lastRoutes) {
+                    double d = fr.distance(lr);
+                    if (d < minDistance) {
+                        minDistance = d;
+                        firstRoute = fr;
+                        lastRoute = lr;
+                    }
                 }
-            }
 
-        for(Station s1 : from) if(firstRoute.stations().contains(s1)) firstStation = s1;
-        for(Station s2 : to) if(lastRoute.stations().contains(s2)) lastStation = s2;
-
+            for (Station s1 : from) if (firstRoute.stations().contains(s1)) firstStation = s1;
+            for (Station s2 : to) if (lastRoute.stations().contains(s2)) lastStation = s2;
 
 
-        boolean end = false;
-        List<Route> connectingRoutes = new ArrayList<>(List.of(firstRoute));
+            boolean end = false;
+            List<Route> connectingRoutes = new ArrayList<>(List.of(firstRoute));
 
-        do{
+            while (!end) {
 
-            Route next = null;
+                Route next = null;
 
-            for(Route r : ChMap.routes()) {
+                for (Route r : possibleRoutes) {
 
-                if(connectingRoutes.contains(r)) continue;
+                    if (connectingRoutes.contains(r)) continue;
 
 
+                    double checkDistance = r.distance(lastRoute);
 
-                double checkDistance = r.distance(lastRoute);
+                    boolean connected = (r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station1())
+                            || r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station2()));
 
-                boolean connected = ( r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station1())
-                || r.stations().contains(connectingRoutes.get(connectingRoutes.size() - 1).station2()) );
-
-                if((checkDistance <= minDistance) && connected) {
-                    minDistance = checkDistance;
-                    next = r;
+                    if ((checkDistance <= minDistance) && connected) {
+                        minDistance = checkDistance;
+                        next = r;
+                    }
                 }
-            }
 
 
-            if(next != null) {
-                if(avoid.contains(next)) {
-
-                    Station s1 = next.station1();
-                    Station s2 = next.station2();
-                    boolean connected = false;
-
-                    /*
-                    do{
-
-                        // TODO: 02.06.21
-                        
-                        
-                    } while(!connected);
-
-                     */
-
-                } else
+                if (next != null)
                     connectingRoutes.add(next);
+                 else
+                     end = true;
+
+                if (connectingRoutes.get(connectingRoutes.size() - 1).stations().contains(lastStation)) end = true;
+
             }
 
-            if(connectingRoutes.get(connectingRoutes.size() - 1).stations().contains(lastStation)) end = true;
+            if(connectingRoutes.get(0).stations().contains(firstStation) &&
+                    connectingRoutes.get(connectingRoutes.size() - 1).stations().contains(lastStation))
+                return new Trail(connectingRoutes, firstStation, lastStation);
 
-        } while(!end);
 
-        return new Trail(connectingRoutes, firstStation, lastStation);
+            //Only returns null if there is no possible starting point, ending point or any possible middle points
+        } return null;
     }
 
 
 
-
-
-
     /**
-     * longest method
      * @param routes (List<Route>) List of routes
      * @return the longest path of the network made up of the given routes
      */
@@ -229,7 +222,6 @@ public final class Trail {
     }
 
     /**
-     * Returns the length of the path
      * @return the length of the path
      */
     public int length() {
@@ -237,7 +229,6 @@ public final class Trail {
     }
 
     /**
-     * Returns the first station of the path, or null if (and only if) the path is zero length
      * @return the first station of the path, or null if (and only if) the path is zero length
      */
     public Station station1() {
@@ -249,7 +240,6 @@ public final class Trail {
     }
 
     /**
-     * returns the last station of the path, or null, if (and only if) the path is zero length
      * @return the last station of the path, or null, if (and only if) the path is zero length
      */
 
@@ -261,7 +251,6 @@ public final class Trail {
     }
 
     /**
-     * toString method returns a textual representation of the path
      * @return (String) a textual representation of the path
      */
     @Override

@@ -53,6 +53,7 @@ final class DecksViewCreator{
 
         final ObjectProperty<Trail> selectedTicketTrail = new SimpleObjectProperty<>(null);
         final ObjectProperty<Ticket> selectedTicket = new SimpleObjectProperty<>(null);
+        final List<Route> routesToAvoid = new ArrayList<>();
 
         tickets.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Ticket>) (c) -> {
 
@@ -61,7 +62,7 @@ final class DecksViewCreator{
             if(ticket.size() == 1) {
 
                 selectedTicket.setValue(ticket.get(0));
-                selectedTicketTrail.setValue(Trail.shortest(selectedTicket.get(), List.of()));
+                selectedTicketTrail.setValue(Trail.shortest(selectedTicket.get(), routesToAvoid));
 
             } else {
 
@@ -75,15 +76,38 @@ final class DecksViewCreator{
 
             if(selectedTicket.get() == null) return;
 
-            List<Route> routesToAvoid = new ArrayList<>();
 
             for(Route r : ChMap.routes()) {
-                if(nV.get(r) != null)
-                    if(nV.get(r).equals(state.playerId().next()) &&
-                    selectedTicketTrail.get().routes().contains(r)) {
+                if(nV.get(r) != null){
+
+
+                    //TODO doesn't fully work yet
+                    boolean sideRouteClaimed = false;
+
+                    if(ChMap.routes().indexOf(r) > 0 && ChMap.routes().indexOf(r) < ChMap.routes().size() - 1) {
+
+                        Route lastRoute = ChMap.routes().get(ChMap.routes().indexOf(r) - 1);
+                        Route nextRoute = ChMap.routes().get(ChMap.routes().indexOf(r) + 1);
+
+                        if(lastRoute.stations().equals(r.stations()) && nV.get(lastRoute) != null) {
+                            if(nV.get(lastRoute).equals(state.playerId().next()))
+                                sideRouteClaimed = true;
+
+                        } else if (nextRoute.stations().equals(r.stations()) && nV.get(nextRoute) != null) {
+                            if(nV.get(nextRoute).equals(state.playerId().next()))
+                                sideRouteClaimed = true;
+                        }
+
+                    } else if(ChMap.routes().indexOf(r) == ChMap.routes().size() - 1 && nV.get(ChMap.routes().get(ChMap.routes().indexOf(r) - 1)) != null)
+                        if(nV.get(ChMap.routes().get(ChMap.routes().indexOf(r) - 1)).equals(state.playerId().next())) sideRouteClaimed = true;
+
+                    if(nV.get(r).equals(state.playerId().next()) && !routesToAvoid.contains(r) || sideRouteClaimed) {
                         routesToAvoid.add(r);
                     }
+                }
             }
+
+            System.out.println(state.playerId() + " routes to avoid: " + routesToAvoid);
 
             selectedTicketTrail.setValue(Trail.shortest(selectedTicket.get(), routesToAvoid));
 
@@ -99,8 +123,6 @@ final class DecksViewCreator{
                 for(Route r : nV.routes())
                     handler.addHighlight(r);
             }
-
-            System.out.println(nV);
 
         });
 
@@ -263,10 +285,21 @@ final class DecksViewCreator{
         cardsHandler.get().onDrawCard(Integer.parseInt(id));
     }
 
-    //todo
+    /**
+     * Handler which gets DecksViewCreator to communicate with
+     * MapViewCreator via GraphicalPlayer to be able to highlight
+     * routes when tickets are selected
+     */
     public interface HighlightHandler{
+        /**
+         * highlights given route on the map
+         * @param route route to be highlighted
+         */
         void addHighlight(Route route);
 
+        /**
+         * removes all highlights on map
+         */
         void removeAllHighlights();
     }
 

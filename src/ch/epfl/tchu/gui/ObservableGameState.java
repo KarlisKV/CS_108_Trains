@@ -142,8 +142,6 @@ public final class ObservableGameState {
             }
         }
 
-        System.out.println();
-
         if(!routesMap.equals(newRoutesMap)) routesMap.setValue(newRoutesMap);
 
         if(!newClaimMap.equals(canClaimRoute)) canClaimRoute.setValue(newClaimMap);

@@ -81,13 +81,12 @@ final class MapViewCreator {
                 c.next();
 
                 if(c.getAddedSubList().contains(route)){
+                    //TODO: change the effect bc this one is shit lol
                     routeGroup.setEffect(new ColorAdjust(1, 1, 1, 1));
                 }
 
-                if(c.getRemoved().contains(route)) {
+                if(c.getRemoved().contains(route))
                     routeGroup.setEffect(null);
-                    System.out.println("removed route: " + route);
-                }
 
             });
 
