@@ -36,6 +36,7 @@ public final class ObservableGameState {
     //Quantity of each type of card the player PlayerId has (in the order of the Card Enum)
     private final ListProperty<Integer> cardAmount = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final MapProperty<Route, Boolean> canClaimRoute = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private final MapProperty<Route, Boolean> canHighlightRoute = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
     //Other attributes
     private final PlayerId playerId;
@@ -59,14 +60,19 @@ public final class ObservableGameState {
 
         MapProperty<Route, Boolean> initCanClaimCards = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
+        MapProperty<Route, Boolean> initialHighlightMap = new SimpleMapProperty<>(FXCollections.observableHashMap());
+
         for(Route r : ChMap.routes()) {
             initRoutesMap.put(r, null);
 
             initCanClaimCards.put(r, false);
+
+            initialHighlightMap.put(r, true);
         }
 
         routesMap.setValue(initRoutesMap);
         canClaimRoute.setValue(initCanClaimCards);
+        canHighlightRoute.setValue(initialHighlightMap);
 
         for(PlayerId ignore : PlayerId.ALL) {
             playersTicketCount.add(new SimpleIntegerProperty(0));
@@ -100,6 +106,8 @@ public final class ObservableGameState {
 
         MapProperty<Route, Boolean> newClaimMap = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
+        MapProperty<Route, Boolean> newHighlightMap = new SimpleMapProperty<>(FXCollections.observableHashMap());
+
         for(Route r : ChMap.routes()) {
 
             if(newGameState.playerState(playerId).routes().contains(r)) {
@@ -108,11 +116,15 @@ public final class ObservableGameState {
 
                 newClaimMap.put(r, false);
 
+                newHighlightMap.put(r, true);
+
             } else if(newGameState.playerState(playerId.next()).routes().contains(r)) {
 
                 newRoutesMap.put(r, playerId.next());
 
                 newClaimMap.put(r, false);
+
+                newHighlightMap.put(r, false);
 
             } else {
 
@@ -122,22 +134,33 @@ public final class ObservableGameState {
 
                 if(ChMap.routes().indexOf(r) > 0 && ChMap.routes().indexOf(r) < ChMap.routes().size() - 1) {
 
-                    Route lastRoute = ChMap.routes().get(ChMap.routes().indexOf(r) - 1);
+                    Route prevRoute = ChMap.routes().get(ChMap.routes().indexOf(r) - 1);
                     Route nextRoute = ChMap.routes().get(ChMap.routes().indexOf(r) + 1);
 
-                    if(lastRoute.stations().equals(r.stations())) {
-                        for(PlayerId pid : PlayerId.ALL) if(newGameState.playerState(pid).routes().contains(lastRoute)) sideRouteNotClaimed = false;
-
-                    } else if (nextRoute.stations().equals(r.stations())) {
+                    if(nextRoute.stations().equals(r.stations())) {
                         for(PlayerId pid : PlayerId.ALL) if(newGameState.playerState(pid).routes().contains(nextRoute)) sideRouteNotClaimed = false;
+
+                    } else if (prevRoute.stations().equals(r.stations())) {
+                        for(PlayerId pid : PlayerId.ALL) if(newGameState.playerState(pid).routes().contains(prevRoute)) sideRouteNotClaimed = false;
 
                     }
                 } else if(ChMap.routes().indexOf(r) == ChMap.routes().size() - 1)
                     for(PlayerId pid : PlayerId.ALL)
                         if(newGameState.playerState(pid).routes().contains(ChMap.routes().get(ChMap.routes().indexOf(r) - 1))) sideRouteNotClaimed = false;
 
-                        if(newPlayerState.canClaimRoute(r) && sideRouteNotClaimed) newClaimMap.put(r, true);
-                        else newClaimMap.put(r, false);
+                        if(sideRouteNotClaimed){
+
+                            newHighlightMap.put(r, true);
+
+                            if(newPlayerState.canClaimRoute(r)) newClaimMap.put(r, true);
+                            else newClaimMap.put(r, false);
+
+                        } else {
+
+                            newClaimMap.put(r, false);
+
+                            newHighlightMap.put(r, false);
+                        }
 
             }
         }
@@ -145,6 +168,8 @@ public final class ObservableGameState {
         if(!routesMap.equals(newRoutesMap)) routesMap.setValue(newRoutesMap);
 
         if(!newClaimMap.equals(canClaimRoute)) canClaimRoute.setValue(newClaimMap);
+
+        if(!newHighlightMap.equals(canHighlightRoute)) canHighlightRoute.setValue(newHighlightMap);
 
         for(int i = 0; i < PlayerId.ALL.size(); ++i) {
             playersTicketCount.get(i).setValue(newGameState.playerState(PlayerId.ALL.get(i)).ticketCount());
@@ -269,7 +294,6 @@ public final class ObservableGameState {
     }
 
     /**
-     * Returns the list of the sortedBag of the possible claimCards for the given route
      * @return the list of the sortedBag of the possible claimCards for the given route
      */
     public List<SortedBag<Card>> possibleClaimCards(Route r) {
@@ -281,6 +305,16 @@ public final class ObservableGameState {
      */
     public PlayerId playerId(){
         return this.playerId;
+    }
+
+
+    /**
+     * @return the mapping of routes which can still be claimed
+     * or not regardless of the possibleClaimCards and the carCount,
+     * used for highlighting routes
+     */
+    public ReadOnlyMapProperty<Route, Boolean> canHighlightRouteMapProperty() {
+        return canHighlightRoute;
     }
 
 

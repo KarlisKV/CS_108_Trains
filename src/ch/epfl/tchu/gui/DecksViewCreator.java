@@ -72,45 +72,22 @@ final class DecksViewCreator{
             }
         });
 
-        state.routesMapProperty().addListener((o, oV, nV) -> {
+        state.canHighlightRouteMapProperty().addListener((o, oV, nV) -> {
 
-            if(selectedTicket.get() == null) return;
+            for(Route r : ChMap.routes())
+                if(!nV.get(r) && !routesToAvoid.contains(r))
+                    routesToAvoid.add(r);
 
+            System.out.println(routesToAvoid);
 
-            for(Route r : ChMap.routes()) {
-                if(nV.get(r) != null){
+            if(selectedTicket.get() == null)
+                selectedTicketTrail.setValue(null);
+            else {
 
+                Trail trail = Trail.shortest(selectedTicket.get(), routesToAvoid);
+                selectedTicketTrail.setValue(trail);
 
-                    //TODO doesn't fully work yet
-                    boolean sideRouteClaimed = false;
-
-                    if(ChMap.routes().indexOf(r) > 0 && ChMap.routes().indexOf(r) < ChMap.routes().size() - 1) {
-
-                        Route lastRoute = ChMap.routes().get(ChMap.routes().indexOf(r) - 1);
-                        Route nextRoute = ChMap.routes().get(ChMap.routes().indexOf(r) + 1);
-
-                        if(lastRoute.stations().equals(r.stations()) && nV.get(lastRoute) != null) {
-                            if(nV.get(lastRoute).equals(state.playerId().next()))
-                                sideRouteClaimed = true;
-
-                        } else if (nextRoute.stations().equals(r.stations()) && nV.get(nextRoute) != null) {
-                            if(nV.get(nextRoute).equals(state.playerId().next()))
-                                sideRouteClaimed = true;
-                        }
-
-                    } else if(ChMap.routes().indexOf(r) == ChMap.routes().size() - 1 && nV.get(ChMap.routes().get(ChMap.routes().indexOf(r) - 1)) != null)
-                        if(nV.get(ChMap.routes().get(ChMap.routes().indexOf(r) - 1)).equals(state.playerId().next())) sideRouteClaimed = true;
-
-                    if(nV.get(r).equals(state.playerId().next()) && !routesToAvoid.contains(r) || sideRouteClaimed) {
-                        routesToAvoid.add(r);
-                    }
-                }
             }
-
-            System.out.println(state.playerId() + " routes to avoid: " + routesToAvoid);
-
-            selectedTicketTrail.setValue(Trail.shortest(selectedTicket.get(), routesToAvoid));
-
         });
 
         selectedTicketTrail.addListener((o, oV, nV) -> {
