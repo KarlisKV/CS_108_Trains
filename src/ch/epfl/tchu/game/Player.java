@@ -92,10 +92,11 @@ public interface Player {
 
 
     /**
-     * Highlights this player's trail
-     * @param route route to be highlighted
+     * Highlights specified route on this players map. Is only called at the end
+     * of the game to highlight the longest trail(s)
+     * @param trail trail to be highlighted
      */
-    void highlightRoute(Route route);
+    void highlightTrail(Trail trail);
 
     /**
      * enum for the decisions the player could make

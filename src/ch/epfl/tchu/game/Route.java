@@ -2,8 +2,6 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
-import com.sun.prism.image.Coords;
-import javafx.geometry.Pos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +141,7 @@ public final class Route {
      * @param claimCards (SortedBag<Card>) list of played cards to claim the route
      * @param drawnCards (SortedBag<Card>) list of cards to draw after playing
      * @return number of drawn cards that correspond to the played cards
-     * @throws IllegalArgumentException if the road to which it is applied is not a tunnel, or if drawnCardsdoes not contain exactly 3 maps
+     * @throws IllegalArgumentException if the road to which it is applied is not a tunnel, or if drawnCards does not contain exactly 3 maps
      */
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
 
@@ -220,6 +218,7 @@ public final class Route {
 
 
     /**
+     * Added in bonus
      * @param that route from which you want to know the distance
      * @return the distance between this route and that route
      * @throws NullPointerException if that is null

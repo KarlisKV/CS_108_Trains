@@ -165,7 +165,7 @@ public final class RemotePlayerClient {
                             case "HIGHLIGHT_TRAIL":
 
                                 List<Route> routes = Serdes.ROUTE_LIST_SERDE.deserialize(typeAndArgs[1]);
-                                for(Route r : routes) player.highlightRoute(r);
+                                player.highlightTrail(Trail.longest(routes));
 
                                 break;
 

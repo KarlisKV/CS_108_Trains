@@ -10,8 +10,10 @@
 .WHITE   .filled { -fx-fill: "#f5f5f5"; }
 .NEUTRAL .filled { -fx-fill: "#d3d3d3"; }
 
+
 .PLAYER_1 .filled { -fx-fill: gold;
 
 }
+
 .PLAYER_2 .filled { -fx-fill: silver;
 }

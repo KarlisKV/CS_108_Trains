@@ -81,8 +81,8 @@ final class MapViewCreator {
                 c.next();
 
                 if(c.getAddedSubList().contains(route)){
-                    //TODO: change the effect bc this one is shit lol
-                    routeGroup.setEffect(new ColorAdjust(1, 1, 1, 1));
+                    Effect e = new ColorAdjust(0, 0, 1, 0);
+                    routeGroup.setEffect(e);
                 }
 
                 if(c.getRemoved().contains(route))

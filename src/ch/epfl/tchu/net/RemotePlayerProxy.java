@@ -210,9 +210,15 @@ public final class RemotePlayerProxy implements Player {
         return Serdes.CARD_SORTED_BAG_SERDE.deserialize(additionalCards);
     }
 
+
+    /**
+     * Highlights specified route on this players map. Is only called at the end
+     * of the game to highlight the longest trail(s)
+     * @param trail trail to be highlighted
+     */
     @Override
-    public void highlightRoute(Route route) {
-        send(MessageId.HIGHLIGHT_TRAIL + sep + Serdes.ROUTE_SERDE.serialize(route));
+    public void highlightTrail(Trail trail) {
+        send(MessageId.HIGHLIGHT_TRAIL + sep + Serdes.ROUTE_LIST_SERDE.serialize(trail.routes()));
     }
 
 

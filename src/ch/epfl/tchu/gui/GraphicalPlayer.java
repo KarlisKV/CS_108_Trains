@@ -3,10 +3,7 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -44,6 +41,7 @@ public final class GraphicalPlayer {
     private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
 
     private final ListProperty<Route> highlightedRoutes;
+    private final BooleanProperty gameHasEnded;
 
 
     /**
@@ -60,6 +58,7 @@ public final class GraphicalPlayer {
         this.claimRouteHandler = new SimpleObjectProperty<>();
         this.mainStage = new Stage();
         this.highlightedRoutes = new SimpleListProperty<>(FXCollections.observableArrayList());
+        this.gameHasEnded = new SimpleBooleanProperty(false);
 
         //Here the scene graph is created
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (this::chooseClaimCards), highlightedRoutes);
@@ -67,12 +66,14 @@ public final class GraphicalPlayer {
         Node handView = DecksViewCreator.createHandView(gameState, new DecksViewCreator.HighlightHandler() {
             @Override
             public void addHighlight(Route route) {
-                highlightedRoutes.add(route);
+                if(!gameHasEnded.get())
+                    highlightedRoutes.add(route);
             }
 
             @Override
-            public void removeAllHighlights() {
-                highlightedRoutes.clear();
+            public void removeAllHighlights(List<Route> routes) {
+                if(!gameHasEnded.get())
+                    highlightedRoutes.removeAll(routes);
             }
         });
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, infos);
@@ -243,14 +244,17 @@ public final class GraphicalPlayer {
 
 
     /**
-     *
-     * @param route
+     * Highlights specified route on this players map. Is only called at the end
+     * of the game to highlight the longest trail(s)
+     * @param trail trail to be highlighted
      */
-    public void highlightTrail(Route route) {
+    public void highlightTrail(Trail trail) {
 
         assert  Platform.isFxApplicationThread();
 
-        highlightedRoutes.add(route);
+        gameHasEnded.setValue(true);
+        highlightedRoutes.clear();
+        highlightedRoutes.addAll(trail.routes());
     }
 
 

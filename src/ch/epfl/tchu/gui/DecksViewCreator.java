@@ -6,8 +6,6 @@ import ch.epfl.tchu.game.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -90,11 +88,13 @@ final class DecksViewCreator{
 
         selectedTicketTrail.addListener((o, oV, nV) -> {
 
-            if(nV == null)
-                handler.removeAllHighlights();
-
+            if(nV == null){
+                if(oV != null)
+                    handler.removeAllHighlights(oV.routes());
+            }
             else if(!nV.equals(oV)) {
-                handler.removeAllHighlights();
+                if(oV != null)
+                    handler.removeAllHighlights(oV.routes());
                 for(Route r : nV.routes())
                     handler.addHighlight(r);
             }
@@ -273,9 +273,10 @@ final class DecksViewCreator{
         void addHighlight(Route route);
 
         /**
-         * removes all highlights on map
+         * removes all highlights passed as arguments on map
+         * @param routes routes to be removed
          */
-        void removeAllHighlights();
+        void removeAllHighlights(List<Route> routes);
     }
 
 }

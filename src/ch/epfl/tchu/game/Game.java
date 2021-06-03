@@ -248,9 +248,8 @@ public final class Game {
 
             allPlayersReceiveInfo(players, info.get(longestTrailPlayerId).getsLongestTrailBonus(longest));
 
-            for(Route r : longestTrail.get(longestTrailPlayerId).routes())
-                for(PlayerId id : PlayerId.ALL)
-                    players.get(id).highlightRoute(r);
+            for(PlayerId id : PlayerId.ALL)
+                players.get(id).highlightTrail(longestTrail.get(longestTrailPlayerId));
 
         } else {
 
@@ -260,9 +259,8 @@ public final class Game {
 
                 allPlayersReceiveInfo(players, info.get(p).getsLongestTrailBonus(longestTrail.get(p)));
 
-                for(Route r : longestTrail.get(p).routes())
-                    for(PlayerId id : PlayerId.ALL)
-                        players.get(id).highlightRoute(r);
+                for(PlayerId id : PlayerId.ALL)
+                    players.get(id).highlightTrail(longestTrail.get(p));
 
             }
         }

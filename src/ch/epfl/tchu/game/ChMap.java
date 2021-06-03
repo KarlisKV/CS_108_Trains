@@ -88,6 +88,7 @@ public final class ChMap {
             DE1, DE2, DE3, DE4, DE5, AT1, AT2, AT3, IT1, IT2, IT3, IT4, IT5, FR1, FR2, FR3, FR4);
 
     // Routes
+    //Added coordinates to routes to be able to highlight routes necessary to complete a given ticket. Coordinates taken from map.css
     private static final List<Route> ALL_ROUTES = List.of(
 
             new Route("AT1_STG_1", AT1, STG, 4, Level.UNDERGROUND, null, 889, 183), //0

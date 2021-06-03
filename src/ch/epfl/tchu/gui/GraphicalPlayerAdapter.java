@@ -271,8 +271,13 @@ public final class GraphicalPlayerAdapter implements Player {
         }
     }
 
+    /**
+     * Highlights specified route on this players map. Is only called at the end
+     * of the game to highlight the longest trail(s)
+     * @param trail trail to be highlighted
+     */
     @Override
-    public void highlightRoute(Route route) {
-        runLater(() -> graphicalPlayer.highlightTrail(route));
+    public void highlightTrail(Trail trail) {
+        runLater(() -> graphicalPlayer.highlightTrail(trail));
     }
 }
