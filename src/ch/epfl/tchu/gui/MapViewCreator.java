@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.effect.*;
 import javafx.scene.layout.Pane;
 import ch.epfl.tchu.gui.ActionHandlers.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
@@ -40,6 +41,7 @@ final class MapViewCreator {
      * @param state (ObservableGameState) given ObservableGameState
      * @param handlerObjectProperty (ObjectProperty<ClaimRouteHandler>) given handlerObjectProperty
      * @param cardChooser (CardChooser) functional interface argument
+     * @param highlightedRoutes (ListProperty<Route>) property to highlight the selected routes
      * @return the created MapView
      */
     public static Node createMapView(ObservableGameState state, ObjectProperty<ClaimRouteHandler> handlerObjectProperty,
@@ -81,8 +83,12 @@ final class MapViewCreator {
                 c.next();
 
                 if(c.getAddedSubList().contains(route)){
-                    Effect e = new ColorAdjust(0, 0, 1, 0);
-                    routeGroup.setEffect(e);
+
+                    DropShadow ds = new DropShadow();
+                    ds.setOffsetY(5.0);
+                    ds.setOffsetX(5.0);
+                    ds.setColor(Color.DARKRED);
+                    routeGroup.setEffect(ds);
                 }
 
                 if(c.getRemoved().contains(route))
