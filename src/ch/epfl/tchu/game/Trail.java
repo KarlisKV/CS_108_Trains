@@ -71,7 +71,7 @@ public final class Trail {
             }
 
             for(Station s2 : to) {
-                if(r.stations().contains(s2))
+                if(r.stations().contains(s2) && !firstRoutes.contains(r))
                     lastRoutes.add(r);
             }
         }
