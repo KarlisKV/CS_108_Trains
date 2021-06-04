@@ -1,9 +1,6 @@
 package ch.epfl.tchu.net;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * MessageId enum gives the different messages communicated in the game

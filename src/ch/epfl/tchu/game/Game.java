@@ -190,6 +190,8 @@ public final class Game {
 
                     SortedBag<Ticket> keptTickets;
 
+                    allPlayersReceiveInfo(players, info.get(currentPlayerId).drewTickets(Constants.IN_GAME_TICKETS_COUNT));
+
                     if(game.ticketsCount() < Constants.IN_GAME_TICKETS_COUNT) {
                         keptTickets = currentPlayer.chooseTickets(game.topTickets(game.ticketsCount()));
                         game = game.withChosenAdditionalTickets(game.topTickets(game.ticketsCount()), keptTickets);

@@ -74,9 +74,8 @@ public final class StationPartition implements StationConnectivity {
          * one of the two representatives as representative of the joined sub-assembly;
          * @param s1 (Station) station 1
          * @param s2 (Station) station 2
-         * @return the builder (this)
          */
-        public Builder connect(Station s1, Station s2) {
+        public void connect(Station s1, Station s2) {
 
             if(!build().connected(s1, s2)) {
 
@@ -112,9 +111,6 @@ public final class StationPartition implements StationConnectivity {
                     stationMap.remove(index);
                 }
             }
-
-
-            return this;
         }
 
 

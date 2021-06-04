@@ -3,8 +3,6 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -98,17 +96,6 @@ public class PublicGameState {
         return playerState.get(currentPlayerId);
     }
 
-    /**
-     * returns all of the routes both of the players have seized
-     * @return List of routes both of the players have seized
-     */
-    public List<Route> claimedRoutes() {
-        List<Route> listOfCombinedRoutes = new ArrayList<>(playerState.get(currentPlayerId).routes());
-        PlayerId nextPlayer = currentPlayerId.next();
-        listOfCombinedRoutes.addAll(playerState.get(nextPlayer).routes());
-
-        return listOfCombinedRoutes;
-    }
 
     /**
      * Returns the PlayerId of the lastPlayer

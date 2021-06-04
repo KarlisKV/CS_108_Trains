@@ -7,7 +7,6 @@ import ch.epfl.tchu.game.Color;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Trail;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -123,10 +122,12 @@ public final class Info {
      * @param count (int) number of tickets
      * @return the message stating that the player has drawn the given number of tickets
      */
-    public String drewTickets(int count) {
+   public String drewTickets(int count) {
 
         return String.format(StringsFr.DREW_TICKETS, playerName, count, StringsFr.plural(count));
     }
+
+
 
 
     /**
