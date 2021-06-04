@@ -34,6 +34,7 @@ final class DecksViewCreator{
     /**
      * Main method to create the handView for the player
      * @param state (ObservableGameState) given state
+     * @param handler handles the highlighting of the routes
      * @return the created HBox (Node)
      */
     public static Node createHandView(ObservableGameState state, HighlightHandler handler){
@@ -273,8 +274,8 @@ final class DecksViewCreator{
         void addHighlight(Route route);
 
         /**
-         * removes all highlights passed as arguments on map
-         * @param routes routes to be removed
+         * removes all highlights on the routes passed as arguments on the map
+         * @param routes routes to be "unhighlighted"
          */
         void removeAllHighlights(List<Route> routes);
     }

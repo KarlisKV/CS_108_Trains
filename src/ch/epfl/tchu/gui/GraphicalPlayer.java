@@ -41,7 +41,8 @@ public final class GraphicalPlayer {
     private final ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
 
     private final ListProperty<Route> highlightedRoutes;
-    private final BooleanProperty gameHasEnded;
+    //Prevents the HighlightHandler (ONLY the handler) from highlighting/"unhighlighting" routes after the longest trail has been highlighted
+    private final BooleanProperty preventFurtherHighlights;
 
 
     /**
@@ -58,7 +59,7 @@ public final class GraphicalPlayer {
         this.claimRouteHandler = new SimpleObjectProperty<>();
         this.mainStage = new Stage();
         this.highlightedRoutes = new SimpleListProperty<>(FXCollections.observableArrayList());
-        this.gameHasEnded = new SimpleBooleanProperty(false);
+        this.preventFurtherHighlights = new SimpleBooleanProperty(false);
 
         //Here the scene graph is created
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (this::chooseClaimCards), highlightedRoutes);
@@ -66,13 +67,13 @@ public final class GraphicalPlayer {
         Node handView = DecksViewCreator.createHandView(gameState, new DecksViewCreator.HighlightHandler() {
             @Override
             public void addHighlight(Route route) {
-                if(!gameHasEnded.get())
+                if(!preventFurtherHighlights.get())
                     highlightedRoutes.add(route);
             }
 
             @Override
             public void removeAllHighlights(List<Route> routes) {
-                if(!gameHasEnded.get())
+                if(!preventFurtherHighlights.get())
                     highlightedRoutes.removeAll(routes);
             }
         });
@@ -244,15 +245,17 @@ public final class GraphicalPlayer {
 
 
     /**
-     * Highlights specified route on this players map. Is only called at the end
-     * of the game to highlight the longest trail(s)
+     * Highlights all routes of specified trail on this players map. Is only called at the end
+     * of the game to highlight the longest trail(s). The BooleanProperty is there to prevent
+     * any other routes from being highlighted or "unhighlighted" after the longest trail(s)
+     * is/are already highlighted. Clears all previous highlights before highlighting the longest trail
      * @param trail trail to be highlighted
      */
     public void highlightTrail(Trail trail) {
 
         assert  Platform.isFxApplicationThread();
 
-        gameHasEnded.setValue(true);
+        preventFurtherHighlights.setValue(true);
         highlightedRoutes.clear();
         highlightedRoutes.addAll(trail.routes());
     }

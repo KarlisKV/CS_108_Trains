@@ -10,11 +10,11 @@ import java.util.List;
 
 /**
  * ObservableGameSate, represents the observable part of the GameState
- * @author Daniel Polka  (326800)
- * @author Karlis Velins (325180)
  * This is a combined state that includes:
  * the public part of the state of the game, i.e. the information contained in an instance of PublicGameState,
  * the entire state of a given player, that is, the information contained in an instance of PlayerState.
+ * @author Daniel Polka  (326800)
+ * @author Karlis Velins (325180)
  */
 public final class ObservableGameState {
 
@@ -301,9 +301,8 @@ public final class ObservableGameState {
     }
 
     /**
-     * @return the mapping of routes which can still be claimed
-     * or not regardless of the possibleClaimCards and the carCount,
-     * used for highlighting routes
+     * @return which routes are already claimed by this player or which can still be claimed by this player
+     * (regardless of the cards they have and their carCount), used for highlighting routes
      */
     public ReadOnlyMapProperty<Route, Boolean> canHighlightRouteMapProperty() {
         return canHighlightRoute;

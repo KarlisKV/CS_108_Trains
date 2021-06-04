@@ -212,7 +212,7 @@ public final class RemotePlayerProxy implements Player {
 
 
     /**
-     * Highlights specified route on this players map. Is only called at the end
+     * Highlights all routes of specified trail on this players map. Is only called at the end
      * of the game to highlight the longest trail(s)
      * @param trail trail to be highlighted
      */
