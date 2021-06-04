@@ -83,7 +83,6 @@ final class MapViewCreator {
                 c.next();
 
                 if(c.getAddedSubList().contains(route)){
-
                     DropShadow ds = new DropShadow();
                     ds.setOffsetY(5.0);
                     ds.setOffsetX(5.0);

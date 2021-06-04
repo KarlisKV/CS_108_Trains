@@ -301,14 +301,6 @@ public final class ObservableGameState {
     }
 
     /**
-     * @return the PlayerId of this player
-     */
-    public PlayerId playerId(){
-        return this.playerId;
-    }
-
-
-    /**
      * @return the mapping of routes which can still be claimed
      * or not regardless of the possibleClaimCards and the carCount,
      * used for highlighting routes
